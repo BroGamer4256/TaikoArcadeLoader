@@ -18,28 +18,28 @@ enumWindows (HWND handle, LPARAM param) {
 // force show cursor
 HOOK_DYNAMIC (i32, __stdcall, ShowMouse, i32 show) { return originalShowMouse (true); }
 
-#define DRUM_HIT 20000
+#define DRUM_HIT     20000
 #define IF_HIT(bind) return IsButtonTapped (bind) ? DRUM_HIT : 0
 
-struct Keybindings EXIT = { .keycodes = { VK_ESCAPE } };
-struct Keybindings COIN_ADD = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
-struct Keybindings TEST = { .keycodes = { VK_F1 } };
-struct Keybindings SERVICE = { .keycodes = { VK_F2 } };
-struct Keybindings DEBUG_UP = { .keycodes = { VK_UP } };
-struct Keybindings DEBUG_DOWN = { .keycodes = { VK_DOWN } };
-struct Keybindings DEBUG_ENTER = { .keycodes = { VK_RETURN } };
-struct Keybindings P1_LEFT_BLUE = { .keycodes = { 'D' } };
-struct Keybindings P1_LEFT_RED = { .keycodes = { 'F' } };
-struct Keybindings P1_RIGHT_RED = { .keycodes = { 'J' } };
+struct Keybindings EXIT          = { .keycodes = { VK_ESCAPE } };
+struct Keybindings COIN_ADD      = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
+struct Keybindings TEST          = { .keycodes = { VK_F1 } };
+struct Keybindings SERVICE       = { .keycodes = { VK_F2 } };
+struct Keybindings DEBUG_UP      = { .keycodes = { VK_UP } };
+struct Keybindings DEBUG_DOWN    = { .keycodes = { VK_DOWN } };
+struct Keybindings DEBUG_ENTER   = { .keycodes = { VK_RETURN } };
+struct Keybindings P1_LEFT_BLUE  = { .keycodes = { 'D' } };
+struct Keybindings P1_LEFT_RED   = { .keycodes = { 'F' } };
+struct Keybindings P1_RIGHT_RED  = { .keycodes = { 'J' } };
 struct Keybindings P1_RIGHT_BLUE = { .keycodes = { 'K' } };
-struct Keybindings P2_LEFT_BLUE = {};
-struct Keybindings P2_LEFT_RED = {};
-struct Keybindings P2_RIGHT_RED = {};
+struct Keybindings P2_LEFT_BLUE  = {};
+struct Keybindings P2_LEFT_RED   = {};
+struct Keybindings P2_RIGHT_RED  = {};
 struct Keybindings P2_RIGHT_BLUE = {};
 
-int coin_count = 0;
+int coin_count   = 0;
 bool testEnabled = false;
-bool inited = false;
+bool inited      = false;
 
 HOOK_DYNAMIC (i64, __fastcall, DecCoin, i32 a1, u16 a2) {
 	coin_count -= a2;
@@ -48,24 +48,15 @@ HOOK_DYNAMIC (i64, __fastcall, DecCoin, i32 a1, u16 a2) {
 
 HOOK_DYNAMIC (u16, __fastcall, GetAnalogIn, u8 which) {
 	switch (which) {
-	case 0: // Player 1 Left Blue
-		IF_HIT (P1_LEFT_BLUE);
-	case 1: // Player 1 Left Red
-		IF_HIT (P1_LEFT_RED);
-	case 2: // Player 1 Right Red
-		IF_HIT (P1_RIGHT_RED);
-	case 3: // Player 1 Right Blue
-		IF_HIT (P1_RIGHT_BLUE);
-	case 4: // Player 2 Left Blue
-		IF_HIT (P2_LEFT_BLUE);
-	case 5: // Player 2 Left Red
-		IF_HIT (P2_LEFT_RED);
-	case 6: // Player 2 Right Red
-		IF_HIT (P2_RIGHT_RED);
-	case 7: // Player 2 Right Blue
-		IF_HIT (P2_RIGHT_BLUE);
-	default:
-		return 0;
+	case 0: IF_HIT (P1_LEFT_BLUE);  // Player 1 Left Blue
+	case 1: IF_HIT (P1_LEFT_RED);   // Player 1 Left Red
+	case 2: IF_HIT (P1_RIGHT_RED);  // Player 1 Right Red
+	case 3: IF_HIT (P1_RIGHT_BLUE); // Player 1 Right Blue
+	case 4: IF_HIT (P2_LEFT_BLUE);  // Player 2 Left Blue
+	case 5: IF_HIT (P2_LEFT_RED);   // Player 2 Left Red
+	case 6: IF_HIT (P2_RIGHT_RED);  // Player 2 Right Red
+	case 7: IF_HIT (P2_RIGHT_BLUE); // Player 2 Right Blue
+	default: return 0;
 	}
 }
 
@@ -103,12 +94,9 @@ HOOK_DYNAMIC (u16, __fastcall, GetCoin, i32 a1) {
 		}
 
 		UpdatePoll (windowHandle);
-		if (IsButtonTapped (COIN_ADD))
-			coin_count++;
-		if (IsButtonTapped (TEST))
-			testEnabled = !testEnabled;
-		if (IsButtonTapped(EXIT))
-			ExitProcess(0);
+		if (IsButtonTapped (COIN_ADD)) coin_count++;
+		if (IsButtonTapped (TEST)) testEnabled = !testEnabled;
+		if (IsButtonTapped (EXIT)) ExitProcess (0);
 	}
 	return coin_count;
 }
@@ -129,17 +117,15 @@ HOOK_DYNAMIC (i64, __stdcall, ResetCoin) {
 }
 
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
-	if (cause == DLL_PROCESS_DETACH)
-		DisposePoll ();
-	if (cause != DLL_PROCESS_ATTACH)
-		return 1;
+	if (cause == DLL_PROCESS_DETACH) DisposePoll ();
+	if (cause != DLL_PROCESS_ATTACH) return 1;
 
 	// Blatantly stolen patches from mon.im
-	WRITE_MEMORY (0x1400239C0, u8, 0xC3);		// Stop error
+	WRITE_MEMORY (0x1400239C0, u8, 0xC3);       // Stop error
 	WRITE_MEMORY (0x140314E8D, u8, 0xB0, 0x01); // Unlock songs
-	WRITE_MEMORY (0x140692E17, u8, 0xEB);		// Shared audio
+	WRITE_MEMORY (0x140692E17, u8, 0xEB);       // Shared audio
 	WRITE_MEMORY (0x140517339, u8, 0xBA, 0x00, 0x00, 0x00, 0x00,
-				  0x90); // Disable VSync
+	              0x90); // Disable VSync
 
 	INSTALL_HOOK_DYNAMIC (ShowMouse, PROC_ADDRESS ("user32.dll", "ShowCursor"));
 	INSTALL_HOOK_DYNAMIC (DecCoin, PROC_ADDRESS ("bnusio.dll", "bnusio_DecCoin"));

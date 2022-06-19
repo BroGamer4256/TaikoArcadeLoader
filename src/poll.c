@@ -6,16 +6,16 @@ struct {
 	const char *string;
 	uint8_t keycode;
 } ConfigKeyboardButtons[] = {
-	{ "F1", 0x70 },		 { "F2", 0x71 },		{ "F3", 0x72 },		   { "F4", 0x73 },		   { "F5", 0x74 },	  { "F6", 0x75 },
-	{ "F7", 0x76 },		 { "F8", 0x77 },		{ "F9", 0x78 },		   { "F10", 0x79 },		   { "F11", 0x7A },	  { "F12", 0x7B },
-	{ "NUM1", '1' },	 { "NUM2", '2' },		{ "NUM3", '3' },	   { "NUM4", '4' },		   { "NUM5", '5' },	  { "NUM6", '6' },
-	{ "NUM7", '7' },	 { "NUM8", '8' },		{ "NUM9", '9' },	   { "NUM0", '0' },		   { "Q", 'Q' },	  { "W", 'W' },
-	{ "E", 'E' },		 { "R", 'R' },			{ "T", 'T' },		   { "Y", 'Y' },		   { "U", 'U' },	  { "I", 'I' },
-	{ "O", 'O' },		 { "P", 'P' },			{ "A", 'A' },		   { "S", 'S' },		   { "D", 'D' },	  { "F", 'F' },
-	{ "G", 'G' },		 { "H", 'H' },			{ "J", 'J' },		   { "K", 'K' },		   { "L", 'L' },	  { "Z", 'Z' },
-	{ "X", 'X' },		 { "C", 'C' },			{ "V", 'V' },		   { "B", 'B' },		   { "N", 'N' },	  { "M", 'M' },
+	{ "F1", 0x70 },      { "F2", 0x71 },        { "F3", 0x72 },        { "F4", 0x73 },         { "F5", 0x74 },    { "F6", 0x75 },
+	{ "F7", 0x76 },      { "F8", 0x77 },        { "F9", 0x78 },        { "F10", 0x79 },        { "F11", 0x7A },   { "F12", 0x7B },
+	{ "NUM1", '1' },     { "NUM2", '2' },       { "NUM3", '3' },       { "NUM4", '4' },        { "NUM5", '5' },   { "NUM6", '6' },
+	{ "NUM7", '7' },     { "NUM8", '8' },       { "NUM9", '9' },       { "NUM0", '0' },        { "Q", 'Q' },      { "W", 'W' },
+	{ "E", 'E' },        { "R", 'R' },          { "T", 'T' },          { "Y", 'Y' },           { "U", 'U' },      { "I", 'I' },
+	{ "O", 'O' },        { "P", 'P' },          { "A", 'A' },          { "S", 'S' },           { "D", 'D' },      { "F", 'F' },
+	{ "G", 'G' },        { "H", 'H' },          { "J", 'J' },          { "K", 'K' },           { "L", 'L' },      { "Z", 'Z' },
+	{ "X", 'X' },        { "C", 'C' },          { "V", 'V' },          { "B", 'B' },           { "N", 'N' },      { "M", 'M' },
 	{ "UPARROW", 0x26 }, { "LEFTARROW", 0x25 }, { "DOWNARROW", 0x28 }, { "RIGHTARROW", 0x27 }, { "ENTER", 0x0D }, { "SPACE", 0x20 },
-	{ "CONTROL", 0x11 }, { "SHIFT", 0x10 },		{ "TAB", 0x09 },	   { "ESCAPE", 0x1B },
+	{ "CONTROL", 0x11 }, { "SHIFT", 0x10 },     { "TAB", 0x09 },       { "ESCAPE", 0x1B },
 };
 
 struct {
@@ -49,9 +49,9 @@ struct {
 	const char *string;
 	enum SDLAxis axis;
 } ConfigControllerAXIS[] = {
-	{ "SDL_LSTICK_LEFT", SDL_AXIS_LEFT_LEFT },	 { "SDL_LSTICK_UP", SDL_AXIS_LEFT_UP },		   { "SDL_LSTICK_DOWN", SDL_AXIS_LEFT_DOWN },
+	{ "SDL_LSTICK_LEFT", SDL_AXIS_LEFT_LEFT },   { "SDL_LSTICK_UP", SDL_AXIS_LEFT_UP },        { "SDL_LSTICK_DOWN", SDL_AXIS_LEFT_DOWN },
 	{ "SDL_LSTICK_RIGHT", SDL_AXIS_LEFT_RIGHT }, { "SDL_RSTICK_LEFT", SDL_AXIS_RIGHT_LEFT },   { "SDL_RSTICK_UP", SDL_AXIS_RIGHT_UP },
-	{ "SDL_RSTICK_DOWN", SDL_AXIS_RIGHT_DOWN },	 { "SDL_RSTICK_RIGHT", SDL_AXIS_RIGHT_RIGHT }, { "SDL_LTRIGGER", SDL_AXIS_LTRIGGER_DOWN },
+	{ "SDL_RSTICK_DOWN", SDL_AXIS_RIGHT_DOWN },  { "SDL_RSTICK_RIGHT", SDL_AXIS_RIGHT_RIGHT }, { "SDL_LTRIGGER", SDL_AXIS_LTRIGGER_DOWN },
 	{ "SDL_RTRIGGER", SDL_AXIS_RTRIGGER_DOWN },
 };
 
@@ -95,8 +95,7 @@ SetConfigValue (toml_table_t *table, char *key, struct Keybindings *keybind) {
 
 	for (int i = 0;; i++) {
 		toml_datum_t bind = toml_string_at (array, i);
-		if (!bind.ok)
-			break;
+		if (!bind.ok) break;
 		struct ConfigValue value = StringToConfigEnum (bind.u.s);
 		free (bind.u.s);
 
@@ -132,8 +131,7 @@ SetConfigValue (toml_table_t *table, char *key, struct Keybindings *keybind) {
 				}
 			}
 			break;
-		default:
-			break;
+		default: break;
 		}
 	}
 }
@@ -154,23 +152,22 @@ InitializePoll (void *DivaWindowHandle) {
 		} else {
 			printError (
 
-				"SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | "
-				"SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO): "
-				"%s\n",
-				SDL_GetError ());
+			    "SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | "
+			    "SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO): "
+			    "%s\n",
+			    SDL_GetError ());
 			return false;
 		}
 	}
 
 	if (SDL_GameControllerAddMappingsFromFile (configPath ("gamecontrollerdb.txt")) == -1)
 		printError ("%s (): Cannot read "
-					"plugins/gamecontrollerdb.txt\n",
-					__func__);
+		            "plugins/gamecontrollerdb.txt\n",
+		            __func__);
 	SDL_GameControllerEventState (SDL_ENABLE);
 
 	for (int i = 0; i < SDL_NumJoysticks (); i++) {
-		if (!SDL_IsGameController (i))
-			continue;
+		if (!SDL_IsGameController (i)) continue;
 
 		SDL_GameController *controller = SDL_GameControllerOpen (i);
 
@@ -184,127 +181,94 @@ InitializePoll (void *DivaWindowHandle) {
 	}
 
 	window = SDL_CreateWindowFrom (DivaWindowHandle);
-	if (window != NULL)
-		SDL_SetWindowResizable (window, true);
-	else
-		printError ("SDL_CreateWindowFrom (DivaWindowHandle): %s\n", SDL_GetError ());
+	if (window != NULL) SDL_SetWindowResizable (window, true);
+	else printError ("SDL_CreateWindowFrom (DivaWindowHandle): %s\n", SDL_GetError ());
 
 	return hasRumble;
 }
 
 void
 UpdatePoll (void *DivaWindowHandle) {
-	if (DivaWindowHandle == NULL || GetForegroundWindow () != DivaWindowHandle)
-		return;
+	if (DivaWindowHandle == NULL || GetForegroundWindow () != DivaWindowHandle) return;
 
 	memcpy (lastKeyboardState, currentKeyboardState, 255);
 	memcpy (lastControllerButtonsState, currentControllerButtonsState, 21);
-	lastMouseState = currentMouseState;
+	lastMouseState          = currentMouseState;
 	lastControllerAxisState = currentControllerAxisState;
 
 	for (uint8_t i = 0; i < 0xFF; i++)
 		currentKeyboardState[i] = GetAsyncKeyState (i) != 0;
 
-	currentMouseState.ScrolledUp = false;
+	currentMouseState.ScrolledUp   = false;
 	currentMouseState.ScrolledDown = false;
 
 	SDL_Event event;
 	while (SDL_PollEvent (&event) != 0) {
 		switch (event.type) {
 		case SDL_CONTROLLERDEVICEADDED:
-			if (!SDL_IsGameController (event.cdevice.which))
-				break;
+			if (!SDL_IsGameController (event.cdevice.which)) break;
 
 			SDL_GameController *controller = SDL_GameControllerOpen (event.cdevice.which);
 
 			if (!controller) {
 				printError (
 
-					"%s (): Could not open "
-					"gamecontroller %s: %s\n",
-					__func__, SDL_GameControllerNameForIndex (event.cdevice.which), SDL_GetError ());
+				    "%s (): Could not open "
+				    "gamecontroller %s: %s\n",
+				    __func__, SDL_GameControllerNameForIndex (event.cdevice.which), SDL_GetError ());
 				continue;
 			}
 
 			controllers[event.cdevice.which] = controller;
 			break;
 		case SDL_CONTROLLERDEVICEREMOVED:
-			if (!SDL_IsGameController (event.cdevice.which))
-				break;
+			if (!SDL_IsGameController (event.cdevice.which)) break;
 			SDL_GameControllerClose (controllers[event.cdevice.which]);
 
 			break;
 		case SDL_MOUSEWHEEL:
-			if (event.wheel.y > 0)
-				currentMouseState.ScrolledUp = true;
-			else if (event.wheel.y < 0)
-				currentMouseState.ScrolledDown = true;
+			if (event.wheel.y > 0) currentMouseState.ScrolledUp = true;
+			else if (event.wheel.y < 0) currentMouseState.ScrolledDown = true;
 			break;
 		case SDL_CONTROLLERBUTTONUP:
-		case SDL_CONTROLLERBUTTONDOWN:
-			currentControllerButtonsState[event.cbutton.button] = event.cbutton.state;
-			break;
+		case SDL_CONTROLLERBUTTONDOWN: currentControllerButtonsState[event.cbutton.button] = event.cbutton.state; break;
 		case SDL_CONTROLLERAXISMOTION:
 			if (event.caxis.value > 8000) {
 				switch (event.caxis.axis) {
-				case SDL_CONTROLLER_AXIS_LEFTX:
-					currentControllerAxisState.LeftRight = 1;
-					break;
-				case SDL_CONTROLLER_AXIS_LEFTY:
-					currentControllerAxisState.LeftDown = 1;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTX:
-					currentControllerAxisState.RightRight = 1;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTY:
-					currentControllerAxisState.RightDown = 1;
-					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-					currentControllerAxisState.LTriggerDown = 1;
-					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-					currentControllerAxisState.RTriggerDown = 1;
-					break;
+				case SDL_CONTROLLER_AXIS_LEFTX: currentControllerAxisState.LeftRight = 1; break;
+				case SDL_CONTROLLER_AXIS_LEFTY: currentControllerAxisState.LeftDown = 1; break;
+				case SDL_CONTROLLER_AXIS_RIGHTX: currentControllerAxisState.RightRight = 1; break;
+				case SDL_CONTROLLER_AXIS_RIGHTY: currentControllerAxisState.RightDown = 1; break;
+				case SDL_CONTROLLER_AXIS_TRIGGERLEFT: currentControllerAxisState.LTriggerDown = 1; break;
+				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: currentControllerAxisState.RTriggerDown = 1; break;
 				}
 			} else if (event.caxis.value < -8000) {
 				switch (event.caxis.axis) {
-				case SDL_CONTROLLER_AXIS_LEFTX:
-					currentControllerAxisState.LeftLeft = 1;
-					break;
-				case SDL_CONTROLLER_AXIS_LEFTY:
-					currentControllerAxisState.LeftUp = 1;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTX:
-					currentControllerAxisState.RightLeft = 1;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTY:
-					currentControllerAxisState.RightUp = 1;
-					break;
+				case SDL_CONTROLLER_AXIS_LEFTX: currentControllerAxisState.LeftLeft = 1; break;
+				case SDL_CONTROLLER_AXIS_LEFTY: currentControllerAxisState.LeftUp = 1; break;
+				case SDL_CONTROLLER_AXIS_RIGHTX: currentControllerAxisState.RightLeft = 1; break;
+				case SDL_CONTROLLER_AXIS_RIGHTY: currentControllerAxisState.RightUp = 1; break;
 				}
 			} else {
 				switch (event.caxis.axis) {
 				case SDL_CONTROLLER_AXIS_LEFTX:
 					currentControllerAxisState.LeftRight = 0;
-					currentControllerAxisState.LeftLeft = 0;
+					currentControllerAxisState.LeftLeft  = 0;
 					break;
 				case SDL_CONTROLLER_AXIS_LEFTY:
 					currentControllerAxisState.LeftDown = 0;
-					currentControllerAxisState.LeftUp = 0;
+					currentControllerAxisState.LeftUp   = 0;
 					break;
 				case SDL_CONTROLLER_AXIS_RIGHTX:
 					currentControllerAxisState.RightRight = 0;
-					currentControllerAxisState.RightLeft = 0;
+					currentControllerAxisState.RightLeft  = 0;
 					break;
 				case SDL_CONTROLLER_AXIS_RIGHTY:
 					currentControllerAxisState.RightDown = 0;
-					currentControllerAxisState.RightUp = 0;
+					currentControllerAxisState.RightUp   = 0;
 					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-					currentControllerAxisState.LTriggerDown = 0;
-					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-					currentControllerAxisState.RTriggerDown = 0;
-					break;
+				case SDL_CONTROLLER_AXIS_TRIGGERLEFT: currentControllerAxisState.LTriggerDown = 0; break;
+				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: currentControllerAxisState.RTriggerDown = 0; break;
 				}
 			}
 			break;
@@ -323,13 +287,13 @@ StringToConfigEnum (char *value) {
 	struct ConfigValue rval = { 0 };
 	for (int i = 0; i < COUNTOFARR (ConfigKeyboardButtons); ++i)
 		if (!strcmp (value, ConfigKeyboardButtons[i].string)) {
-			rval.type = keycode;
+			rval.type    = keycode;
 			rval.keycode = ConfigKeyboardButtons[i].keycode;
 			return rval;
 		}
 	for (int i = 0; i < COUNTOFARR (ConfigControllerButtons); ++i)
 		if (!strcmp (value, ConfigControllerButtons[i].string)) {
-			rval.type = button;
+			rval.type   = button;
 			rval.button = ConfigControllerButtons[i].button;
 			return rval;
 		}
@@ -341,7 +305,7 @@ StringToConfigEnum (char *value) {
 		}
 	for (int i = 0; i < COUNTOFARR (ConfigMouseScroll); ++i)
 		if (!strcmp (value, ConfigMouseScroll[i].string)) {
-			rval.type = scroll;
+			rval.type   = scroll;
 			rval.scroll = ConfigMouseScroll[i].scroll;
 			return rval;
 		}
@@ -355,44 +319,28 @@ GetInternalButtonState (struct Keybindings bindings) {
 	struct InternalButtonState buttons = { 0 };
 
 	for (int i = 0; i < COUNTOFARR (ConfigKeyboardButtons); i++) {
-		if (bindings.keycodes[i] == 0)
-			continue;
-		if (KeyboardIsReleased (bindings.keycodes[i]))
-			buttons.Released = 1;
-		if (KeyboardIsDown (bindings.keycodes[i]))
-			buttons.Down = 1;
-		if (KeyboardIsTapped (bindings.keycodes[i]))
-			buttons.Tapped = 1;
+		if (bindings.keycodes[i] == 0) continue;
+		if (KeyboardIsReleased (bindings.keycodes[i])) buttons.Released = 1;
+		if (KeyboardIsDown (bindings.keycodes[i])) buttons.Down = 1;
+		if (KeyboardIsTapped (bindings.keycodes[i])) buttons.Tapped = 1;
 	}
 	for (int i = 0; i < COUNTOFARR (ConfigControllerButtons); i++) {
-		if (bindings.buttons[i] == SDL_CONTROLLER_BUTTON_INVALID)
-			continue;
-		if (ControllerButtonIsReleased (bindings.buttons[i]))
-			buttons.Released = 1;
-		if (ControllerButtonIsDown (bindings.buttons[i]))
-			buttons.Down = 1;
-		if (ControllerButtonIsTapped (bindings.buttons[i]))
-			buttons.Tapped = 1;
+		if (bindings.buttons[i] == SDL_CONTROLLER_BUTTON_INVALID) continue;
+		if (ControllerButtonIsReleased (bindings.buttons[i])) buttons.Released = 1;
+		if (ControllerButtonIsDown (bindings.buttons[i])) buttons.Down = 1;
+		if (ControllerButtonIsTapped (bindings.buttons[i])) buttons.Tapped = 1;
 	}
 	for (int i = 0; i < COUNTOFARR (ConfigControllerAXIS); i++) {
-		if (bindings.axis[i] == 0)
-			continue;
-		if (ControllerAxisIsReleased (bindings.axis[i]))
-			buttons.Released = 1;
-		if (ControllerAxisIsDown (bindings.axis[i]))
-			buttons.Down = 1;
-		if (ControllerAxisIsTapped (bindings.axis[i]))
-			buttons.Tapped = 1;
+		if (bindings.axis[i] == 0) continue;
+		if (ControllerAxisIsReleased (bindings.axis[i])) buttons.Released = 1;
+		if (ControllerAxisIsDown (bindings.axis[i])) buttons.Down = 1;
+		if (ControllerAxisIsTapped (bindings.axis[i])) buttons.Tapped = 1;
 	}
 	for (int i = 0; i < COUNTOFARR (ConfigMouseScroll); i++) {
-		if (bindings.scroll[i] == 0)
-			continue;
-		if (GetMouseScrollIsReleased (bindings.scroll[i]))
-			buttons.Released = 1;
-		if (GetMouseScrollIsDown (bindings.scroll[i]))
-			buttons.Down = 1;
-		if (GetMouseScrollIsTapped (bindings.scroll[i]))
-			buttons.Tapped = 1;
+		if (bindings.scroll[i] == 0) continue;
+		if (GetMouseScrollIsReleased (bindings.scroll[i])) buttons.Released = 1;
+		if (GetMouseScrollIsDown (bindings.scroll[i])) buttons.Down = 1;
+		if (GetMouseScrollIsTapped (bindings.scroll[i])) buttons.Tapped = 1;
 	}
 
 	return buttons;
@@ -401,8 +349,7 @@ GetInternalButtonState (struct Keybindings bindings) {
 void
 SetRumble (int left, int right) {
 	for (int i = 0; i < COUNTOFARR (controllers); i++) {
-		if (!controllers[i] || !SDL_GameControllerHasRumble (controllers[i]))
-			continue;
+		if (!controllers[i] || !SDL_GameControllerHasRumble (controllers[i])) continue;
 
 		SDL_GameControllerRumble (controllers[i], left, right, 1000);
 	}
@@ -485,26 +432,20 @@ GetWasMouseScrollDown () {
 
 inline bool
 GetMouseScrollIsReleased (enum Scroll scroll) {
-	if (scroll == MOUSE_SCROLL_UP)
-		return !GetMouseScrollUp () && GetWasMouseScrollUp ();
-	else
-		return !GetMouseScrollDown () && GetWasMouseScrollDown ();
+	if (scroll == MOUSE_SCROLL_UP) return !GetMouseScrollUp () && GetWasMouseScrollUp ();
+	else return !GetMouseScrollDown () && GetWasMouseScrollDown ();
 }
 
 inline bool
 GetMouseScrollIsDown (enum Scroll scroll) {
-	if (scroll == MOUSE_SCROLL_UP)
-		return GetMouseScrollUp ();
-	else
-		return GetMouseScrollDown ();
+	if (scroll == MOUSE_SCROLL_UP) return GetMouseScrollUp ();
+	else return GetMouseScrollDown ();
 }
 
 inline bool
 GetMouseScrollIsTapped (enum Scroll scroll) {
-	if (scroll == MOUSE_SCROLL_UP)
-		return GetMouseScrollUp () && !GetWasMouseScrollUp ();
-	else
-		return GetMouseScrollDown () && !GetWasMouseScrollDown ();
+	if (scroll == MOUSE_SCROLL_UP) return GetMouseScrollUp () && !GetWasMouseScrollUp ();
+	else return GetMouseScrollDown () && !GetWasMouseScrollDown ();
 }
 
 inline bool
@@ -540,29 +481,18 @@ ControllerButtonIsReleased (SDL_GameControllerButton button) {
 inline bool
 ControllerAxisIsDown (enum SDLAxis axis) {
 	switch (axis) {
-	case SDL_AXIS_LEFT_LEFT:
-		return currentControllerAxisState.LeftLeft;
-	case SDL_AXIS_LEFT_RIGHT:
-		return currentControllerAxisState.LeftRight;
-	case SDL_AXIS_LEFT_UP:
-		return currentControllerAxisState.LeftUp;
-	case SDL_AXIS_LEFT_DOWN:
-		return currentControllerAxisState.LeftDown;
-	case SDL_AXIS_RIGHT_LEFT:
-		return currentControllerAxisState.RightLeft;
-	case SDL_AXIS_RIGHT_RIGHT:
-		return currentControllerAxisState.RightRight;
-	case SDL_AXIS_RIGHT_UP:
-		return currentControllerAxisState.RightUp;
-	case SDL_AXIS_RIGHT_DOWN:
-		return currentControllerAxisState.RightDown;
-	case SDL_AXIS_LTRIGGER_DOWN:
-		return currentControllerAxisState.LTriggerDown;
-	case SDL_AXIS_RTRIGGER_DOWN:
-		return currentControllerAxisState.RTriggerDown;
+	case SDL_AXIS_LEFT_LEFT: return currentControllerAxisState.LeftLeft;
+	case SDL_AXIS_LEFT_RIGHT: return currentControllerAxisState.LeftRight;
+	case SDL_AXIS_LEFT_UP: return currentControllerAxisState.LeftUp;
+	case SDL_AXIS_LEFT_DOWN: return currentControllerAxisState.LeftDown;
+	case SDL_AXIS_RIGHT_LEFT: return currentControllerAxisState.RightLeft;
+	case SDL_AXIS_RIGHT_RIGHT: return currentControllerAxisState.RightRight;
+	case SDL_AXIS_RIGHT_UP: return currentControllerAxisState.RightUp;
+	case SDL_AXIS_RIGHT_DOWN: return currentControllerAxisState.RightDown;
+	case SDL_AXIS_LTRIGGER_DOWN: return currentControllerAxisState.LTriggerDown;
+	case SDL_AXIS_RTRIGGER_DOWN: return currentControllerAxisState.RTriggerDown;
 	case SDL_AXIS_NULL:
-	case SDL_AXIS_MAX:
-		return false;
+	case SDL_AXIS_MAX: return false;
 	}
 }
 
@@ -574,29 +504,18 @@ ControllerAxisIsUp (enum SDLAxis axis) {
 inline bool
 ControllerAxisWasDown (enum SDLAxis axis) {
 	switch (axis) {
-	case SDL_AXIS_LEFT_LEFT:
-		return lastControllerAxisState.LeftLeft;
-	case SDL_AXIS_LEFT_RIGHT:
-		return lastControllerAxisState.LeftRight;
-	case SDL_AXIS_LEFT_UP:
-		return lastControllerAxisState.LeftUp;
-	case SDL_AXIS_LEFT_DOWN:
-		return lastControllerAxisState.LeftDown;
-	case SDL_AXIS_RIGHT_LEFT:
-		return lastControllerAxisState.RightLeft;
-	case SDL_AXIS_RIGHT_RIGHT:
-		return lastControllerAxisState.RightRight;
-	case SDL_AXIS_RIGHT_UP:
-		return lastControllerAxisState.RightUp;
-	case SDL_AXIS_RIGHT_DOWN:
-		return lastControllerAxisState.RightDown;
-	case SDL_AXIS_LTRIGGER_DOWN:
-		return lastControllerAxisState.LTriggerDown;
-	case SDL_AXIS_RTRIGGER_DOWN:
-		return lastControllerAxisState.RTriggerDown;
+	case SDL_AXIS_LEFT_LEFT: return lastControllerAxisState.LeftLeft;
+	case SDL_AXIS_LEFT_RIGHT: return lastControllerAxisState.LeftRight;
+	case SDL_AXIS_LEFT_UP: return lastControllerAxisState.LeftUp;
+	case SDL_AXIS_LEFT_DOWN: return lastControllerAxisState.LeftDown;
+	case SDL_AXIS_RIGHT_LEFT: return lastControllerAxisState.RightLeft;
+	case SDL_AXIS_RIGHT_RIGHT: return lastControllerAxisState.RightRight;
+	case SDL_AXIS_RIGHT_UP: return lastControllerAxisState.RightUp;
+	case SDL_AXIS_RIGHT_DOWN: return lastControllerAxisState.RightDown;
+	case SDL_AXIS_LTRIGGER_DOWN: return lastControllerAxisState.LTriggerDown;
+	case SDL_AXIS_RTRIGGER_DOWN: return lastControllerAxisState.RTriggerDown;
 	case SDL_AXIS_NULL:
-	case SDL_AXIS_MAX:
-		return false;
+	case SDL_AXIS_MAX: return false;
 	}
 }
 

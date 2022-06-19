@@ -23,13 +23,13 @@ typedef uint64_t u64;
 #define HOOK(returnType, callingConvention, functionName, location, ...)                                                                             \
 	typedef returnType callingConvention (*functionName) (__VA_ARGS__);                                                                              \
 	functionName original##functionName = NULL;                                                                                                      \
-	void *where##functionName = (void *)location;                                                                                                    \
+	void *where##functionName           = (void *)location;                                                                                          \
 	returnType callingConvention implOf##functionName (__VA_ARGS__)
 
 #define HOOK_DYNAMIC(returnType, callingConvention, functionName, ...)                                                                               \
 	typedef returnType callingConvention (*functionName) (__VA_ARGS__);                                                                              \
 	functionName original##functionName = NULL;                                                                                                      \
-	void *where##functionName = NULL;                                                                                                                \
+	void *where##functionName           = NULL;                                                                                                      \
 	returnType callingConvention implOf##functionName (__VA_ARGS__)
 
 #define INSTALL_HOOK(functionName)                                                                                                                   \
@@ -84,10 +84,10 @@ typedef uint64_t u64;
 
 #define COUNTOFARR(arr) sizeof (arr) / sizeof (arr[0])
 
-#define WARNING_COLOUR (FOREGROUND_RED | FOREGROUND_GREEN)
-#define ERROR_COLOUR FOREGROUND_RED
+#define WARNING_COLOUR            (FOREGROUND_RED | FOREGROUND_GREEN)
+#define ERROR_COLOUR              FOREGROUND_RED
 #define printWarning(format, ...) printColour (WARNING_COLOUR, format, __VA_ARGS__)
-#define printError(format, ...) printColour (ERROR_COLOUR, format, __VA_ARGS__)
+#define printError(format, ...)   printColour (ERROR_COLOUR, format, __VA_ARGS__)
 
 char *configPath (char *name);
 toml_table_t *openConfig (char *configFilePath);

@@ -1,7 +1,13 @@
 BasedOnStyle: GNU
 IndentWidth: 4
 TabWidth: 4
-UseTab: Always
+UseTab: ForIndentation
 IndentCaseLabels: False
 BreakBeforeBraces: Attach
 ColumnLimit: 150
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveMacros: Consecutive
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: True
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
