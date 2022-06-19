@@ -62,10 +62,8 @@ void UpdatePoll (void *DivaWindowHandle);
 void DisposePoll ();
 
 struct ConfigValue StringToConfigEnum (char *value);
-void SetConfigValue (toml_table_t *table, char *key,
-					 struct Keybindings *keybind);
-struct InternalButtonState
-GetInternalButtonState (struct Keybindings bindings);
+void SetConfigValue (toml_table_t *table, char *key, struct Keybindings *keybind);
+struct InternalButtonState GetInternalButtonState (struct Keybindings bindings);
 void SetRumble (int left, int right);
 
 bool KeyboardIsDown (uint8_t keycode);

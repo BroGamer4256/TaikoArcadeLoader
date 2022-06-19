@@ -6,26 +6,16 @@ struct {
 	const char *string;
 	uint8_t keycode;
 } ConfigKeyboardButtons[] = {
-	{ "F1", 0x70 },			{ "F2", 0x71 },		   { "F3", 0x72 },
-	{ "F4", 0x73 },			{ "F5", 0x74 },		   { "F6", 0x75 },
-	{ "F7", 0x76 },			{ "F8", 0x77 },		   { "F9", 0x78 },
-	{ "F10", 0x79 },		{ "F11", 0x7A },	   { "F12", 0x7B },
-	{ "NUM1", '1' },		{ "NUM2", '2' },	   { "NUM3", '3' },
-	{ "NUM4", '4' },		{ "NUM5", '5' },	   { "NUM6", '6' },
-	{ "NUM7", '7' },		{ "NUM8", '8' },	   { "NUM9", '9' },
-	{ "NUM0", '0' },		{ "Q", 'Q' },		   { "W", 'W' },
-	{ "E", 'E' },			{ "R", 'R' },		   { "T", 'T' },
-	{ "Y", 'Y' },			{ "U", 'U' },		   { "I", 'I' },
-	{ "O", 'O' },			{ "P", 'P' },		   { "A", 'A' },
-	{ "S", 'S' },			{ "D", 'D' },		   { "F", 'F' },
-	{ "G", 'G' },			{ "H", 'H' },		   { "J", 'J' },
-	{ "K", 'K' },			{ "L", 'L' },		   { "Z", 'Z' },
-	{ "X", 'X' },			{ "C", 'C' },		   { "V", 'V' },
-	{ "B", 'B' },			{ "N", 'N' },		   { "M", 'M' },
-	{ "UPARROW", 0x26 },	{ "LEFTARROW", 0x25 }, { "DOWNARROW", 0x28 },
-	{ "RIGHTARROW", 0x27 }, { "ENTER", 0x0D },	   { "SPACE", 0x20 },
-	{ "CONTROL", 0x11 },	{ "SHIFT", 0x10 },	   { "TAB", 0x09 },
-	{ "ESCAPE", 0x1B },
+	{ "F1", 0x70 },		 { "F2", 0x71 },		{ "F3", 0x72 },		   { "F4", 0x73 },		   { "F5", 0x74 },	  { "F6", 0x75 },
+	{ "F7", 0x76 },		 { "F8", 0x77 },		{ "F9", 0x78 },		   { "F10", 0x79 },		   { "F11", 0x7A },	  { "F12", 0x7B },
+	{ "NUM1", '1' },	 { "NUM2", '2' },		{ "NUM3", '3' },	   { "NUM4", '4' },		   { "NUM5", '5' },	  { "NUM6", '6' },
+	{ "NUM7", '7' },	 { "NUM8", '8' },		{ "NUM9", '9' },	   { "NUM0", '0' },		   { "Q", 'Q' },	  { "W", 'W' },
+	{ "E", 'E' },		 { "R", 'R' },			{ "T", 'T' },		   { "Y", 'Y' },		   { "U", 'U' },	  { "I", 'I' },
+	{ "O", 'O' },		 { "P", 'P' },			{ "A", 'A' },		   { "S", 'S' },		   { "D", 'D' },	  { "F", 'F' },
+	{ "G", 'G' },		 { "H", 'H' },			{ "J", 'J' },		   { "K", 'K' },		   { "L", 'L' },	  { "Z", 'Z' },
+	{ "X", 'X' },		 { "C", 'C' },			{ "V", 'V' },		   { "B", 'B' },		   { "N", 'N' },	  { "M", 'M' },
+	{ "UPARROW", 0x26 }, { "LEFTARROW", 0x25 }, { "DOWNARROW", 0x28 }, { "RIGHTARROW", 0x27 }, { "ENTER", 0x0D }, { "SPACE", 0x20 },
+	{ "CONTROL", 0x11 }, { "SHIFT", 0x10 },		{ "TAB", 0x09 },	   { "ESCAPE", 0x1B },
 };
 
 struct {
@@ -59,15 +49,9 @@ struct {
 	const char *string;
 	enum SDLAxis axis;
 } ConfigControllerAXIS[] = {
-	{ "SDL_LSTICK_LEFT", SDL_AXIS_LEFT_LEFT },
-	{ "SDL_LSTICK_UP", SDL_AXIS_LEFT_UP },
-	{ "SDL_LSTICK_DOWN", SDL_AXIS_LEFT_DOWN },
-	{ "SDL_LSTICK_RIGHT", SDL_AXIS_LEFT_RIGHT },
-	{ "SDL_RSTICK_LEFT", SDL_AXIS_RIGHT_LEFT },
-	{ "SDL_RSTICK_UP", SDL_AXIS_RIGHT_UP },
-	{ "SDL_RSTICK_DOWN", SDL_AXIS_RIGHT_DOWN },
-	{ "SDL_RSTICK_RIGHT", SDL_AXIS_RIGHT_RIGHT },
-	{ "SDL_LTRIGGER", SDL_AXIS_LTRIGGER_DOWN },
+	{ "SDL_LSTICK_LEFT", SDL_AXIS_LEFT_LEFT },	 { "SDL_LSTICK_UP", SDL_AXIS_LEFT_UP },		   { "SDL_LSTICK_DOWN", SDL_AXIS_LEFT_DOWN },
+	{ "SDL_LSTICK_RIGHT", SDL_AXIS_LEFT_RIGHT }, { "SDL_RSTICK_LEFT", SDL_AXIS_RIGHT_LEFT },   { "SDL_RSTICK_UP", SDL_AXIS_RIGHT_UP },
+	{ "SDL_RSTICK_DOWN", SDL_AXIS_RIGHT_DOWN },	 { "SDL_RSTICK_RIGHT", SDL_AXIS_RIGHT_RIGHT }, { "SDL_LTRIGGER", SDL_AXIS_LTRIGGER_DOWN },
 	{ "SDL_RTRIGGER", SDL_AXIS_RTRIGGER_DOWN },
 };
 
@@ -164,12 +148,8 @@ InitializePoll (void *DivaWindowHandle) {
 	SDL_SetHint (SDL_HINT_JOYSTICK_HIDAPI_PS5, "1");
 	SDL_SetHint (SDL_HINT_JOYSTICK_HIDAPI_PS5_RUMBLE, "1");
 
-	if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER
-				  | SDL_INIT_EVENTS | SDL_INIT_VIDEO)
-		!= 0) {
-		if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER
-					  | SDL_INIT_EVENTS | SDL_INIT_VIDEO)
-			== 0) {
+	if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO) != 0) {
+		if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO) == 0) {
 			hasRumble = false;
 		} else {
 			printError (
@@ -182,9 +162,7 @@ InitializePoll (void *DivaWindowHandle) {
 		}
 	}
 
-	if (SDL_GameControllerAddMappingsFromFile (
-			configPath ("gamecontrollerdb.txt"))
-		== -1)
+	if (SDL_GameControllerAddMappingsFromFile (configPath ("gamecontrollerdb.txt")) == -1)
 		printError ("%s (): Cannot read "
 					"plugins/gamecontrollerdb.txt\n",
 					__func__);
@@ -197,8 +175,7 @@ InitializePoll (void *DivaWindowHandle) {
 		SDL_GameController *controller = SDL_GameControllerOpen (i);
 
 		if (!controller) {
-			printWarning ("Could not open gamecontroller %s: %s\n",
-						  SDL_GameControllerNameForIndex (i), SDL_GetError ());
+			printWarning ("Could not open gamecontroller %s: %s\n", SDL_GameControllerNameForIndex (i), SDL_GetError ());
 			continue;
 		}
 
@@ -210,8 +187,7 @@ InitializePoll (void *DivaWindowHandle) {
 	if (window != NULL)
 		SDL_SetWindowResizable (window, true);
 	else
-		printError ("SDL_CreateWindowFrom (DivaWindowHandle): %s\n",
-					SDL_GetError ());
+		printError ("SDL_CreateWindowFrom (DivaWindowHandle): %s\n", SDL_GetError ());
 
 	return hasRumble;
 }
@@ -239,17 +215,14 @@ UpdatePoll (void *DivaWindowHandle) {
 			if (!SDL_IsGameController (event.cdevice.which))
 				break;
 
-			SDL_GameController *controller
-				= SDL_GameControllerOpen (event.cdevice.which);
+			SDL_GameController *controller = SDL_GameControllerOpen (event.cdevice.which);
 
 			if (!controller) {
 				printError (
 
 					"%s (): Could not open "
 					"gamecontroller %s: %s\n",
-					__func__,
-					SDL_GameControllerNameForIndex (event.cdevice.which),
-					SDL_GetError ());
+					__func__, SDL_GameControllerNameForIndex (event.cdevice.which), SDL_GetError ());
 				continue;
 			}
 
@@ -269,8 +242,7 @@ UpdatePoll (void *DivaWindowHandle) {
 			break;
 		case SDL_CONTROLLERBUTTONUP:
 		case SDL_CONTROLLERBUTTONDOWN:
-			currentControllerButtonsState[event.cbutton.button]
-				= event.cbutton.state;
+			currentControllerButtonsState[event.cbutton.button] = event.cbutton.state;
 			break;
 		case SDL_CONTROLLERAXISMOTION:
 			if (event.caxis.value > 8000) {
