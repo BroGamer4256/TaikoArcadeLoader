@@ -1,0 +1,7 @@
+TEST = [ "F1" ]
+SERVICE = [ "F2" ]
+DEBUG_UP = [ "UPARROW" ]
+DEBUG_DOWN = [ "DOWNARROW" ]
+DEBUG_ENTER = [ "ENTER" ]
+
+COIN_ADD = [ "ENTER", "SDL_START" ]

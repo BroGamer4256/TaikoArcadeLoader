@@ -1,0 +1,6 @@
+BasedOnStyle: GNU
+IndentWidth: 4
+TabWidth: 4
+UseTab: Always
+IndentCaseLabels: False
+BreakBeforeBraces: Attach
