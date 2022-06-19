@@ -1,3 +1,5 @@
+EXIT = [ "ESCAPE" ]
+
 TEST = [ "F1" ]
 SERVICE = [ "F2" ]
 DEBUG_UP = [ "UPARROW" ]

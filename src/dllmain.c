@@ -21,6 +21,7 @@ HOOK_DYNAMIC (i32, __stdcall, ShowMouse, i32 show) { return originalShowMouse (t
 #define DRUM_HIT 20000
 #define IF_HIT(bind) return IsButtonTapped (bind) ? DRUM_HIT : 0
 
+struct Keybindings EXIT = { .keycodes = { VK_ESCAPE } };
 struct Keybindings COIN_ADD = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
 struct Keybindings TEST = { .keycodes = { VK_F1 } };
 struct Keybindings SERVICE = { .keycodes = { VK_F2 } };
@@ -76,6 +77,8 @@ HOOK_DYNAMIC (u16, __fastcall, GetCoin, i32 a1) {
 
 			toml_table_t *config = openConfig (configPath ("keyconfig.toml"));
 			if (config) {
+				SetConfigValue (config, "EXIT", &EXIT);
+
 				SetConfigValue (config, "TEST", &TEST);
 				SetConfigValue (config, "SERVICE", &SERVICE);
 				SetConfigValue (config, "DEBUG_UP", &DEBUG_UP);
@@ -100,11 +103,12 @@ HOOK_DYNAMIC (u16, __fastcall, GetCoin, i32 a1) {
 		}
 
 		UpdatePoll (windowHandle);
-		if (IsButtonTapped (COIN_ADD)) {
+		if (IsButtonTapped (COIN_ADD))
 			coin_count++;
-		}
 		if (IsButtonTapped (TEST))
 			testEnabled = !testEnabled;
+		if (IsButtonTapped(EXIT))
+			ExitProcess(0);
 	}
 	return coin_count;
 }
