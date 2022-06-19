@@ -2,21 +2,12 @@
 #include "poll.h"
 #include <math.h>
 
-u16
-rand16 (void) {
-	int max_value = 20000; // ~ 90 in I/O test menu
-	int min_value = 10000; // ~ 30 in I/O test menu
-
-	return (u16)(rand () % max_value + min_value);
-}
-
 HWND windowHandle = 0;
 
 int CALLBACK
 enumWindows (HWND handle, LPARAM param) {
 	char buf[64];
 	GetClassName (handle, buf, 64);
-	printf ("%s\n", buf);
 	if (!strcmp (buf, "nuFoundation.Window")) {
 		windowHandle = handle;
 		return 0;
@@ -31,17 +22,20 @@ HOOK_DYNAMIC (i32, __stdcall, ShowMouse, i32 show) {
 
 // xinput stuff
 HOOK_DYNAMIC (u32, __stdcall, XinputGetState, u32 index, void *state) {
-	return 1167;
+	return ERROR_DEVICE_NOT_CONNECTED;
 }
 
 HOOK_DYNAMIC (u32, __stdcall, XinputSetState, u32 index, void *state) {
-	return 1167;
+	return ERROR_DEVICE_NOT_CONNECTED;
 }
 
 HOOK_DYNAMIC (u32, __stdcall, XinputGetCapabilites, u32 index, u32 flags,
 			  void *state) {
-	return 1167;
+	return ERROR_DEVICE_NOT_CONNECTED;
 }
+
+#define DRUM_HIT 20000
+#define IF_HIT(bind) return IsButtonTapped (bind) ? DRUM_HIT : 0
 
 struct Keybindings COIN_ADD = { .keycodes = { VK_RETURN },
 								.buttons = { SDL_CONTROLLER_BUTTON_START } };
@@ -50,6 +44,14 @@ struct Keybindings SERVICE = { .keycodes = { VK_F2 } };
 struct Keybindings DEBUG_UP = { .keycodes = { VK_UP } };
 struct Keybindings DEBUG_DOWN = { .keycodes = { VK_DOWN } };
 struct Keybindings DEBUG_ENTER = { .keycodes = { VK_RETURN } };
+struct Keybindings P1_LEFT_BLUE = { .keycodes = { 'D' } };
+struct Keybindings P1_LEFT_RED = { .keycodes = { 'F' } };
+struct Keybindings P1_RIGHT_RED = { .keycodes = { 'J' } };
+struct Keybindings P1_RIGHT_BLUE = { .keycodes = { 'K' } };
+struct Keybindings P2_LEFT_BLUE = {};
+struct Keybindings P2_LEFT_RED = {};
+struct Keybindings P2_RIGHT_RED = {};
+struct Keybindings P2_RIGHT_BLUE = {};
 
 int coin_count = 0;
 bool testEnabled = false;
@@ -69,8 +71,28 @@ HOOK_DYNAMIC (i64, __fastcall, DecCoin, i32 a1, u16 a2) {
 
 HOOK_DYNAMIC (i64, __fastcall, DecService, i32 a1, u16 a2) { return false; }
 
-// TODO
-HOOK_DYNAMIC (u16, __fastcall, GetAnalogIn, u8 which) { return false; }
+HOOK_DYNAMIC (u16, __fastcall, GetAnalogIn, u8 which) {
+	switch (which) {
+	case 0: // Player 1 Left Blue
+		IF_HIT (P1_LEFT_BLUE);
+	case 1: // Player 1 Left Red
+		IF_HIT (P1_LEFT_RED);
+	case 2: // Player 1 Right Red
+		IF_HIT (P1_RIGHT_RED);
+	case 3: // Player 1 Right Blue
+		IF_HIT (P1_RIGHT_BLUE);
+	case 4: // Player 2 Left Blue
+		IF_HIT (P2_LEFT_BLUE);
+	case 5: // Player 2 Left Red
+		IF_HIT (P2_LEFT_RED);
+	case 6: // Player 2 Right Red
+		IF_HIT (P2_RIGHT_RED);
+	case 7: // Player 2 Right Blue
+		IF_HIT (P2_RIGHT_BLUE);
+	default:
+		return 0;
+	}
+}
 
 HOOK_DYNAMIC (void *, __fastcall, GetBuffer, u16 a1, i64 a2, i16 a3) {
 	return false;
@@ -86,12 +108,22 @@ HOOK_DYNAMIC (u16, __fastcall, GetCoin, i32 a1) {
 
 			toml_table_t *config = openConfig (configPath ("keyconfig.toml"));
 			if (config) {
-				SetConfigValue (config, "COIN_ADD", &COIN_ADD);
 				SetConfigValue (config, "TEST", &TEST);
 				SetConfigValue (config, "SERVICE", &SERVICE);
 				SetConfigValue (config, "DEBUG_UP", &DEBUG_UP);
 				SetConfigValue (config, "DEBUG_DOWN", &DEBUG_DOWN);
 				SetConfigValue (config, "DEBUG_ENTER", &DEBUG_ENTER);
+
+				SetConfigValue (config, "COIN_ADD", &COIN_ADD);
+
+				SetConfigValue (config, "P1_LEFT_BLUE", &P1_LEFT_BLUE);
+				SetConfigValue (config, "P1_LEFT_RED", &P1_LEFT_RED);
+				SetConfigValue (config, "P1_RIGHT_RED", &P1_RIGHT_RED);
+				SetConfigValue (config, "P1_RIGHT_BLUE", &P1_RIGHT_BLUE);
+				SetConfigValue (config, "P2_LEFT_BLUE", &P2_LEFT_BLUE);
+				SetConfigValue (config, "P2_LEFT_RED", &P2_LEFT_RED);
+				SetConfigValue (config, "P2_RIGHT_RED", &P2_RIGHT_RED);
+				SetConfigValue (config, "P2_RIGHT_BLUE", &P2_RIGHT_BLUE);
 
 				toml_free (config);
 			}
@@ -101,7 +133,6 @@ HOOK_DYNAMIC (u16, __fastcall, GetCoin, i32 a1) {
 
 		UpdatePoll (windowHandle);
 		if (IsButtonTapped (COIN_ADD)) {
-			printf ("Add coin\n");
 			coin_count++;
 		}
 		if (IsButtonTapped (TEST))
@@ -160,7 +191,6 @@ HOOK_DYNAMIC (u8, __stdcall, IsWideUsio) { return false; }
 
 HOOK_DYNAMIC (i64, __stdcall, Open) { return false; }
 
-// TODO
 HOOK_DYNAMIC (i64, __stdcall, ResetCoin) {
 	coin_count = 0;
 	return false;
@@ -174,7 +204,6 @@ HOOK_DYNAMIC (i64, __fastcall, SetBuffer, u16 a1, i32 a2, i16 a3) {
 
 HOOK_DYNAMIC (i64, __fastcall, SetCDOut, u8 a1, u8 a2) { return false; }
 
-// TODO
 HOOK_DYNAMIC (i64, __fastcall, SetCoinLock, u8 a1, u8 a2) { return false; }
 
 HOOK_DYNAMIC (i64, __fastcall, SetExpansionMode, i16 a1) { return false; }
@@ -223,11 +252,14 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause != DLL_PROCESS_ATTACH)
 		return 1;
 
-	void *base = GetModuleHandleA (0);
-
-	// Blatantly stolen patches
-	WRITE_MEMORY (base + 0x239C0, u8, 0xC3); // Actually get shit working
-	WRITE_MEMORY (base + 0x314E8D, u8, 0xB0, 0x01); // Unlock songs
+	// Blatantly stolen patches from mon.im
+	WRITE_MEMORY ((void *)0x140000C00 + 0x22DC0, u8,
+				  0xC3); // Actually get shit working
+	WRITE_MEMORY ((void *)0x140000C00 + 0x31428D, u8, 0xB0,
+				  0x01);									 // Unlock songs
+	WRITE_MEMORY ((void *)0x140000C00 + 0x692217, u8, 0xEB); // Shared audio
+	WRITE_MEMORY ((void *)0x140000C00 + 0x516739, u8, 0xBA, 0x00, 0x00, 0x00,
+				  0x00, 0x90); // Disable VSync
 
 	INSTALL_HOOK_DYNAMIC (ShowMouse,
 						  PROC_ADDRESS ("user32.dll", "ShowCursor"));

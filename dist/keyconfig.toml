@@ -5,3 +5,12 @@ DEBUG_DOWN = [ "DOWNARROW" ]
 DEBUG_ENTER = [ "ENTER" ]
 
 COIN_ADD = [ "ENTER", "SDL_START" ]
+
+P1_LEFT_BLUE = [ "D" ]
+P1_LEFT_RED = [ "F" ]
+P1_RIGHT_RED = [ "J" ]
+P1_RIGHT_BLUE = [ "K" ]
+P2_LEFT_BLUE = [  ]
+P2_LEFT_RED = [  ]
+P2_RIGHT_RED = [  ]
+P2_RIGHT_BLUE = [  ]
