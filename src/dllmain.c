@@ -116,10 +116,7 @@ HOOK_DYNAMIC (i64, __stdcall, ResetCoin) {
 	return false;
 }
 
-i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
-	if (cause == DLL_PROCESS_DETACH) DisposePoll ();
-	if (cause != DLL_PROCESS_ATTACH) return true;
-
+HOOK (i32, __stdcall, CrtMain, 0x140666d2c, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i32 nShowCmd) {
 	// Blatantly stolen patches from mon.im
 	WRITE_MEMORY (0x1400239C0, u8, 0xC3);       // Stop error
 	WRITE_MEMORY (0x140314E8D, u8, 0xB0, 0x01); // Unlock songs
@@ -131,6 +128,14 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	WRITE_MEMORY (0x140B5C528, u8, "./Setting1.bin");
 	WRITE_MEMORY (0x140B5C538, u8, "./Setting2.bin");
 
+	return originalCrtMain (hInstance, hPrevInstance, lpCmdLine, nShowCmd);
+}
+
+i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
+	if (cause == DLL_PROCESS_DETACH) DisposePoll ();
+	if (cause != DLL_PROCESS_ATTACH) return true;
+
+	INSTALL_HOOK (CrtMain);
 	INSTALL_HOOK_DYNAMIC (ShowMouse, PROC_ADDRESS ("user32.dll", "ShowCursor"));
 	INSTALL_HOOK_DYNAMIC (DecCoin, PROC_ADDRESS ("bnusio.dll", "bnusio_DecCoin"));
 	INSTALL_HOOK_DYNAMIC (GetAnalogIn, PROC_ADDRESS ("bnusio.dll", "bnusio_GetAnalogIn"));
