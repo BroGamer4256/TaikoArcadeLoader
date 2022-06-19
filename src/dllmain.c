@@ -118,7 +118,7 @@ HOOK_DYNAMIC (i64, __stdcall, ResetCoin) {
 
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause == DLL_PROCESS_DETACH) DisposePoll ();
-	if (cause != DLL_PROCESS_ATTACH) return 1;
+	if (cause != DLL_PROCESS_ATTACH) return true;
 
 	// Blatantly stolen patches from mon.im
 	WRITE_MEMORY (0x1400239C0, u8, 0xC3);       // Stop error
@@ -126,6 +126,10 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	WRITE_MEMORY (0x140692E17, u8, 0xEB);       // Shared audio
 	WRITE_MEMORY (0x140517339, u8, 0xBA, 0x00, 0x00, 0x00, 0x00,
 	              0x90); // Disable VSync
+	// Blatantly stolen patches from openparrot
+	// Save settings cross session
+	WRITE_MEMORY (0x140B5C528, u8, "./Setting1.bin");
+	WRITE_MEMORY (0x140B5C538, u8, "./Setting2.bin");
 
 	INSTALL_HOOK_DYNAMIC (ShowMouse, PROC_ADDRESS ("user32.dll", "ShowCursor"));
 	INSTALL_HOOK_DYNAMIC (DecCoin, PROC_ADDRESS ("bnusio.dll", "bnusio_DecCoin"));
