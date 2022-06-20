@@ -6,49 +6,49 @@ HOOK_DYNAMIC (u32, __stdcall, XinputSetState, u32 index, void *state) { return E
 HOOK_DYNAMIC (u32, __stdcall, XinputGetCapabilites, u32 index, u32 flags, void *state) { return ERROR_DEVICE_NOT_CONNECTED; }
 
 // bnusio stuff
-HOOK_DYNAMIC (i64, __stdcall, ClearSram) { return false; }
-HOOK_DYNAMIC (i64, __stdcall, Close) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, Communication, i32 a1) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, DecService, i32 a1, u16 a2) { return false; }
-HOOK_DYNAMIC (void *, __fastcall, GetBuffer, u16 a1, i64 a2, i16 a3) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, GetCDOut, u8 a1) { return false; }
-HOOK_DYNAMIC (void *, __fastcall, GetCoinError, i32 a1) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, GetCoinLock, u8 a1) { return false; }
-HOOK_DYNAMIC (u64, __stdcall, GetEncoder) { return false; }
-HOOK_DYNAMIC (void *, __stdcall, GetExpansionMode) { return false; }
+HOOK_DYNAMIC (i64, __stdcall, ClearSram) { return 0; }
+HOOK_DYNAMIC (i64, __stdcall, Close) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, Communication, i32 a1) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, DecService, i32 a1, u16 a2) { return 0; }
+HOOK_DYNAMIC (void *, __fastcall, GetBuffer, u16 a1, i64 a2, i16 a3) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, GetCDOut, u8 a1) { return 0; }
+HOOK_DYNAMIC (void *, __fastcall, GetCoinError, i32 a1) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, GetCoinLock, u8 a1) { return 0; }
+HOOK_DYNAMIC (u64, __stdcall, GetEncoder) { return 0; }
+HOOK_DYNAMIC (void *, __stdcall, GetExpansionMode) { return 0; }
 HOOK_DYNAMIC (void *, __stdcall, GetFirmwareVersion) { return (void *)(u16)126; }
-HOOK_DYNAMIC (u8, __stdcall, GetGout, u8 a1) { return false; }
-HOOK_DYNAMIC (i64, __stdcall, GetHopOut, u8 a1) { return false; }
-HOOK_DYNAMIC (char *, __stdcall, GetIoBoardName) { return false; }
-HOOK_DYNAMIC (u16, __fastcall, GetRegisterU16, i16 a1) { return false; }
-HOOK_DYNAMIC (u8, __fastcall, GetRegisterU8, u16 a1) { return false; }
-HOOK_DYNAMIC (void *, __fastcall, GetService, i32 a1) { return false; }
-HOOK_DYNAMIC (void *, __fastcall, GetServiceError, i32 a1) { return false; }
-HOOK_DYNAMIC (u16, __fastcall, GetStatusU16, u16 a1) { return false; }
-HOOK_DYNAMIC (u8, __fastcall, GetStatusU8, u16 a1) { return false; }
-HOOK_DYNAMIC (u64, __stdcall, GetSwIn64) { return false; }
-HOOK_DYNAMIC (void *, __stdcall, GetSystemError) { return false; }
-HOOK_DYNAMIC (u8, __stdcall, IsConnected) { return false; }
-HOOK_DYNAMIC (u8, __stdcall, IsWideUsio) { return false; }
-HOOK_DYNAMIC (i64, __stdcall, Open) { return false; }
-HOOK_DYNAMIC (i32, __stdcall, ResetIoBoard) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetBuffer, u16 a1, i32 a2, i16 a3) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetCDOut, u8 a1, u8 a2) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetCoinLock, u8 a1, u8 a2) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetExpansionMode, i16 a1) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetGout, u8 a1, u8 a2) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetHopOut, u8 a1, u8 a2) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetHopperLimit, u16 a1, i16 a2) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetHopperRequest, u16 a1, i16 a2) { return false; }
-HOOK_DYNAMIC (void *, __fastcall, SetPLCounter, i16 a1) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetRegisterU16, u16 a1, u16 a2) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetRegisterU8, u16 a1, u8 a2) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SetSystemError, i16 a1) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SramRead, i32 a1, u8 a2, i32 a3, u16 a4) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, SramWrite, i32 a1, u8 a2, i32 a3, u16 a4) { return false; }
-HOOK_DYNAMIC (i64, __stdcall, UsbFinderInitialize) { return false; }
-HOOK_DYNAMIC (i64, __stdcall, UsbFinderRelease) { return false; }
-HOOK_DYNAMIC (i64, __fastcall, UsbFinderGetSerialNumber, i32 a1, i64 a2) { return true; }
+HOOK_DYNAMIC (u8, __stdcall, GetGout, u8 a1) { return 0; }
+HOOK_DYNAMIC (i64, __stdcall, GetHopOut, u8 a1) { return 0; }
+HOOK_DYNAMIC (char *, __stdcall, GetIoBoardName) { return 0; }
+HOOK_DYNAMIC (u16, __fastcall, GetRegisterU16, i16 a1) { return 0; }
+HOOK_DYNAMIC (u8, __fastcall, GetRegisterU8, u16 a1) { return 0; }
+HOOK_DYNAMIC (void *, __fastcall, GetService, i32 a1) { return 0; }
+HOOK_DYNAMIC (void *, __fastcall, GetServiceError, i32 a1) { return 0; }
+HOOK_DYNAMIC (u16, __fastcall, GetStatusU16, u16 a1) { return 0; }
+HOOK_DYNAMIC (u8, __fastcall, GetStatusU8, u16 a1) { return 0; }
+HOOK_DYNAMIC (u64, __stdcall, GetSwIn64) { return 0; }
+HOOK_DYNAMIC (void *, __stdcall, GetSystemError) { return 0; }
+HOOK_DYNAMIC (u8, __stdcall, IsConnected) { return 0; }
+HOOK_DYNAMIC (u8, __stdcall, IsWideUsio) { return 0; }
+HOOK_DYNAMIC (i64, __stdcall, Open) { return 0; }
+HOOK_DYNAMIC (i32, __stdcall, ResetIoBoard) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetBuffer, u16 a1, i32 a2, i16 a3) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetCDOut, u8 a1, u8 a2) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetCoinLock, u8 a1, u8 a2) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetExpansionMode, i16 a1) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetGout, u8 a1, u8 a2) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetHopOut, u8 a1, u8 a2) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetHopperLimit, u16 a1, i16 a2) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetHopperRequest, u16 a1, i16 a2) { return 0; }
+HOOK_DYNAMIC (void *, __fastcall, SetPLCounter, i16 a1) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetRegisterU16, u16 a1, u16 a2) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetRegisterU8, u16 a1, u8 a2) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SetSystemError, i16 a1) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SramRead, i32 a1, u8 a2, i32 a3, u16 a4) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, SramWrite, i32 a1, u8 a2, i32 a3, u16 a4) { return 0; }
+HOOK_DYNAMIC (i64, __stdcall, UsbFinderInitialize) { return 0; }
+HOOK_DYNAMIC (i64, __stdcall, UsbFinderRelease) { return 0; }
+HOOK_DYNAMIC (i64, __fastcall, UsbFinderGetSerialNumber, i32 a1, i64 a2) { return 1; }
 
 void
 init_boilerplate () {

@@ -84,8 +84,10 @@ typedef uint64_t u64;
 
 #define COUNTOFARR(arr) sizeof (arr) / sizeof (arr[0])
 
+#define INFO_COLOUR               FOREGROUND_GREEN
 #define WARNING_COLOUR            (FOREGROUND_RED | FOREGROUND_GREEN)
 #define ERROR_COLOUR              FOREGROUND_RED
+#define printInfo(format, ...)    printColour (INFO_COLOUR, format, __VA_ARGS__)
 #define printWarning(format, ...) printColour (WARNING_COLOUR, format, __VA_ARGS__)
 #define printError(format, ...)   printColour (ERROR_COLOUR, format, __VA_ARGS__)
 

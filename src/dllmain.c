@@ -18,8 +18,7 @@ enumWindows (HWND handle, LPARAM param) {
 // force show cursor
 HOOK_DYNAMIC (i32, __stdcall, ShowMouse, i32 show) { return originalShowMouse (true); }
 
-#define DRUM_HIT     20000
-#define IF_HIT(bind) return IsButtonTapped (bind) ? DRUM_HIT : 0
+#define ON_HIT(bind) IsButtonTapped (bind) ? 0xFFFF : 0
 
 struct Keybindings EXIT          = { .keycodes = { VK_ESCAPE } };
 struct Keybindings COIN_ADD      = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
@@ -48,14 +47,14 @@ HOOK_DYNAMIC (i64, __fastcall, DecCoin, i32 a1, u16 a2) {
 
 HOOK_DYNAMIC (u16, __fastcall, GetAnalogIn, u8 which) {
 	switch (which) {
-	case 0: IF_HIT (P1_LEFT_BLUE);  // Player 1 Left Blue
-	case 1: IF_HIT (P1_LEFT_RED);   // Player 1 Left Red
-	case 2: IF_HIT (P1_RIGHT_RED);  // Player 1 Right Red
-	case 3: IF_HIT (P1_RIGHT_BLUE); // Player 1 Right Blue
-	case 4: IF_HIT (P2_LEFT_BLUE);  // Player 2 Left Blue
-	case 5: IF_HIT (P2_LEFT_RED);   // Player 2 Left Red
-	case 6: IF_HIT (P2_RIGHT_RED);  // Player 2 Right Red
-	case 7: IF_HIT (P2_RIGHT_BLUE); // Player 2 Right Blue
+	case 0: return ON_HIT (P1_LEFT_BLUE);  // Player 1 Left Blue
+	case 1: return ON_HIT (P1_LEFT_RED);   // Player 1 Left Red
+	case 2: return ON_HIT (P1_RIGHT_RED);  // Player 1 Right Red
+	case 3: return ON_HIT (P1_RIGHT_BLUE); // Player 1 Right Blue
+	case 4: return ON_HIT (P2_LEFT_BLUE);  // Player 2 Left Blue
+	case 5: return ON_HIT (P2_LEFT_RED);   // Player 2 Left Red
+	case 6: return ON_HIT (P2_RIGHT_RED);  // Player 2 Right Red
+	case 7: return ON_HIT (P2_RIGHT_BLUE); // Player 2 Right Blue
 	default: return 0;
 	}
 }
@@ -123,7 +122,6 @@ HOOK (i32, __stdcall, CrtMain, 0x140666d2c, HINSTANCE hInstance, HINSTANCE hPrev
 	WRITE_MEMORY (0x140692E17, u8, 0xEB);       // Shared audio
 	WRITE_MEMORY (0x140517339, u8, 0xBA, 0x00, 0x00, 0x00, 0x00,
 	              0x90); // Disable VSync
-	// Blatantly stolen patches from openparrot
 	// Save settings cross session
 	WRITE_MEMORY (0x140B5C528, u8, "./Setting1.bin");
 	WRITE_MEMORY (0x140B5C538, u8, "./Setting2.bin");
