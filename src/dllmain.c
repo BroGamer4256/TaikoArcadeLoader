@@ -92,7 +92,6 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 		if (IsButtonTapped (TEST)) testEnabled = !testEnabled;
 		if (IsButtonTapped (EXIT)) ExitProcess (0);
 	}
-	printf ("%d %d\n", a1, coin_count);
 	return coin_count;
 }
 
@@ -106,27 +105,35 @@ u32 __stdcall bnusio_GetSwIn () {
 	return sw;
 }
 
-HOOK (i32, __stdcall, CrtMain, 0x140666d2c, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i32 nShowCmd) {
-	// Blatantly stolen patches from mon.im
-	WRITE_MEMORY (0x1400239C0, u8, 0xC3);       // Stop error
-	WRITE_MEMORY (0x140314E8D, u8, 0xB0, 0x01); // Unlock songs
-	WRITE_MEMORY (0x140692E17, u8, 0xEB);       // Shared audio
-	WRITE_MEMORY (0x140313726, u8, 0x00, 0x7F); // Remove song limit
-	WRITE_MEMORY (0x140517339, u8, 0xBA, 0x00, 0x00, 0x00, 0x00,
-	              0x90); // Disable VSync
-	// Save settings cross session
-	WRITE_MEMORY (0x140B5C528, u8, "./Setting1.bin");
-	WRITE_MEMORY (0x140B5C538, u8, "./Setting2.bin");
-
-	return originalCrtMain (hInstance, hPrevInstance, lpCmdLine, nShowCmd);
-}
-
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause == DLL_PROCESS_DETACH) DisposePoll ();
 	if (cause != DLL_PROCESS_ATTACH) return true;
 
-	INSTALL_HOOK (CrtMain);
 	init_boilerplate ();
+	
+	// Set current directory to the directory of the executable
+	// Find all files in the plugins directory that end with .dll
+	// Call loadlibraryA on those files
+	// Create a message box if they fail to load
+	wchar_t path[MAX_PATH];
+	GetModuleFileNameW (NULL, path, MAX_PATH);
+	*wcsrchr (path, '\\') = '\0';
+	SetCurrentDirectoryW (path);
+
+	WIN32_FIND_DATAW fd;
+	HANDLE hFind = FindFirstFileW (L"plugins/*.dll", &fd);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+			wchar_t filePath[MAX_PATH];
+			wcscpy(filePath, path);
+			wcscat(filePath, L"/plugins/");
+			wcscat(filePath, fd.cFileName);
+			HMODULE hModule = LoadLibraryW (filePath);
+			if (!hModule) { MessageBoxW (NULL, L"Failed to load plugin", fd.cFileName, MB_ICONERROR); }
+		} while (FindNextFileW (hFind, &fd));
+		FindClose (hFind);
+	}
 
 	return true;
 }
