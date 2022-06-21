@@ -83,6 +83,8 @@ typedef uint64_t u64;
 	}
 
 #define COUNTOFARR(arr) sizeof (arr) / sizeof (arr[0])
+#define RETURN_FALSE(returnType, callingConvention, functionName, ...)                                                                               \
+	returnType callingConvention functionName (__VA_ARGS__) { return 0; }
 
 #define INFO_COLOUR               FOREGROUND_GREEN
 #define WARNING_COLOUR            (FOREGROUND_RED | FOREGROUND_GREEN)

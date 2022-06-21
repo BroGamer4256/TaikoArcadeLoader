@@ -36,16 +36,9 @@ struct Keybindings P2_LEFT_RED   = {};
 struct Keybindings P2_RIGHT_RED  = {};
 struct Keybindings P2_RIGHT_BLUE = {};
 
-int coin_count   = 0;
 bool testEnabled = false;
-bool inited      = false;
 
-HOOK_DYNAMIC (i64, __fastcall, DecCoin, i32 a1, u16 a2) {
-	coin_count -= a2;
-	return false;
-}
-
-HOOK_DYNAMIC (u16, __fastcall, GetAnalogIn, u8 which) {
+u16 __fastcall bnusio_GetAnalogIn (u8 which) {
 	switch (which) {
 	case 0: return ON_HIT (P1_LEFT_BLUE);  // Player 1 Left Blue
 	case 1: return ON_HIT (P1_LEFT_RED);   // Player 1 Left Red
@@ -59,8 +52,10 @@ HOOK_DYNAMIC (u16, __fastcall, GetAnalogIn, u8 which) {
 	}
 }
 
-HOOK_DYNAMIC (u16, __fastcall, GetCoin, i32 a1) {
+u16 __fastcall bnusio_GetCoin (i32 a1) {
+	static int coin_count = 0;
 	if (a1 == 1) {
+		static bool inited = false;
 		if (!inited) {
 			EnumWindows (enumWindows, 0);
 			InitializePoll (windowHandle);
@@ -93,26 +88,22 @@ HOOK_DYNAMIC (u16, __fastcall, GetCoin, i32 a1) {
 		}
 
 		UpdatePoll (windowHandle);
-		if (IsButtonTapped (COIN_ADD)) coin_count++;
+		if (IsButtonTapped (COIN_ADD) && !testEnabled) coin_count++;
 		if (IsButtonTapped (TEST)) testEnabled = !testEnabled;
 		if (IsButtonTapped (EXIT)) ExitProcess (0);
 	}
+	printf ("%d %d\n", a1, coin_count);
 	return coin_count;
 }
 
-HOOK_DYNAMIC (u32, __stdcall, GetSwIn) {
-	u32 mask = 0;
-	mask |= (u32)testEnabled << 7;
-	mask |= (u32)IsButtonDown (DEBUG_ENTER) << 9;
-	mask |= (u32)IsButtonDown (DEBUG_DOWN) << 12;
-	mask |= (u32)IsButtonDown (DEBUG_UP) << 13;
-	mask |= (u32)IsButtonDown (SERVICE) << 14;
-	return mask;
-}
-
-HOOK_DYNAMIC (i64, __stdcall, ResetCoin) {
-	coin_count = 0;
-	return false;
+u32 __stdcall bnusio_GetSwIn () {
+	u32 sw = 0;
+	sw |= (u32)testEnabled << 7;
+	sw |= (u32)IsButtonDown (DEBUG_ENTER) << 9;
+	sw |= (u32)IsButtonDown (DEBUG_DOWN) << 12;
+	sw |= (u32)IsButtonDown (DEBUG_UP) << 13;
+	sw |= (u32)IsButtonDown (SERVICE) << 14;
+	return sw;
 }
 
 HOOK (i32, __stdcall, CrtMain, 0x140666d2c, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i32 nShowCmd) {
@@ -135,12 +126,6 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause != DLL_PROCESS_ATTACH) return true;
 
 	INSTALL_HOOK (CrtMain);
-	INSTALL_HOOK_DYNAMIC (ShowMouse, PROC_ADDRESS ("user32.dll", "ShowCursor"));
-	INSTALL_HOOK_DYNAMIC (DecCoin, PROC_ADDRESS ("bnusio.dll", "bnusio_DecCoin"));
-	INSTALL_HOOK_DYNAMIC (GetAnalogIn, PROC_ADDRESS ("bnusio.dll", "bnusio_GetAnalogIn"));
-	INSTALL_HOOK_DYNAMIC (GetCoin, PROC_ADDRESS ("bnusio.dll", "bnusio_GetCoin"));
-	INSTALL_HOOK_DYNAMIC (GetSwIn, PROC_ADDRESS ("bnusio.dll", "bnusio_GetSwIn"));
-	INSTALL_HOOK_DYNAMIC (ResetCoin, PROC_ADDRESS ("bnusio.dll", "bnusio_ResetCoin"));
 	init_boilerplate ();
 
 	return true;
