@@ -150,20 +150,15 @@ InitializePoll (void *DivaWindowHandle) {
 		if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO) == 0) {
 			hasRumble = false;
 		} else {
-			printError (
-
-			    "SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | "
-			    "SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO): "
-			    "%s\n",
-			    SDL_GetError ());
+			printError ("SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO): "
+			            "%s\n",
+			            SDL_GetError ());
 			return false;
 		}
 	}
 
 	if (SDL_GameControllerAddMappingsFromFile (configPath ("gamecontrollerdb.txt")) == -1)
-		printError ("%s (): Cannot read "
-		            "plugins/gamecontrollerdb.txt\n",
-		            __func__);
+		printError ("%s (): Cannot read plugins/gamecontrollerdb.txt\n", __func__);
 	SDL_GameControllerEventState (SDL_ENABLE);
 
 	for (int i = 0; i < SDL_NumJoysticks (); i++) {
@@ -211,11 +206,8 @@ UpdatePoll (void *DivaWindowHandle) {
 			SDL_GameController *controller = SDL_GameControllerOpen (event.cdevice.which);
 
 			if (!controller) {
-				printError (
-
-				    "%s (): Could not open "
-				    "gamecontroller %s: %s\n",
-				    __func__, SDL_GameControllerNameForIndex (event.cdevice.which), SDL_GetError ());
+				printError ("%s (): Could not open gamecontroller %s: %s\n", __func__, SDL_GameControllerNameForIndex (event.cdevice.which),
+				            SDL_GetError ());
 				continue;
 			}
 

@@ -18,7 +18,11 @@ enumWindows (HWND handle, LPARAM param) {
 // force show cursor
 HOOK_DYNAMIC (i32, __stdcall, ShowMouse, i32 show) { return originalShowMouse (true); }
 
-#define ON_HIT(bind) IsButtonTapped (bind) ? 0xFFFF : 0
+bool testEnabled = false;
+u16 drumMax      = 0xFFFF;
+u16 drumMin      = 0xFFFF;
+
+#define ON_HIT(bind) IsButtonTapped (bind) ? drumMax == drumMin ? drumMax : (u16)(rand () % drumMax + drumMin) : 0
 
 struct Keybindings EXIT          = { .keycodes = { VK_ESCAPE } };
 struct Keybindings COIN_ADD      = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
@@ -35,8 +39,6 @@ struct Keybindings P2_LEFT_BLUE  = {};
 struct Keybindings P2_LEFT_RED   = {};
 struct Keybindings P2_RIGHT_RED  = {};
 struct Keybindings P2_RIGHT_BLUE = {};
-
-bool testEnabled = false;
 
 u16 __fastcall bnusio_GetAnalogIn (u8 which) {
 	switch (which) {
@@ -133,6 +135,13 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 			if (!hModule) { MessageBoxW (NULL, L"Failed to load plugin", fd.cFileName, MB_ICONERROR); }
 		} while (FindNextFileW (hFind, &fd));
 		FindClose (hFind);
+	}
+
+	toml_table_t *config = openConfig (configPath ("config.toml"));
+	if (config) {
+		drumMax = readConfigInt (config, "drumMax", drumMax);
+		drumMin = readConfigInt (config, "drumMin", drumMin);
+		toml_free (config);
 	}
 
 	return true;

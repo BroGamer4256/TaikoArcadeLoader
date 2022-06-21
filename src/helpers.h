@@ -16,7 +16,7 @@ typedef uint32_t u32;
 typedef uint64_t u64;
 
 #ifdef BASE_ADDRESS
-#define ASLR(address) ((u64)GetModuleHandle (0) + (u64)address - (u64)BASE_ADDRESS)
+#define ASLR(address, handle) ((u64)handle + (u64)address - (u64)BASE_ADDRESS)
 #endif
 
 #define FUNCTION_PTR(returnType, callingConvention, function, location, ...)                                                                         \
@@ -48,8 +48,6 @@ typedef uint64_t u64;
 		where##functionName = location;                                                                                                              \
 		INSTALL_HOOK (functionName);                                                                                                                 \
 	}
-
-#define READ_MEMORY(location, type) *(type *)location
 
 #define WRITE_MEMORY(location, type, ...)                                                                                                            \
 	{                                                                                                                                                \
