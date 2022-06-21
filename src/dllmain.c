@@ -110,7 +110,7 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause != DLL_PROCESS_ATTACH) return true;
 
 	init_boilerplate ();
-	
+
 	// Set current directory to the directory of the executable
 	// Find all files in the plugins directory that end with .dll
 	// Call loadlibraryA on those files
@@ -126,9 +126,9 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 		do {
 			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
 			wchar_t filePath[MAX_PATH];
-			wcscpy(filePath, path);
-			wcscat(filePath, L"/plugins/");
-			wcscat(filePath, fd.cFileName);
+			wcscpy (filePath, path);
+			wcscat (filePath, L"/plugins/");
+			wcscat (filePath, fd.cFileName);
 			HMODULE hModule = LoadLibraryW (filePath);
 			if (!hModule) { MessageBoxW (NULL, L"Failed to load plugin", fd.cFileName, MB_ICONERROR); }
 		} while (FindNextFileW (hFind, &fd));

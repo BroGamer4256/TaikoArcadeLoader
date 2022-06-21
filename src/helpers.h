@@ -15,6 +15,10 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+#ifdef BASE_ADDRESS
+#define ASLR(address) ((u64)GetModuleHandle (0) + (u64)address - (u64)BASE_ADDRESS)
+#endif
+
 #define FUNCTION_PTR(returnType, callingConvention, function, location, ...)                                                                         \
 	returnType (callingConvention *function) (__VA_ARGS__) = (returnType (callingConvention *) (__VA_ARGS__)) (location)
 
