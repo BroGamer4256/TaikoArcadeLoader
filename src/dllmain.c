@@ -120,6 +120,7 @@ HOOK (i32, __stdcall, CrtMain, 0x140666d2c, HINSTANCE hInstance, HINSTANCE hPrev
 	WRITE_MEMORY (0x1400239C0, u8, 0xC3);       // Stop error
 	WRITE_MEMORY (0x140314E8D, u8, 0xB0, 0x01); // Unlock songs
 	WRITE_MEMORY (0x140692E17, u8, 0xEB);       // Shared audio
+	WRITE_MEMORY (0x140313726, u8, 0x00, 0x7F); // Remove song limit
 	WRITE_MEMORY (0x140517339, u8, 0xBA, 0x00, 0x00, 0x00, 0x00,
 	              0x90); // Disable VSync
 	// Save settings cross session
