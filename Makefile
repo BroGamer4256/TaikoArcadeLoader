@@ -50,11 +50,14 @@ clean:
 patches:
 	make -C patches/8.18
 
-.PHONY: dist
-dist: options ${OUT} ${patches}
+.PHONY: dist-no-7z
+dist-no-7z: options ${OUT} ${patches}
 	mkdir -p out/plugins
 	cp ${TARGET}/${OUT}.dll out/
 	cp ${TARGET}/patches.*.dll out/plugins
 	cp dist/* out/
+
+.PHONY: dist
+dist: dist-no-7z
 	cd out && 7z a -t7z ../${OUT}.7z .
 	rm -rf out
