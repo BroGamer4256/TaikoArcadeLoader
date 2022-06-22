@@ -16,6 +16,9 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	// Save settings cross session
 	WRITE_MEMORY (ASLR(0x140B5C528, handle), u8, "./Setting1.bin");
 	WRITE_MEMORY (ASLR(0x140B5C538, handle), u8, "./Setting2.bin");
+	// CabinetOfflineData
+	WRITE_MEMORY (ASLR(0x140b1b4b0, handle), u8, "./");
+	WRITE_MEMORY (ASLR(0x14001c941, handle), u8, 0x02);
 
 	void *amHandle = GetModuleHandle ("AMFrameWork.dll");
 	WRITE_MEMORY (amHandle + 0x33EF7, u8, 0xEB);

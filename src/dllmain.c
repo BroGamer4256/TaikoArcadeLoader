@@ -2,19 +2,6 @@
 #include "helpers.h"
 #include "poll.h"
 
-HWND windowHandle = 0;
-
-int CALLBACK
-enumWindows (HWND handle, LPARAM param) {
-	char buf[64];
-	GetClassName (handle, buf, 64);
-	if (!strcmp (buf, "nuFoundation.Window")) {
-		windowHandle = handle;
-		return 0;
-	}
-	return 1;
-}
-
 // force show cursor
 HOOK_DYNAMIC (i32, __stdcall, ShowMouse, i32 show) { return originalShowMouse (true); }
 
@@ -57,9 +44,11 @@ u16 __fastcall bnusio_GetAnalogIn (u8 which) {
 u16 __fastcall bnusio_GetCoin (i32 a1) {
 	static int coin_count = 0;
 	if (a1 == 1) {
-		static bool inited = false;
+		static bool inited       = false;
+		static HWND windowHandle = 0;
 		if (!inited) {
-			EnumWindows (enumWindows, 0);
+			windowHandle = FindWindowA ("nuFoundation.Window", 0);
+
 			InitializePoll (windowHandle);
 
 			toml_table_t *config = openConfig (configPath ("keyconfig.toml"));
@@ -115,7 +104,7 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 
 	// Set current directory to the directory of the executable
 	// Find all files in the plugins directory that end with .dll
-	// Call loadlibraryA on those files
+	// Call loadlibraryW on those files
 	// Create a message box if they fail to load
 	wchar_t path[MAX_PATH];
 	GetModuleFileNameW (NULL, path, MAX_PATH);

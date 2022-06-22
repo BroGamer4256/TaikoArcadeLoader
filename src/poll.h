@@ -47,10 +47,12 @@ enum EnumType { none, keycode, button, axis, scroll };
 
 struct ConfigValue {
 	enum EnumType type;
-	uint8_t keycode;
-	SDL_GameControllerButton button;
-	enum SDLAxis axis;
-	enum Scroll scroll;
+	union {
+		uint8_t keycode;
+		SDL_GameControllerButton button;
+		enum SDLAxis axis;
+		enum Scroll scroll;
+	};
 };
 
 struct InternalButtonState {
