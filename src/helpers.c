@@ -8,7 +8,7 @@ configPath (char *name) {
 	static char buffer[MAX_PATH];
 	GetModuleFileNameA (NULL, buffer, MAX_PATH);
 	*(strrchr (buffer, '\\') + 1) = 0;
-	strcat (buffer, name);
+	strcat_s (buffer, MAX_PATH, name);
 	return buffer;
 }
 

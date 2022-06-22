@@ -41,6 +41,8 @@ struct Keybindings {
 	enum Scroll scroll[2];
 };
 
+typedef struct Keybindings Keybindings;
+
 enum EnumType { none, keycode, button, axis, scroll };
 
 struct ConfigValue {

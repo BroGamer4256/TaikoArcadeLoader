@@ -26,6 +26,7 @@ options:
 ${TARGET}/%.o: %.c
 	@echo BUILD $@
 	@${CC} -c ${CFLAGS} $< -o $@
+	@clang-tidy -header-filter=.* -system-headers $< -- ${CFLAGS}
 
 .PHONY: SDL
 SDL:
@@ -54,6 +55,7 @@ patches:
 dist-no-7z: options ${OUT} patches
 	mkdir -p out/plugins
 	cp ${TARGET}/${OUT}.dll out/
+	mv out/${OUT}.dll out/bnusio.dll
 	cp ${TARGET}/patches.*.dll out/plugins
 	cp dist/* out/
 

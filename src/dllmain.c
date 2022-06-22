@@ -24,21 +24,21 @@ u16 drumMin      = 0xFFFF;
 
 #define ON_HIT(bind) IsButtonTapped (bind) ? drumMax == drumMin ? drumMax : (u16)(rand () % drumMax + drumMin) : 0
 
-struct Keybindings EXIT          = { .keycodes = { VK_ESCAPE } };
-struct Keybindings COIN_ADD      = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
-struct Keybindings TEST          = { .keycodes = { VK_F1 } };
-struct Keybindings SERVICE       = { .keycodes = { VK_F2 } };
-struct Keybindings DEBUG_UP      = { .keycodes = { VK_UP } };
-struct Keybindings DEBUG_DOWN    = { .keycodes = { VK_DOWN } };
-struct Keybindings DEBUG_ENTER   = { .keycodes = { VK_RETURN } };
-struct Keybindings P1_LEFT_BLUE  = { .keycodes = { 'D' } };
-struct Keybindings P1_LEFT_RED   = { .keycodes = { 'F' } };
-struct Keybindings P1_RIGHT_RED  = { .keycodes = { 'J' } };
-struct Keybindings P1_RIGHT_BLUE = { .keycodes = { 'K' } };
-struct Keybindings P2_LEFT_BLUE  = {};
-struct Keybindings P2_LEFT_RED   = {};
-struct Keybindings P2_RIGHT_RED  = {};
-struct Keybindings P2_RIGHT_BLUE = {};
+Keybindings EXIT          = { .keycodes = { VK_ESCAPE } };
+Keybindings COIN_ADD      = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
+Keybindings TEST          = { .keycodes = { VK_F1 } };
+Keybindings SERVICE       = { .keycodes = { VK_F2 } };
+Keybindings DEBUG_UP      = { .keycodes = { VK_UP } };
+Keybindings DEBUG_DOWN    = { .keycodes = { VK_DOWN } };
+Keybindings DEBUG_ENTER   = { .keycodes = { VK_RETURN } };
+Keybindings P1_LEFT_BLUE  = { .keycodes = { 'D' } };
+Keybindings P1_LEFT_RED   = { .keycodes = { 'F' } };
+Keybindings P1_RIGHT_RED  = { .keycodes = { 'J' } };
+Keybindings P1_RIGHT_BLUE = { .keycodes = { 'K' } };
+Keybindings P2_LEFT_BLUE  = {};
+Keybindings P2_LEFT_RED   = {};
+Keybindings P2_RIGHT_RED  = {};
+Keybindings P2_RIGHT_BLUE = {};
 
 u16 __fastcall bnusio_GetAnalogIn (u8 which) {
 	switch (which) {
