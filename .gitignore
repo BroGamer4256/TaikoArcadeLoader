@@ -1,4 +1,4 @@
 x86_64-pc-windows
 *.o
 *.dll
-original.cpp
+*.7z

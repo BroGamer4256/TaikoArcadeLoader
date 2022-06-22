@@ -27,6 +27,12 @@ ${TARGET}/%.o: %.c
 	@echo BUILD $@
 	@${CC} -c ${CFLAGS} $< -o $@
 
+.PHONY: SDL
+SDL:
+	@mkdir -p SDL/${SDL_TARGET}
+	@cd SDL/${SDL_TARGET} && ../configure --build=x86_64-linux-gnu --host=${SDL_TARGET} --disable-sdl2-config --disable-shared --enable-assertions=release --enable-directx --enable-haptic 
+	@make -s -C SDL/${SDL_TARGET}
+
 .PHONY: ${OUT}
 ${OUT}: dirs ${DEPS} ${OBJ}
 	@echo LINK $@
@@ -40,8 +46,15 @@ fmt:
 clean:
 	rm -rf ${TARGET}
 
-.PHONY: SDL
-SDL:
-	@mkdir -p SDL/${SDL_TARGET}
-	@cd SDL/${SDL_TARGET} && ../configure --build=x86_64-linux-gnu --host=${SDL_TARGET} --disable-sdl2-config --disable-shared --enable-assertions=release --enable-directx --enable-haptic 
-	@make -s -C SDL/${SDL_TARGET}
+.PHONY: patches
+patches:
+	make -C patches/8.18
+
+.PHONY: dist
+dist: options ${OUT} ${patches}
+	mkdir -p out/plugins
+	cp ${TARGET}/${OUT}.dll out/
+	cp ${TARGET}/patches.*.dll out/plugins
+	cp dist/* out/
+	cd out && 7z a -t7z ../${OUT}.7z .
+	rm -rf out
