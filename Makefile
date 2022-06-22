@@ -51,7 +51,7 @@ patches:
 	make -C patches/8.18
 
 .PHONY: dist-no-7z
-dist-no-7z: options ${OUT} ${patches}
+dist-no-7z: options ${OUT} patches
 	mkdir -p out/plugins
 	cp ${TARGET}/${OUT}.dll out/
 	cp ${TARGET}/patches.*.dll out/plugins

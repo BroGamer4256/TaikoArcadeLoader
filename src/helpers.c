@@ -76,7 +76,7 @@ printColour (int colour, const char *format, ...) {
 	char buffer[255];
 	vsprintf (buffer, format, args);
 	SetConsoleTextAttribute (consoleHandle, colour);
-	printf (buffer);
+	printf ("%s", buffer);
 	SetConsoleTextAttribute (consoleHandle, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 
 	va_end (args);
