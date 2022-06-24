@@ -2,9 +2,6 @@
 #include "helpers.h"
 #include "poll.h"
 
-// force show cursor
-HOOK_DYNAMIC (i32, __stdcall, ShowMouse, i32 show) { return originalShowMouse (true); }
-
 bool testEnabled = false;
 u16 drumMax      = 0xFFFF;
 u16 drumMin      = 0xFFFF;
@@ -12,16 +9,16 @@ u16 drumMin      = 0xFFFF;
 #define ON_HIT(bind) IsButtonTapped (bind) ? drumMax == drumMin ? drumMax : (u16)(rand () % drumMax + drumMin) : 0
 
 Keybindings EXIT          = { .keycodes = { VK_ESCAPE } };
-Keybindings COIN_ADD      = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
 Keybindings TEST          = { .keycodes = { VK_F1 } };
 Keybindings SERVICE       = { .keycodes = { VK_F2 } };
 Keybindings DEBUG_UP      = { .keycodes = { VK_UP } };
 Keybindings DEBUG_DOWN    = { .keycodes = { VK_DOWN } };
 Keybindings DEBUG_ENTER   = { .keycodes = { VK_RETURN } };
-Keybindings P1_LEFT_BLUE  = { .keycodes = { 'D' } };
-Keybindings P1_LEFT_RED   = { .keycodes = { 'F' } };
-Keybindings P1_RIGHT_RED  = { .keycodes = { 'J' } };
-Keybindings P1_RIGHT_BLUE = { .keycodes = { 'K' } };
+Keybindings COIN_ADD      = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
+Keybindings P1_LEFT_BLUE  = { .keycodes = { 'D' }, .axis = { SDL_AXIS_LTRIGGER_DOWN } };
+Keybindings P1_LEFT_RED   = { .keycodes = { 'F' }, .buttons = { SDL_CONTROLLER_BUTTON_LEFTSTICK } };
+Keybindings P1_RIGHT_RED  = { .keycodes = { 'J' }, .buttons = { SDL_CONTROLLER_BUTTON_RIGHTSTICK } };
+Keybindings P1_RIGHT_BLUE = { .keycodes = { 'K' }, .axis = { SDL_AXIS_RTRIGGER_DOWN } };
 Keybindings P2_LEFT_BLUE  = {};
 Keybindings P2_LEFT_RED   = {};
 Keybindings P2_RIGHT_RED  = {};
