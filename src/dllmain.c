@@ -43,9 +43,11 @@ u16 __fastcall bnusio_GetAnalogIn (u8 which) {
 
 u16 __fastcall bnusio_GetCoin (i32 a1) {
 	static int coin_count = 0;
+
 	if (a1 == 1) {
 		static bool inited       = false;
 		static HWND windowHandle = 0;
+
 		if (!inited) {
 			windowHandle = FindWindowA ("nuFoundation.Window", 0);
 

@@ -42,6 +42,7 @@ ${OUT}: dirs ${DEPS} ${OBJ}
 .PHONY: fmt
 fmt:
 	@cd src && clang-format -i *.h *.c -style=file
+	@cd patches/8.18 && clang-format -i *.c -style=file
 
 .PHONY: clean
 clean:
