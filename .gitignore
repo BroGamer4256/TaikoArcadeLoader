@@ -2,3 +2,5 @@ x86_64-pc-windows
 *.o
 *.dll
 *.7z
+.cache
+compile_commands.json

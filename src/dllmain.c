@@ -6,6 +6,9 @@ bool testEnabled = false;
 u16 drumMax      = 0xFFFF;
 u16 drumMin      = 0xFFFF;
 
+typedef i32 (*callbackAttach) (i32, i32, i32 *);
+typedef void (*callbackTouch) (i32, i32, u8[168], u64);
+
 #define ON_HIT(bind) IsButtonTapped (bind) ? drumMax == drumMin ? drumMax : (u16)(rand () % drumMax + drumMin) : 0
 
 Keybindings EXIT          = { .keycodes = { VK_ESCAPE } };
@@ -85,6 +88,11 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 	return coin_count;
 }
 
+callbackAttach attach;
+i32 *attachData;
+callbackTouch touch;
+u64 touchData;
+
 u32 __stdcall bnusio_GetSwIn () {
 	u32 sw = 0;
 	sw |= (u32)testEnabled << 7;
@@ -92,7 +100,40 @@ u32 __stdcall bnusio_GetSwIn () {
 	sw |= (u32)IsButtonDown (DEBUG_DOWN) << 12;
 	sw |= (u32)IsButtonDown (DEBUG_UP) << 13;
 	sw |= (u32)IsButtonDown (SERVICE) << 14;
+
+	if (attach != 0) {
+		attach (0, 0, attachData);
+		attach = 0;
+	}
+	if (touch != 0) {
+		u8 data[168]
+		    = { 0x01, 0x01, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x92, 0x2E, 0x58, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00,
+			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7F, 0x5C, 0x97, 0x44, 0xF0, 0x88, 0x04, 0x00, 0x43, 0x26, 0x2C, 0x33, 0x00, 0x04,
+			    0x06, 0x10, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30,
+			    0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x30, 0x30, 0x30, 0x30,
+			    0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00,
+			    0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4E, 0x42, 0x47, 0x49, 0x43, 0x36,
+			    0x00, 0x00, 0xFA, 0xE9, 0x69, 0x00, 0xF6, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		memcpy (data + 0x2C, "7F5C9744F111111143262C3300040610", 34);
+		memcpy (data + 0x50, "30764352518498791337", 22);
+		touch (0, 0, data, touchData);
+		touch = 0;
+	}
 	return sw;
+}
+
+HOOK_DYNAMIC (u64, __stdcall, bngrw_attach, i32 a1, char *a2, i32 a3, i32 a4, callbackAttach callback, i32 *a6) {
+	attach     = callback;
+	attachData = a6;
+	return 1;
+}
+
+HOOK_DYNAMIC (i32, __stdcall, bngrw_reqWaitTouch, u32 a1, i32 a2, u32 a3, callbackTouch callback, u64 a5) {
+	if (!GetAsyncKeyState (VK_RETURN)) return -1;
+	touch     = callback;
+	touchData = a5;
+	return 1;
 }
 
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
@@ -100,6 +141,8 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause != DLL_PROCESS_ATTACH) return true;
 
 	init_boilerplate ();
+	INSTALL_HOOK_DYNAMIC (bngrw_attach, PROC_ADDRESS ("bngrw.dll", "BngRwAttach"));
+	INSTALL_HOOK_DYNAMIC (bngrw_reqWaitTouch, PROC_ADDRESS ("bngrw.dll", "BngRwReqWaitTouch"));
 
 	// Set current directory to the directory of the executable
 	// Find all files in the plugins directory that end with .dll
@@ -120,7 +163,11 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 			wcscat (filePath, L"/plugins/");
 			wcscat (filePath, fd.cFileName);
 			HMODULE hModule = LoadLibraryW (filePath);
-			if (!hModule) { MessageBoxW (NULL, L"Failed to load plugin", fd.cFileName, MB_ICONERROR); }
+			if (!hModule) {
+				wchar_t buf[128];
+				swprintf (buf, 128, L"Failed to load plugin %d", GetLastError ());
+				MessageBoxW (NULL, buf, fd.cFileName, MB_ICONERROR);
+			}
 		} while (FindNextFileW (hFind, &fd));
 		FindClose (hFind);
 	}

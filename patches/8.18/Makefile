@@ -26,6 +26,6 @@ options:
 	@${CC} -c ${CFLAGS} $< -o $@
 
 .PHONY: ${OUT}
-${OUT}: dirs ${DEPS} ${OBJ}
+${OUT}: dirs ${OBJ}
 	@echo LINK $@
 	@${CC} ${CFLAGS} -o ../../${TARGET}/$@.dll ${OBJ} ${EXTERN_OBJ} ${LDFLAGS} ${LIBS}
