@@ -1,6 +1,5 @@
 #include "card.h"
 #include "mingw.thread.h"
-#include <thread>
 
 using namespace std::chrono_literals;
 

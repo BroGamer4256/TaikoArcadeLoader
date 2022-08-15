@@ -109,13 +109,23 @@ HOOK_DYNAMIC (i32, __stdcall, bngrw_reqWaitTouch, u32 a1, i32 a2, u32 a3, callba
 	return 1;
 }
 
+HOOK_DYNAMIC (HWND, __stdcall, WindowCreateExW, DWORD dwExStyle, LPCWSTR lpClassName, LPCWSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth,
+              int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) {
+	if (nWidth > 0 && nHeight > 0)
+		return originalWindowCreateExW (dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, GetSystemMetrics (SM_CXSCREEN),
+		                                GetSystemMetrics (SM_CYSCREEN), hWndParent, hMenu, hInstance, lpParam);
+	else return originalWindowCreateExW (dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+}
+
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause == DLL_PROCESS_DETACH) DisposePoll ();
 	if (cause != DLL_PROCESS_ATTACH) return true;
 
 	init_boilerplate ();
+
 	INSTALL_HOOK_DYNAMIC (bngrw_attach, PROC_ADDRESS ("bngrw.dll", "BngRwAttach"));
 	INSTALL_HOOK_DYNAMIC (bngrw_reqWaitTouch, PROC_ADDRESS ("bngrw.dll", "BngRwReqWaitTouch"));
+	INSTALL_HOOK_DYNAMIC (WindowCreateExW, PROC_ADDRESS ("user32.dll", "CreateWindowExW"));
 
 	// Set current directory to the directory of the executable
 	// Find all files in the plugins directory that end with .dll
