@@ -14,6 +14,8 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
+typedef i32 (*callbackAttach) (i32, i32, i32 *);
+typedef void (*callbackTouch) (i32, i32, u8[168], u64);
 
 #ifdef BASE_ADDRESS
 #define ASLR(address, handle) ((u64)handle + (u64)address - (u64)BASE_ADDRESS)

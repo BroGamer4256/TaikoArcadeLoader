@@ -1,6 +1,13 @@
 #define BASE_ADDRESS 0x140000000
 #include "helpers.h"
 
+HOOK_DYNAMIC (u8, __fastcall, qrVtable1, u64 a1) { return 1; }
+HOOK_DYNAMIC (u8, __fastcall, qrReadFromCOM1, u64 a1) {
+	*(u32 *)(a1 + 40) = 1;
+	*(u32 *)(a1 + 16) = 1;
+	return 1;
+}
+
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause != DLL_PROCESS_ATTACH) return 1;
 
@@ -27,6 +34,9 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	WRITE_MEMORY (amHandle + 0x34ACD, u8, 0xEB);
 	WRITE_MEMORY (amHandle + 0x148AF, u8, 0xEB);
 	WRITE_MEMORY (amHandle + 0x14A1A, u8, 0xEB);
+
+	INSTALL_HOOK_DYNAMIC (qrVtable1, amHandle + 0x1BA00);
+	INSTALL_HOOK_DYNAMIC (qrReadFromCOM1, amHandle + 0x1BC20);
 
 	return 1;
 }
