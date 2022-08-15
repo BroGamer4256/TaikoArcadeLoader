@@ -18,6 +18,7 @@ Keybindings DEBUG_UP      = { .keycodes = { VK_UP } };
 Keybindings DEBUG_DOWN    = { .keycodes = { VK_DOWN } };
 Keybindings DEBUG_ENTER   = { .keycodes = { VK_RETURN } };
 Keybindings COIN_ADD      = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
+Keybindings CARD_INSERT   = { .keycodes = { 'P' } };
 Keybindings P1_LEFT_BLUE  = { .keycodes = { 'D' }, .axis = { SDL_AXIS_LTRIGGER_DOWN } };
 Keybindings P1_LEFT_RED   = { .keycodes = { 'F' }, .buttons = { SDL_CONTROLLER_BUTTON_LEFTSTICK } };
 Keybindings P1_RIGHT_RED  = { .keycodes = { 'J' }, .buttons = { SDL_CONTROLLER_BUTTON_RIGHTSTICK } };
@@ -130,7 +131,7 @@ HOOK_DYNAMIC (u64, __stdcall, bngrw_attach, i32 a1, char *a2, i32 a3, i32 a4, ca
 }
 
 HOOK_DYNAMIC (i32, __stdcall, bngrw_reqWaitTouch, u32 a1, i32 a2, u32 a3, callbackTouch callback, u64 a5) {
-	if (!GetAsyncKeyState (VK_RETURN)) return -1;
+	if (IsButtonTapped (CARD_INSERT)) return -1;
 	touch     = callback;
 	touchData = a5;
 	return 1;
