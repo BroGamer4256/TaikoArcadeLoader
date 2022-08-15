@@ -1,12 +1,13 @@
 #include "card.h"
+#include "mingw.thread.h"
 #include <thread>
 
 using namespace std::chrono_literals;
 
 void
 attach (callbackAttach callback, i32 *data) {
-	std::thread t ([callback, data] () {
-		std::this_thread::sleep_for (250ms);
+	mingw_stdthread::thread t ([callback, data] () {
+		mingw_stdthread::this_thread::sleep_for (250ms);
 		callback (0, 0, data);
 	});
 	t.detach ();
@@ -14,8 +15,8 @@ attach (callbackAttach callback, i32 *data) {
 
 void
 touch (callbackTouch callback, u64 data) {
-	std::thread t ([callback, data] () {
-		std::this_thread::sleep_for (250ms);
+	mingw_stdthread::thread t ([callback, data] () {
+		mingw_stdthread::this_thread::sleep_for (250ms);
 		u8 cardData[168]
 		    = { 0x01, 0x01, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x92, 0x2E, 0x58, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00,
 			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7F, 0x5C, 0x97, 0x44, 0xF0, 0x88, 0x04, 0x00, 0x43, 0x26, 0x2C, 0x33, 0x00, 0x04,
