@@ -14,10 +14,10 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	toml_table_t *config = openConfig (configPath ("plugins/patches.toml"));
 	if (!config) return 1;
 	void *handle = GetModuleHandle (0);
-	WRITE_MEMORY (ASLR (0x1400239C0, handle), u8, 0xC3);                                                    // Stop error
-	WRITE_MEMORY (ASLR (0x140314E8D, handle), u8, 0xB0, 0x01);                                              // Unlock songs
-	if (readConfigBool (config, "shared_audio", true)) WRITE_MEMORY (ASLR (0x140692E17, handle), u8, 0xEB); // Shared audio
-	WRITE_MEMORY (ASLR (0x140313726, handle), u8, 0x00, 0x7F);                                              // Remove song limit
+	WRITE_MEMORY (ASLR (0x1400239C0, handle), u8, 0xC3);                                                          // Stop error
+	if (readConfigBool (config, "unlock_songs", true)) WRITE_MEMORY (ASLR (0x140314E8D, handle), u8, 0xB0, 0x01); // Unlock songs
+	if (readConfigBool (config, "shared_audio", true)) WRITE_MEMORY (ASLR (0x140692E17, handle), u8, 0xEB);       // Shared audio
+	WRITE_MEMORY (ASLR (0x140313726, handle), u8, 0x00, 0x7F);                                                    // Remove song limit
 	if (!readConfigBool (config, "vsync", false)) WRITE_MEMORY (ASLR (0x140517339, handle), u8, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x90); // Disable VSync
 	// Save settings cross session without F:/ and G:/ drive
 	WRITE_MEMORY (ASLR (0x140B5C528, handle), u8, "./Setting1.bin");
