@@ -134,11 +134,6 @@ HOOK_DYNAMIC (i32, __stdcall, bngrw_reqWaitTouch, u32 a1, i32 a2, u32 a3, callba
 	return 1;
 }
 
-HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqCancel, u32 a1) {
-	waitingForTouch = false;
-	return (7 < a1 ? -100 : 1);
-}
-
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause == DLL_PROCESS_DETACH) DisposePoll ();
 	if (cause != DLL_PROCESS_ATTACH) return true;
@@ -147,7 +142,6 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 
 	INSTALL_HOOK_DYNAMIC (bngrw_attach, PROC_ADDRESS ("bngrw.dll", "BngRwAttach"));
 	INSTALL_HOOK_DYNAMIC (bngrw_reqWaitTouch, PROC_ADDRESS ("bngrw.dll", "BngRwReqWaitTouch"));
-	INSTALL_HOOK_DYNAMIC (bngrw_ReqCancel, PROC_ADDRESS ("bngrw.dll", "BngRwReqCancel"));
 
 	// Set current directory to the directory of the executable
 	// Find all files in the plugins directory that end with .dll

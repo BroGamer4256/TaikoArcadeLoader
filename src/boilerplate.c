@@ -70,11 +70,12 @@ HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqAiccAuth) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqBeep) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqFwCleanup) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqFwVersionUp) { return 1; }
-HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqLatchID, u32 a1) { return (a1 < 8 ? -100 : 1); }
+HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqLatchID) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqLed) { return 1; }
-HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendMail, u32 a1, u32 a2, u32 a3, u64 a4, u64 a5) { return (7 < a1 || !a5 ? -100 : 1); }
-HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendUrl, u32 a1, u32 a2, u32 a3, u64 a4, u64 a5) { return (7 < a1 || !a5 ? -100 : 1); }
+HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendMail) { return 1; }
+HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendUrl) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqSetLedPower) { return 0; }
+HOOK_DYNAMIC (i32, __stdcall, bngrw_reqCancel) { return 1; }
 
 void
 init_boilerplate () {
@@ -105,4 +106,5 @@ init_boilerplate () {
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqSendMail, PROC_ADDRESS ("bngrw.dll", "BngRwReqSendMailTo"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqSendUrl, PROC_ADDRESS ("bngrw.dll", "BngRwReqSendUrlTo"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqSetLedPower, PROC_ADDRESS ("bngrw.dll", "BngRwReqSetLedPower"));
+	INSTALL_HOOK_DYNAMIC (bngrw_reqCancel, PROC_ADDRESS ("bngrw.dll", "BngRwReqCancel"));
 }
