@@ -58,23 +58,22 @@ HOOK_DYNAMIC (i64, __fastcall, UsbFinderGetSerialNumber, i32 a1, char *a2) {
 	return 0;
 }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_DevReset) { return 1; }
-HOOK_DYNAMIC (u64, __stdcall, bngrw_ReadMifare) { return 0xffffff9c; }
+HOOK_DYNAMIC (u64, __stdcall, bngrw_ReadMifare) { return 0xFFFFFF9C; }
 HOOK_DYNAMIC (void, __stdcall, bngrw_fin) { return; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_GetFwVersion) { return 0; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_GetStationID) { return 0; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_GetRetryCount) { return 0; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_Init) { return 0; }
-HOOK_DYNAMIC (i32, __stdcall, bngrw_IsCmdExec) { return -1; }
+HOOK_DYNAMIC (u64, __stdcall, bngrw_IsCmdExec) { return 0xFFFFFFFF; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqAction) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqAiccAuth) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqBeep) { return 1; }
-HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqCancel, u32 a1) { return a1 > 7 ? -100 : 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqFwCleanup) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqFwVersionUp) { return 1; }
-HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqLatchID, u32 a1) { return a1 < 8 ? -100 : 1; }
+HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqLatchID, u32 a1) { return (a1 < 8 ? -100 : 1); }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqLed) { return 1; }
-HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendMail, u32 a1, u32 a2, u32 a3, u64 a4, u64 a5) { return a1 < 8 && a5 ? 1 : -100; }
-HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendUrl, u32 a1, u32 a2, u32 a3, u64 a4, u64 a5) { return a1 < 8 && a5 ? 1 : -100; }
+HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendMail, u32 a1, u32 a2, u32 a3, u64 a4, u64 a5) { return (7 < a1 || !a5 ? -100 : 1); }
+HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendUrl, u32 a1, u32 a2, u32 a3, u64 a4, u64 a5) { return (7 < a1 || !a5 ? -100 : 1); }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqSetLedPower) { return 0; }
 
 void
@@ -89,7 +88,7 @@ init_boilerplate () {
 	INSTALL_HOOK_DYNAMIC (UsbFinderGetSerialNumber, PROC_ADDRESS ("nbamUsbFinder.dll", "nbamUsbFinderGetSerialNumber"));
 
 	INSTALL_HOOK_DYNAMIC (bngrw_DevReset, PROC_ADDRESS ("bngrw.dll", "BngRwDevReset"));
-	INSTALL_HOOK_DYNAMIC (bngrw_ReadMifare, PROC_ADDRESS ("bngrw.dll", "BngRwReadMifareAllBlock"));
+	INSTALL_HOOK_DYNAMIC (bngrw_ReadMifare, PROC_ADDRESS ("bngrw.dll", "BngRwExReadMifareAllBlock"));
 	INSTALL_HOOK_DYNAMIC (bngrw_fin, PROC_ADDRESS ("bngrw.dll", "BngRwFin"));
 	INSTALL_HOOK_DYNAMIC (bngrw_GetFwVersion, PROC_ADDRESS ("bngrw.dll", "BngRwGetFwVersion"));
 	INSTALL_HOOK_DYNAMIC (bngrw_GetStationID, PROC_ADDRESS ("bngrw.dll", "BngRwGetStationID"));
@@ -99,7 +98,6 @@ init_boilerplate () {
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqAction, PROC_ADDRESS ("bngrw.dll", "BngRwReqAction"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqAiccAuth, PROC_ADDRESS ("bngrw.dll", "BngRwReqAiccAuth"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqBeep, PROC_ADDRESS ("bngrw.dll", "BngRwReqBeep"));
-	INSTALL_HOOK_DYNAMIC (bngrw_ReqCancel, PROC_ADDRESS ("bngrw.dll", "BngRwReqCancel"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqFwCleanup, PROC_ADDRESS ("bngrw.dll", "BngRwReqFwCleanup"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqFwVersionUp, PROC_ADDRESS ("bngrw.dll", "BngRwReqFwVersionUp"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqLatchID, PROC_ADDRESS ("bngrw.dll", "BngRwReqLatchID"));

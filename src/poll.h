@@ -1,3 +1,4 @@
+#pragma once
 #include <SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -61,6 +62,9 @@ struct InternalButtonState {
 	unsigned int Tapped : 1;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 bool InitializePoll (void *DivaWindowHandle);
 void UpdatePoll (void *DivaWindowHandle);
 void DisposePoll ();
@@ -80,7 +84,7 @@ POINT GetMousePosition ();
 POINT GetLastMousePosition ();
 POINT GetMouseRelativePosition ();
 POINT GetLastMouseRelativePosition ();
-void SetMousePosition (POINT new);
+void SetMousePosition (POINT newPosition);
 bool GetMouseScrollUp ();
 bool GetMouseScrollDown ();
 bool GetWasMouseScrollUp ();
@@ -103,3 +107,6 @@ bool ControllerAxisIsReleased (enum SDLAxis axis);
 bool IsButtonTapped (struct Keybindings bindings);
 bool IsButtonReleased (struct Keybindings bindings);
 bool IsButtonDown (struct Keybindings bindings);
+#ifdef __cplusplus
+}
+#endif

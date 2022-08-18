@@ -347,130 +347,122 @@ SetRumble (int left, int right) {
 	}
 }
 
-inline bool
+bool
 KeyboardIsDown (uint8_t keycode) {
 	return currentKeyboardState[keycode];
 }
 
-inline bool
+bool
 KeyboardIsUp (uint8_t keycode) {
 	return !KeyboardIsDown (keycode);
 }
 
-inline bool
+bool
 KeyboardIsTapped (uint8_t keycode) {
 	return KeyboardIsDown (keycode) && KeyboardWasUp (keycode);
 }
 
-inline bool
+bool
 KeyboardIsReleased (uint8_t keycode) {
 	return KeyboardIsUp (keycode) && KeyboardWasDown (keycode);
 }
 
-inline bool
+bool
 KeyboardWasDown (uint8_t keycode) {
 	return lastKeyboardState[keycode];
 }
 
-inline bool
+bool
 KeyboardWasUp (uint8_t keycode) {
 	return !KeyboardWasDown (keycode);
 }
 
-inline POINT
-GetMousePosition () {
-	return currentMouseState.Position;
+POINT
+GetMousePosition () { return currentMouseState.Position; }
+
+POINT
+GetLastMousePosition () { return lastMouseState.Position; }
+
+POINT
+GetMouseRelativePosition () { return currentMouseState.RelativePosition; }
+
+POINT
+GetLastMouseRelativePosition () { return lastMouseState.RelativePosition; }
+
+void
+SetMousePosition (POINT newPosition) {
+	currentMouseState.Position = newPosition;
 }
 
-inline POINT
-GetLastMousePosition () {
-	return lastMouseState.Position;
-}
-
-inline POINT
-GetMouseRelativePosition () {
-	return currentMouseState.RelativePosition;
-}
-
-inline POINT
-GetLastMouseRelativePosition () {
-	return lastMouseState.RelativePosition;
-}
-
-inline void
-SetMousePosition (POINT new) {
-	currentMouseState.Position = new;
-}
-
-inline bool
+bool
 GetMouseScrollUp () {
 	return currentMouseState.ScrolledUp;
 }
 
-inline bool
+bool
 GetMouseScrollDown () {
 	return currentMouseState.ScrolledDown;
 }
 
-inline bool
+bool
 GetWasMouseScrollUp () {
 	return lastMouseState.ScrolledUp;
 }
 
-inline bool
+bool
 GetWasMouseScrollDown () {
 	return lastMouseState.ScrolledDown;
 }
 
-inline bool
+bool
 GetMouseScrollIsReleased (enum Scroll scroll) {
 	if (scroll == MOUSE_SCROLL_UP) return !GetMouseScrollUp () && GetWasMouseScrollUp ();
 	else return !GetMouseScrollDown () && GetWasMouseScrollDown ();
 }
 
-inline bool
+bool
 GetMouseScrollIsDown (enum Scroll scroll) {
 	if (scroll == MOUSE_SCROLL_UP) return GetMouseScrollUp ();
 	else return GetMouseScrollDown ();
 }
 
-inline bool
+bool
 GetMouseScrollIsTapped (enum Scroll scroll) {
 	if (scroll == MOUSE_SCROLL_UP) return GetMouseScrollUp () && !GetWasMouseScrollUp ();
 	else return GetMouseScrollDown () && !GetWasMouseScrollDown ();
 }
 
-inline bool
+bool
 ControllerButtonIsDown (SDL_GameControllerButton button) {
 	return currentControllerButtonsState[button];
 }
 
-inline bool
+bool
 ControllerButtonIsUp (SDL_GameControllerButton button) {
 	return !ControllerButtonIsDown (button);
 }
 
-inline bool
+bool
 ControllerButtonWasDown (SDL_GameControllerButton button) {
 	return lastControllerButtonsState[button];
 }
 
-inline bool
+bool
 ControllerButtonWasUp (SDL_GameControllerButton button) {
 	return !ControllerButtonWasDown (button);
 }
 
-inline bool
+bool
 ControllerButtonIsTapped (SDL_GameControllerButton button) {
 	return ControllerButtonIsDown (button) && ControllerButtonWasUp (button);
 }
 
-inline bool
+bool
 ControllerButtonIsReleased (SDL_GameControllerButton button) {
 	return ControllerButtonIsUp (button) && ControllerButtonWasDown (button);
 }
 
-inline bool
+bool
 ControllerAxisIsDown (enum SDLAxis axis) {
 	switch (axis) {
 	case SDL_AXIS_LEFT_LEFT: return currentControllerAxisState.LeftLeft;
@@ -488,12 +480,12 @@ ControllerAxisIsDown (enum SDLAxis axis) {
 	}
 }
 
-inline bool
+bool
 ControllerAxisIsUp (enum SDLAxis axis) {
 	return !ControllerAxisIsDown (axis);
 }
 
-inline bool
+bool
 ControllerAxisWasDown (enum SDLAxis axis) {
 	switch (axis) {
 	case SDL_AXIS_LEFT_LEFT: return lastControllerAxisState.LeftLeft;
@@ -511,32 +503,32 @@ ControllerAxisWasDown (enum SDLAxis axis) {
 	}
 }
 
-inline bool
+bool
 ControllerAxisWasUp (enum SDLAxis axis) {
 	return !ControllerAxisWasDown (axis);
 }
 
-inline bool
+bool
 ControllerAxisIsTapped (enum SDLAxis axis) {
 	return ControllerAxisIsDown (axis) && ControllerAxisWasUp (axis);
 }
 
-inline bool
+bool
 ControllerAxisIsReleased (enum SDLAxis axis) {
 	return ControllerAxisIsUp (axis) && ControllerAxisWasDown (axis);
 }
 
-inline bool
+bool
 IsButtonTapped (struct Keybindings bindings) {
 	return GetInternalButtonState (bindings).Tapped;
 }
 
-inline bool
+bool
 IsButtonReleased (struct Keybindings bindings) {
 	return GetInternalButtonState (bindings).Released;
 }
 
-inline bool
+bool
 IsButtonDown (struct Keybindings bindings) {
 	return GetInternalButtonState (bindings).Down;
 }

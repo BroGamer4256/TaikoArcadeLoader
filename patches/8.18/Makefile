@@ -3,7 +3,7 @@ CC := clang
 TARGET := x86_64-pc-windows-gnu
 SRC = dllmain.c
 OBJ = ${addprefix ../../${TARGET}/patches/8.18/,${SRC:.c=.o}}
-EXTERN_SRC = tomlc99/toml.c minhook/src/buffer.c minhook/src/hook.c minhook/src/trampoline.c minhook/src/hde/hde32.c minhook/src/hde/hde64.c
+EXTERN_SRC = src/helpers.c tomlc99/toml.c minhook/src/buffer.c minhook/src/hook.c minhook/src/trampoline.c minhook/src/hde/hde32.c minhook/src/hde/hde64.c
 EXTERN_OBJ = ${addprefix ../../${TARGET}/,${EXTERN_SRC:.c=.o}}
 CFLAGS = -std=c99 -I../../src -I../../minhook/include -I../../tomlc99 -Wall -Ofast -target ${TARGET} -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
 LDFLAGS := -shared -static -static-libgcc -s

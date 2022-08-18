@@ -64,6 +64,7 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 				SetConfigValue (config, "DEBUG_ENTER", &DEBUG_ENTER);
 
 				SetConfigValue (config, "COIN_ADD", &COIN_ADD);
+				SetConfigValue (config, "CARD_INSERT", &CARD_INSERT);
 
 				SetConfigValue (config, "P1_LEFT_BLUE", &P1_LEFT_BLUE);
 				SetConfigValue (config, "P1_LEFT_RED", &P1_LEFT_RED);
@@ -104,17 +105,13 @@ HOOK_DYNAMIC (u64, __stdcall, bngrw_attach, i32 a1, char *a2, i32 a3, i32 a4, ca
 }
 
 HOOK_DYNAMIC (i32, __stdcall, bngrw_reqWaitTouch, u32 a1, i32 a2, u32 a3, callbackTouch callback, u64 a5) {
-	if (!IsButtonDown (CARD_INSERT)) return -1;
-	touch (callback, a5);
+	touch (callback, a5, CARD_INSERT);
 	return 1;
 }
 
-HOOK_DYNAMIC (HWND, __stdcall, WindowCreateExW, DWORD dwExStyle, LPCWSTR lpClassName, LPCWSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth,
-              int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) {
-	if (nWidth > 0 && nHeight > 0)
-		return originalWindowCreateExW (dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, GetSystemMetrics (SM_CXSCREEN),
-		                                GetSystemMetrics (SM_CYSCREEN), hWndParent, hMenu, hInstance, lpParam);
-	else return originalWindowCreateExW (dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqCancel, u32 a1) {
+	touchCancel ();
+	return (7 < a1 ? -100 : 1);
 }
 
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
@@ -125,7 +122,7 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 
 	INSTALL_HOOK_DYNAMIC (bngrw_attach, PROC_ADDRESS ("bngrw.dll", "BngRwAttach"));
 	INSTALL_HOOK_DYNAMIC (bngrw_reqWaitTouch, PROC_ADDRESS ("bngrw.dll", "BngRwReqWaitTouch"));
-	INSTALL_HOOK_DYNAMIC (WindowCreateExW, PROC_ADDRESS ("user32.dll", "CreateWindowExW"));
+	INSTALL_HOOK_DYNAMIC (bngrw_ReqCancel, PROC_ADDRESS ("bngrw.dll", "BngRwReqCancel"));
 
 	// Set current directory to the directory of the executable
 	// Find all files in the plugins directory that end with .dll

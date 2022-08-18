@@ -63,7 +63,7 @@ dist-no-7z: options ${OUT} patches
 	cp ${TARGET}/${OUT}.dll out/
 	mv out/${OUT}.dll out/bnusio.dll
 	cp ${TARGET}/patches.*.dll out/plugins
-	cp dist/* out/
+	cp -r dist/* out/
 
 .PHONY: dist
 dist: dist-no-7z
