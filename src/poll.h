@@ -62,9 +62,6 @@ struct InternalButtonState {
 	unsigned int Tapped : 1;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 bool InitializePoll (void *DivaWindowHandle);
 void UpdatePoll (void *DivaWindowHandle);
 void DisposePoll ();
@@ -107,6 +104,3 @@ bool ControllerAxisIsReleased (enum SDLAxis axis);
 bool IsButtonTapped (struct Keybindings bindings);
 bool IsButtonReleased (struct Keybindings bindings);
 bool IsButtonDown (struct Keybindings bindings);
-#ifdef __cplusplus
-}
-#endif

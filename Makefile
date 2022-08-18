@@ -1,12 +1,10 @@
 OUT = TAL
 CC := x86_64-w64-mingw32-gcc
-CXX := x86_64-w64-mingw32-g++
 TARGET := x86_64-pc-windows-gnu
 SDL_TARGET := x86_64-w64-mingw32
-SRC = src/dllmain.c src/helpers.c src/poll.c src/boilerplate.c src/card.cpp tomlc99/toml.c minhook/src/buffer.c minhook/src/hook.c minhook/src/trampoline.c minhook/src/hde/hde32.c minhook/src/hde/hde64.c
-OBJ = ${addprefix ${TARGET}/,${subst .cpp,.o,${SRC:.c=.o}}}
+SRC = src/dllmain.c src/helpers.c src/poll.c src/boilerplate.c tomlc99/toml.c minhook/src/buffer.c minhook/src/hook.c minhook/src/trampoline.c minhook/src/hde/hde32.c minhook/src/hde/hde64.c
+OBJ = ${addprefix ${TARGET}/,${SRC:.c=.o}}
 CFLAGS = -std=c99 -Iminhook/include -ISDL/${SDL_TARGET}/include -ISDL/include -Itomlc99 -Wall -Ofast -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
-CXXFLAGS = -std=c++17 -Imingw-std-threads -Iminhook/include -ISDL/${SDL_TARGET}/include -ISDL/include -Itomlc99 -Wall -Ofast -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
 LDFLAGS := -shared -static -static-libgcc -s
 LIBS := SDL/${SDL_TARGET}/build/.libs/libSDL2.a SDL/${SDL_TARGET}/build/.libs/libSDL2main.a -lmingw32 -luuid -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lsetupapi -lversion -pthread
 DEPS = SDL
@@ -29,10 +27,6 @@ ${TARGET}/%.o: %.c
 	@echo BUILD $@
 	@${CC} -c ${CFLAGS} $< -o $@
 
-${TARGET}/%.o: %.cpp
-	@echo BUILD $@
-	@${CXX} -c ${CXXFLAGS} $< -o $@
-
 .PHONY: SDL
 SDL:
 	@mkdir -p SDL/${SDL_TARGET}
@@ -42,7 +36,7 @@ SDL:
 .PHONY: ${OUT}
 ${OUT}: dirs ${DEPS} ${OBJ}
 	@echo LINK $@
-	@${CXX} ${CXXFLAGS} -o ${TARGET}/$@.dll ${OBJ} ${LDFLAGS} ${LIBS}
+	@${CC} ${CFLAGS} -o ${TARGET}/$@.dll ${OBJ} ${LDFLAGS} ${LIBS}
 
 .PHONY: fmt
 fmt:

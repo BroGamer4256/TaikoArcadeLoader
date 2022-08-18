@@ -1,5 +1,4 @@
 #include "boilerplate.h"
-#include "card.h"
 #include "helpers.h"
 #include "poll.h"
 #include <time.h>
@@ -7,6 +6,14 @@
 bool testEnabled = false;
 u16 drumMax      = 0xFFFF;
 u16 drumMin      = 0xFFFF;
+
+typedef i32 (*callbackAttach) (i32, i32, i32 *);
+typedef void (*callbackTouch) (i32, i32, u8[168], u64);
+bool waitingForTouch = false;
+callbackTouch touchCallback;
+u64 touchData;
+callbackAttach attachCallback;
+i32 *attachData;
 
 #define ON_HIT(bind) IsButtonTapped (bind) ? drumMax == drumMin ? drumMax : (u16)(rand () % drumMax + drumMin) : 0
 
@@ -44,48 +51,62 @@ u16 __fastcall bnusio_GetAnalogIn (u8 which) {
 u16 __fastcall bnusio_GetCoin (i32 a1) {
 	static int coin_count = 0;
 
-	if (a1 == 1) {
-		static bool inited       = false;
-		static HWND windowHandle = 0;
+	if (a1 != 1) return coin_count;
+	static bool inited       = false;
+	static HWND windowHandle = 0;
 
-		if (!inited) {
-			windowHandle = FindWindowA ("nuFoundation.Window", 0);
+	if (!inited) {
+		windowHandle = FindWindowA ("nuFoundation.Window", 0);
 
-			InitializePoll (windowHandle);
+		InitializePoll (windowHandle);
 
-			toml_table_t *config = openConfig (configPath ("keyconfig.toml"));
-			if (config) {
-				SetConfigValue (config, "EXIT", &EXIT);
+		toml_table_t *config = openConfig (configPath ("keyconfig.toml"));
+		if (config) {
+			SetConfigValue (config, "EXIT", &EXIT);
 
-				SetConfigValue (config, "TEST", &TEST);
-				SetConfigValue (config, "SERVICE", &SERVICE);
-				SetConfigValue (config, "DEBUG_UP", &DEBUG_UP);
-				SetConfigValue (config, "DEBUG_DOWN", &DEBUG_DOWN);
-				SetConfigValue (config, "DEBUG_ENTER", &DEBUG_ENTER);
+			SetConfigValue (config, "TEST", &TEST);
+			SetConfigValue (config, "SERVICE", &SERVICE);
+			SetConfigValue (config, "DEBUG_UP", &DEBUG_UP);
+			SetConfigValue (config, "DEBUG_DOWN", &DEBUG_DOWN);
+			SetConfigValue (config, "DEBUG_ENTER", &DEBUG_ENTER);
 
-				SetConfigValue (config, "COIN_ADD", &COIN_ADD);
-				SetConfigValue (config, "CARD_INSERT", &CARD_INSERT);
+			SetConfigValue (config, "COIN_ADD", &COIN_ADD);
+			SetConfigValue (config, "CARD_INSERT", &CARD_INSERT);
 
-				SetConfigValue (config, "P1_LEFT_BLUE", &P1_LEFT_BLUE);
-				SetConfigValue (config, "P1_LEFT_RED", &P1_LEFT_RED);
-				SetConfigValue (config, "P1_RIGHT_RED", &P1_RIGHT_RED);
-				SetConfigValue (config, "P1_RIGHT_BLUE", &P1_RIGHT_BLUE);
-				SetConfigValue (config, "P2_LEFT_BLUE", &P2_LEFT_BLUE);
-				SetConfigValue (config, "P2_LEFT_RED", &P2_LEFT_RED);
-				SetConfigValue (config, "P2_RIGHT_RED", &P2_RIGHT_RED);
-				SetConfigValue (config, "P2_RIGHT_BLUE", &P2_RIGHT_BLUE);
+			SetConfigValue (config, "P1_LEFT_BLUE", &P1_LEFT_BLUE);
+			SetConfigValue (config, "P1_LEFT_RED", &P1_LEFT_RED);
+			SetConfigValue (config, "P1_RIGHT_RED", &P1_RIGHT_RED);
+			SetConfigValue (config, "P1_RIGHT_BLUE", &P1_RIGHT_BLUE);
+			SetConfigValue (config, "P2_LEFT_BLUE", &P2_LEFT_BLUE);
+			SetConfigValue (config, "P2_LEFT_RED", &P2_LEFT_RED);
+			SetConfigValue (config, "P2_RIGHT_RED", &P2_RIGHT_RED);
+			SetConfigValue (config, "P2_RIGHT_BLUE", &P2_RIGHT_BLUE);
 
-				toml_free (config);
-			}
-
-			inited = true;
+			toml_free (config);
 		}
 
-		UpdatePoll (windowHandle);
-		if (IsButtonTapped (COIN_ADD) && !testEnabled) coin_count++;
-		if (IsButtonTapped (TEST)) testEnabled = !testEnabled;
-		if (IsButtonTapped (EXIT)) ExitProcess (0);
+		inited = true;
 	}
+
+	UpdatePoll (windowHandle);
+	if (IsButtonTapped (COIN_ADD) && !testEnabled) coin_count++;
+	if (IsButtonTapped (TEST)) testEnabled = !testEnabled;
+	if (IsButtonTapped (EXIT)) ExitProcess (0);
+	if (waitingForTouch && IsButtonTapped (CARD_INSERT)) {
+		u8 cardData[168]
+		    = { 0x01, 0x01, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x92, 0x2E, 0x58, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00,
+			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7F, 0x5C, 0x97, 0x44, 0xF0, 0x88, 0x04, 0x00, 0x43, 0x26, 0x2C, 0x33, 0x00, 0x04,
+			    0x06, 0x10, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30,
+			    0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x30, 0x30, 0x30, 0x30,
+			    0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00,
+			    0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4E, 0x42, 0x47, 0x49, 0x43, 0x36,
+			    0x00, 0x00, 0xFA, 0xE9, 0x69, 0x00, 0xF6, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		memcpy (cardData + 0x2C, "7F5C9744F111111143262C3300040610", 33);
+		memcpy (cardData + 0x50, "30764352518498791337", 21);
+		touchCallback (0, 0, cardData, touchData);
+	}
+	if (attachCallback) attachCallback (0, 0, attachData);
 	return coin_count;
 }
 
@@ -100,17 +121,21 @@ u32 __stdcall bnusio_GetSwIn () {
 }
 
 HOOK_DYNAMIC (u64, __stdcall, bngrw_attach, i32 a1, char *a2, i32 a3, i32 a4, callbackAttach callback, i32 *a6) {
-	attach (callback, a6);
+	// This is way too fucking jank
+	attachCallback = callback;
+	attachData     = a6;
 	return 1;
 }
 
 HOOK_DYNAMIC (i32, __stdcall, bngrw_reqWaitTouch, u32 a1, i32 a2, u32 a3, callbackTouch callback, u64 a5) {
-	touch (callback, a5, CARD_INSERT);
+	waitingForTouch = true;
+	touchCallback   = callback;
+	touchData       = a5;
 	return 1;
 }
 
 HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqCancel, u32 a1) {
-	touchCancel ();
+	waitingForTouch = false;
 	return (7 < a1 ? -100 : 1);
 }
 
