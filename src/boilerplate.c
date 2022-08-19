@@ -2,6 +2,10 @@
 
 // force show cursor
 HOOK_DYNAMIC (i32, __stdcall, ShowMouse, i32 show) { return originalShowMouse (true); }
+HOOK_DYNAMIC (i32, __stdcall, ExitWindows, i32 exitCode, i32 reason) {
+	ExitProcess (0);
+	return true;
+}
 
 // xinput stuff
 HOOK_DYNAMIC (u32, __stdcall, XinputGetState, u32 index, void *state) { return ERROR_DEVICE_NOT_CONNECTED; }
@@ -80,6 +84,8 @@ HOOK_DYNAMIC (i32, __stdcall, bngrw_reqCancel) { return 1; }
 void
 init_boilerplate () {
 	INSTALL_HOOK_DYNAMIC (ShowMouse, PROC_ADDRESS ("user32.dll", "ShowCursor"));
+	INSTALL_HOOK_DYNAMIC (ExitWindows, PROC_ADDRESS ("user32.dll", "ExitWindowsEx"));
+
 	INSTALL_HOOK_DYNAMIC (XinputGetState, PROC_ADDRESS ("xinput9_1_0.dll", "XInputGetState"));
 	INSTALL_HOOK_DYNAMIC (XinputSetState, PROC_ADDRESS ("xinput9_1_0.dll", "XInputSetState"));
 	INSTALL_HOOK_DYNAMIC (XinputGetCapabilites, PROC_ADDRESS ("xinput9_1_0.dll", "XInputGetCapabilities"));
