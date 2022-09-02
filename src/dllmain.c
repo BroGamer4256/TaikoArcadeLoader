@@ -7,10 +7,10 @@ bool testEnabled = false;
 u16 drumMax      = 0xFFFF;
 u16 drumMin      = 0xFFFF;
 
-char accessCode1[33] = "00000000000000000000000000000001";
-char chipId1[21]     = "00000000000000000001";
-char accessCode2[33] = "00000000000000000000000000000002";
-char chipId2[21]     = "00000000000000000002";
+char accessCode1[21] = "00000000000000000001";
+char accessCode2[21] = "00000000000000000002";
+char chipId1[33]     = "00000000000000000000000000000001";
+char chipId2[33]     = "00000000000000000000000000000002";
 
 typedef i32 (*callbackAttach) (i32, i32, i32 *);
 typedef void (*callbackTouch) (i32, i32, u8[168], u64);
@@ -110,12 +110,12 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 			    0x00, 0x00, 0xFA, 0xE9, 0x69, 0x00, 0xF6, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 		if (IsButtonTapped (CARD_INSERT_1)) {
-			memcpy (cardData + 0x2C, accessCode1, 33);
-			memcpy (cardData + 0x50, chipId1, 21);
+			memcpy (cardData + 0x2C, chipId1, 33);
+			memcpy (cardData + 0x50, accessCode1, 21);
 			touchCallback (0, 0, cardData, touchData);
 		} else if (IsButtonTapped (CARD_INSERT_2)) {
-			memcpy (cardData + 0x2C, accessCode2, 33);
-			memcpy (cardData + 0x50, chipId2, 21);
+			memcpy (cardData + 0x2C, chipId2, 33);
+			memcpy (cardData + 0x50, accessCode2, 21);
 			touchCallback (0, 0, cardData, touchData);
 		}
 	}
@@ -188,14 +188,14 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (config) {
 		drumMax            = readConfigInt (config, "drumMax", drumMax);
 		drumMin            = readConfigInt (config, "drumMin", drumMin);
-		i32 accessCode1Int = readConfigInt (config, "accessCode1", 1);
-		i32 chipId1Int     = readConfigInt (config, "chipId1", 1);
-		i32 accessCode2Int = readConfigInt (config, "accessCode2", 2);
-		i32 chipId2Int     = readConfigInt (config, "chipId2", 2);
-		sprintf (accessCode1, "%032X", accessCode1Int);
-		sprintf (chipId1, "%032X", chipId1Int);
-		sprintf (accessCode2, "%032X", accessCode2Int);
-		sprintf (chipId2, "%032X", chipId2Int);
+		i64 accessCode1Int = readConfigInt (config, "accessCode1", 1);
+		i64 accessCode2Int = readConfigInt (config, "accessCode2", 2);
+		i64 chipId1Int     = readConfigInt (config, "chipId1", 1);
+		i64 chipId2Int     = readConfigInt (config, "chipId2", 2);
+		sprintf (accessCode1, "%020d", accessCode1Int);
+		sprintf (accessCode2, "%020d", accessCode2Int);
+		sprintf (chipId1, "%032d", chipId1Int);
+		sprintf (chipId2, "%032d", chipId2Int);
 		toml_free (config);
 	}
 
