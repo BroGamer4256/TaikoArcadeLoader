@@ -194,8 +194,8 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 		i64 chipId2Int     = readConfigInt (config, "chipId2", 2);
 		sprintf (accessCode1, "%020lld", accessCode1Int);
 		sprintf (accessCode2, "%020lld", accessCode2Int);
-		sprintf (chipId1, "%032llx", chipId1Int);
-		sprintf (chipId2, "%032llx", chipId2Int);
+		sprintf (chipId1, "%032llX", chipId1Int);
+		sprintf (chipId2, "%032llX", chipId2Int);
 		toml_free (config);
 	}
 
