@@ -7,6 +7,11 @@ bool testEnabled = false;
 u16 drumMax      = 0xFFFF;
 u16 drumMin      = 0xFFFF;
 
+char accessCode1[33] = "00000000000000000000000000000001";
+char chipId1[21]     = "00000000000000000001";
+char accessCode2[33] = "00000000000000000000000000000002";
+char chipId2[21]     = "00000000000000000002";
+
 typedef i32 (*callbackAttach) (i32, i32, i32 *);
 typedef void (*callbackTouch) (i32, i32, u8[168], u64);
 bool waitingForTouch = false;
@@ -24,7 +29,8 @@ Keybindings DEBUG_UP      = { .keycodes = { VK_UP } };
 Keybindings DEBUG_DOWN    = { .keycodes = { VK_DOWN } };
 Keybindings DEBUG_ENTER   = { .keycodes = { VK_RETURN } };
 Keybindings COIN_ADD      = { .keycodes = { VK_RETURN }, .buttons = { SDL_CONTROLLER_BUTTON_START } };
-Keybindings CARD_INSERT   = { .keycodes = { 'P' } };
+Keybindings CARD_INSERT_1 = { .keycodes = { 'P' } };
+Keybindings CARD_INSERT_2 = {};
 Keybindings P1_LEFT_BLUE  = { .keycodes = { 'D' }, .axis = { SDL_AXIS_LTRIGGER_DOWN } };
 Keybindings P1_LEFT_RED   = { .keycodes = { 'F' }, .buttons = { SDL_CONTROLLER_BUTTON_LEFTSTICK } };
 Keybindings P1_RIGHT_RED  = { .keycodes = { 'J' }, .buttons = { SDL_CONTROLLER_BUTTON_RIGHTSTICK } };
@@ -71,7 +77,8 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 			SetConfigValue (config, "DEBUG_ENTER", &DEBUG_ENTER);
 
 			SetConfigValue (config, "COIN_ADD", &COIN_ADD);
-			SetConfigValue (config, "CARD_INSERT", &CARD_INSERT);
+			SetConfigValue (config, "CARD_INSERT_1", &CARD_INSERT_1);
+			SetConfigValue (config, "CARD_INSERT_2", &CARD_INSERT_2);
 
 			SetConfigValue (config, "P1_LEFT_BLUE", &P1_LEFT_BLUE);
 			SetConfigValue (config, "P1_LEFT_RED", &P1_LEFT_RED);
@@ -92,8 +99,8 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 	if (IsButtonTapped (COIN_ADD) && !testEnabled) coin_count++;
 	if (IsButtonTapped (TEST)) testEnabled = !testEnabled;
 	if (IsButtonTapped (EXIT)) ExitProcess (0);
-	if (waitingForTouch && IsButtonTapped (CARD_INSERT)) {
-		u8 cardData[168]
+	if (waitingForTouch) {
+		static u8 cardData[168]
 		    = { 0x01, 0x01, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x92, 0x2E, 0x58, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00,
 			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7F, 0x5C, 0x97, 0x44, 0xF0, 0x88, 0x04, 0x00, 0x43, 0x26, 0x2C, 0x33, 0x00, 0x04,
 			    0x06, 0x10, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30,
@@ -102,9 +109,15 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 			    0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4E, 0x42, 0x47, 0x49, 0x43, 0x36,
 			    0x00, 0x00, 0xFA, 0xE9, 0x69, 0x00, 0xF6, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-		memcpy (cardData + 0x2C, "7F5C9744F111111143262C3300040610", 33);
-		memcpy (cardData + 0x50, "30764352518498791337", 21);
-		touchCallback (0, 0, cardData, touchData);
+		if (IsButtonTapped (CARD_INSERT_1)) {
+			memcpy (cardData + 0x2C, accessCode1, 33);
+			memcpy (cardData + 0x50, chipId1, 21);
+			touchCallback (0, 0, cardData, touchData);
+		} else if (IsButtonTapped (CARD_INSERT_2)) {
+			memcpy (cardData + 0x2C, accessCode2, 33);
+			memcpy (cardData + 0x50, chipId2, 21);
+			touchCallback (0, 0, cardData, touchData);
+		}
 	}
 	if (attachCallback) attachCallback (0, 0, attachData);
 	return coin_count;
@@ -173,8 +186,16 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 
 	toml_table_t *config = openConfig (configPath ("config.toml"));
 	if (config) {
-		drumMax = readConfigInt (config, "drumMax", drumMax);
-		drumMin = readConfigInt (config, "drumMin", drumMin);
+		drumMax            = readConfigInt (config, "drumMax", drumMax);
+		drumMin            = readConfigInt (config, "drumMin", drumMin);
+		i32 accessCode1Int = readConfigInt (config, "accessCode1", 1);
+		i32 chipId1Int     = readConfigInt (config, "chipId1", 1);
+		i32 accessCode2Int = readConfigInt (config, "accessCode2", 2);
+		i32 chipId2Int     = readConfigInt (config, "chipId2", 2);
+		sprintf (accessCode1, "%032X", accessCode1Int);
+		sprintf (chipId1, "%032X", chipId1Int);
+		sprintf (accessCode2, "%032X", accessCode2Int);
+		sprintf (chipId2, "%032X", chipId2Int);
 		toml_free (config);
 	}
 

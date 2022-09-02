@@ -1,3 +1,9 @@
 # Values for random drum hit amounts
-drumMax = 0xFFFF
-drumMin = 0xFFFF
+drumMax = 20000
+drumMin = 10000
+
+accessCode1 = 1
+chipId1 = 1
+
+accessCode2 = 2
+chipId2 = 2

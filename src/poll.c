@@ -158,7 +158,7 @@ InitializePoll (void *DivaWindowHandle) {
 	}
 
 	if (SDL_GameControllerAddMappingsFromFile (configPath ("gamecontrollerdb.txt")) == -1)
-		printError ("%s (): Cannot read plugins/gamecontrollerdb.txt\n", __func__);
+		printError ("%s (): Cannot read gamecontrollerdb.txt\n", __func__);
 	SDL_GameControllerEventState (SDL_ENABLE);
 
 	for (int i = 0; i < SDL_NumJoysticks (); i++) {

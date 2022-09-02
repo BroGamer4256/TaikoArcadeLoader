@@ -45,7 +45,7 @@ typedef uint64_t u64;
 
 #define INSTALL_HOOK_DYNAMIC(functionName, location)                                                                                                 \
 	{                                                                                                                                                \
-		where##functionName = location;                                                                                                              \
+		where##functionName = (void *)location;                                                                                                      \
 		INSTALL_HOOK (functionName);                                                                                                                 \
 	}
 
