@@ -12,7 +12,7 @@ char accessCode2[21] = "00000000000000000002";
 char chipId1[33]     = "00000000000000000000000000000001";
 char chipId2[33]     = "00000000000000000000000000000002";
 
-char *server = "vsapi.taiko-p.jp";
+char *server = "";
 
 typedef i32 (*callbackAttach) (i32, i32, i32 *);
 typedef void (*callbackTouch) (i32, i32, u8[168], u64);

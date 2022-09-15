@@ -42,6 +42,7 @@ ${OUT}: dirs ${DEPS} ${OBJ}
 fmt:
 	@cd src && clang-format -i *.h *.c -style=file
 	@cd patches/8.18 && clang-format -i *.c -style=file
+	@cd patches/amauth && clang-format -i *.c -style=file
 
 .PHONY: clean
 clean:
@@ -50,6 +51,7 @@ clean:
 .PHONY: patches
 patches:
 	make -C patches/8.18
+	make -C patches/amauth
 
 .PHONY: dist-no-7z
 dist-no-7z: options ${OUT} patches

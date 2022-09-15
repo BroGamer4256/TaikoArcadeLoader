@@ -104,6 +104,9 @@ typedef void event ();
 #define printWarning(format, ...) printColour (WARNING_COLOUR, format, __VA_ARGS__)
 #define printError(format, ...)   printColour (ERROR_COLOUR, format, __VA_ARGS__)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 char *configPath (char *name);
 toml_table_t *openConfig (char *configFilePath);
 toml_table_t *openConfigSection (toml_table_t *config, char *sectionName);
@@ -111,3 +114,6 @@ bool readConfigBool (toml_table_t *table, char *key, bool notFoundValue);
 int64_t readConfigInt (toml_table_t *table, char *key, int64_t notFoundValue);
 char *readConfigString (toml_table_t *table, char *key, char *notFoundValue);
 void printColour (int colour, const char *format, ...);
+#ifdef __cplusplus
+}
+#endif
