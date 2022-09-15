@@ -106,7 +106,7 @@ class CAuth : public IUnknown {
 		strncpy_s (a1 + 44, 8, "08.18", 7);
 		strncpy_s (a1 + 52, 4, "0", 3);
 		strncpy_s (a1 + 56, 4, "PCB", 3);
-		strncpy_s (a1 + 60, 0x100, "https://v402-front.mucha-prd.nbgi-amnet.jp:10122/mucha_front/", 0xFF);
+		strncpy_s (a1 + 60, 0x100, "https://divamodarchive.com/", 0xFF);
 		return 0;
 	}
 	// Some config stuff, unsure if true or false wanted
