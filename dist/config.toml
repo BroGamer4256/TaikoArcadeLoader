@@ -2,7 +2,7 @@
 drumMax = 20000
 drumMin = 10000
 
-server = "vsapi.taiko-p.jp"
+server = "https://divamodarchive.com"
 
 accessCode1 = 1
 chipId1 = 1

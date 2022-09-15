@@ -12,7 +12,7 @@ char accessCode2[21] = "00000000000000000002";
 char chipId1[33]     = "00000000000000000000000000000001";
 char chipId2[33]     = "00000000000000000000000000000002";
 
-char *server = "";
+char *server = "https://divamodarchive.com";
 
 typedef i32 (*callbackAttach) (i32, i32, i32 *);
 typedef void (*callbackTouch) (i32, i32, u8[168], u64);
@@ -156,8 +156,8 @@ i64 __stdcall bnusio_Close () {
 				swprintf (buf, 128, L"Failed to load plugin %d", GetLastError ());
 				MessageBoxW (NULL, buf, fd.cFileName, MB_ICONERROR);
 			} else {
-				FARPROC initEvent = GetProcAddress (hModule, "Exit");
-				if (initEvent) ((event *)initEvent) ();
+				FARPROC exitEvent = GetProcAddress (hModule, "Exit");
+				if (exitEvent) ((event *)exitEvent) ();
 			}
 		} while (FindNextFileW (hFind, &fd));
 		FindClose (hFind);
