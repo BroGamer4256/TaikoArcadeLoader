@@ -257,13 +257,8 @@ class CAuthFactory : public IClassFactory {
 		wchar_t *iid_str;
 		StringFromCLSID (riid, &iid_str);
 		printf ("CreateInstance %ls\n", iid_str);
-		if (riid == IID_CAuth) {
-			CAuth *auth = new CAuth ();
-			return auth->QueryInterface (riid, object);
-		} else {
-			*object = 0;
-			return E_NOINTERFACE;
-		}
+		CAuth *auth = new CAuth ();
+		return auth->QueryInterface (riid, object);
 	}
 	virtual HRESULT
 	LockServer (i32 lock) {
