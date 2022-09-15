@@ -8,11 +8,10 @@ HOOK_DYNAMIC (u8, __fastcall, qrReadFromCOM1, u64 a1) {
 	return 1;
 }
 
-i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
-	if (cause != DLL_PROCESS_ATTACH) return 1;
-
+void
+PreInit () {
 	toml_table_t *config = openConfig (configPath ("plugins/patches.toml"));
-	if (!config) return 1;
+	if (!config) return;
 	void *handle = GetModuleHandle (0);
 	WRITE_MEMORY (ASLR (0x1400239C0, handle), u8, 0xC3);                                                          // Stop error
 	if (readConfigBool (config, "unlock_songs", true)) WRITE_MEMORY (ASLR (0x140314E8D, handle), u8, 0xB0, 0x01); // Unlock songs
@@ -39,6 +38,4 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 
 	INSTALL_HOOK_DYNAMIC (qrVtable1, amHandle + 0x1BA00);
 	INSTALL_HOOK_DYNAMIC (qrReadFromCOM1, amHandle + 0x1BC20);
-
-	return 1;
 }

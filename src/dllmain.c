@@ -12,6 +12,8 @@ char accessCode2[21] = "00000000000000000002";
 char chipId1[33]     = "00000000000000000000000000000001";
 char chipId2[33]     = "00000000000000000000000000000002";
 
+char *server = "vsapi.taiko-p.jp";
+
 typedef i32 (*callbackAttach) (i32, i32, i32 *);
 typedef void (*callbackTouch) (i32, i32, u8[168], u64);
 bool waitingForTouch = false;
@@ -133,6 +135,66 @@ u32 __stdcall bnusio_GetSwIn () {
 	return sw;
 }
 
+i64 __stdcall bnusio_Close () {
+	wchar_t path[MAX_PATH];
+	GetModuleFileNameW (NULL, path, MAX_PATH);
+	*wcsrchr (path, '\\') = '\0';
+	SetCurrentDirectoryW (path);
+
+	WIN32_FIND_DATAW fd;
+	HANDLE hFind = FindFirstFileW (L"plugins/*.dll", &fd);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+			wchar_t filePath[MAX_PATH];
+			wcscpy (filePath, path);
+			wcscat (filePath, L"/plugins/");
+			wcscat (filePath, fd.cFileName);
+			HMODULE hModule = LoadLibraryW (filePath);
+			if (!hModule) {
+				wchar_t buf[128];
+				swprintf (buf, 128, L"Failed to load plugin %d", GetLastError ());
+				MessageBoxW (NULL, buf, fd.cFileName, MB_ICONERROR);
+			} else {
+				FARPROC initEvent = GetProcAddress (hModule, "Exit");
+				if (initEvent) ((event *)initEvent) ();
+			}
+		} while (FindNextFileW (hFind, &fd));
+		FindClose (hFind);
+	}
+	return 0;
+}
+
+HOOK_DYNAMIC (u64, __stdcall, bngrw_Init) {
+	wchar_t path[MAX_PATH];
+	GetModuleFileNameW (NULL, path, MAX_PATH);
+	*wcsrchr (path, '\\') = '\0';
+	SetCurrentDirectoryW (path);
+
+	WIN32_FIND_DATAW fd;
+	HANDLE hFind = FindFirstFileW (L"plugins/*.dll", &fd);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+			wchar_t filePath[MAX_PATH];
+			wcscpy (filePath, path);
+			wcscat (filePath, L"/plugins/");
+			wcscat (filePath, fd.cFileName);
+			HMODULE hModule = LoadLibraryW (filePath);
+			if (!hModule) {
+				wchar_t buf[128];
+				swprintf (buf, 128, L"Failed to load plugin %d", GetLastError ());
+				MessageBoxW (NULL, buf, fd.cFileName, MB_ICONERROR);
+			} else {
+				FARPROC initEvent = GetProcAddress (hModule, "Init");
+				if (initEvent) ((event *)initEvent) ();
+			}
+		} while (FindNextFileW (hFind, &fd));
+		FindClose (hFind);
+	}
+	return 0;
+}
+
 HOOK_DYNAMIC (u64, __stdcall, bngrw_attach, i32 a1, char *a2, i32 a3, i32 a4, callbackAttach callback, i32 *a6) {
 	// This is way too fucking jank
 	attachCallback = callback;
@@ -147,6 +209,10 @@ HOOK_DYNAMIC (i32, __stdcall, bngrw_reqWaitTouch, u32 a1, i32 a2, u32 a3, callba
 	return 1;
 }
 
+HOOK_DYNAMIC (i32, __stdcall, ws2_getaddrinfo, char *node, char *service, void *hints, void *out) {
+	return originalws2_getaddrinfo (server, service, hints, out);
+}
+
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause == DLL_PROCESS_DETACH) DisposePoll ();
 	if (cause != DLL_PROCESS_ATTACH) return true;
@@ -155,6 +221,9 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 
 	INSTALL_HOOK_DYNAMIC (bngrw_attach, PROC_ADDRESS ("bngrw.dll", "BngRwAttach"));
 	INSTALL_HOOK_DYNAMIC (bngrw_reqWaitTouch, PROC_ADDRESS ("bngrw.dll", "BngRwReqWaitTouch"));
+	INSTALL_HOOK_DYNAMIC (bngrw_Init, PROC_ADDRESS ("bngrw.dll", "BngRwInit"));
+
+	INSTALL_HOOK_DYNAMIC (ws2_getaddrinfo, PROC_ADDRESS ("ws2_32.dll", "getaddrinfo"));
 
 	// Set current directory to the directory of the executable
 	// Find all files in the plugins directory that end with .dll
@@ -179,6 +248,9 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 				wchar_t buf[128];
 				swprintf (buf, 128, L"Failed to load plugin %d", GetLastError ());
 				MessageBoxW (NULL, buf, fd.cFileName, MB_ICONERROR);
+			} else {
+				FARPROC preInitEvent = GetProcAddress (hModule, "PreInit");
+				if (preInitEvent) ((event *)preInitEvent) ();
 			}
 		} while (FindNextFileW (hFind, &fd));
 		FindClose (hFind);
@@ -188,6 +260,7 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (config) {
 		drumMax            = readConfigInt (config, "drumMax", drumMax);
 		drumMin            = readConfigInt (config, "drumMin", drumMin);
+		server             = readConfigString (config, "server", server);
 		i64 accessCode1Int = readConfigInt (config, "accessCode1", 1);
 		i64 accessCode2Int = readConfigInt (config, "accessCode2", 2);
 		i64 chipId1Int     = readConfigInt (config, "chipId1", 1);

@@ -14,7 +14,6 @@ HOOK_DYNAMIC (u32, __stdcall, XinputGetCapabilites, u32 index, u32 flags, void *
 
 // bnusio stuff
 RETURN_FALSE (i64, __stdcall, bnusio_ClearSram);
-RETURN_FALSE (i64, __stdcall, bnusio_Close);
 RETURN_FALSE (i64, __fastcall, bnusio_Communication, i32 a1);
 RETURN_FALSE (i64, __fastcall, bnusio_DecService, i32 a1, u16 a2);
 RETURN_FALSE (void *, __fastcall, bnusio_GetBuffer, u16 a1, i64 a2, i16 a3);
@@ -67,7 +66,6 @@ HOOK_DYNAMIC (void, __stdcall, bngrw_fin) { return; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_GetFwVersion) { return 0; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_GetStationID) { return 0; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_GetRetryCount) { return 0; }
-HOOK_DYNAMIC (u64, __stdcall, bngrw_Init) { return 0; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_IsCmdExec) { return 0xFFFFFFFF; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqAction) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqAiccAuth) { return 1; }
@@ -100,7 +98,6 @@ init_boilerplate () {
 	INSTALL_HOOK_DYNAMIC (bngrw_GetFwVersion, PROC_ADDRESS ("bngrw.dll", "BngRwGetFwVersion"));
 	INSTALL_HOOK_DYNAMIC (bngrw_GetStationID, PROC_ADDRESS ("bngrw.dll", "BngRwGetStationID"));
 	INSTALL_HOOK_DYNAMIC (bngrw_GetRetryCount, PROC_ADDRESS ("bngrw.dll", "BngRwGetTotalRetryCount"));
-	INSTALL_HOOK_DYNAMIC (bngrw_Init, PROC_ADDRESS ("bngrw.dll", "BngRwInit"));
 	INSTALL_HOOK_DYNAMIC (bngrw_IsCmdExec, PROC_ADDRESS ("bngrw.dll", "BngRwIsCmdExec"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqAction, PROC_ADDRESS ("bngrw.dll", "BngRwReqAction"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqAiccAuth, PROC_ADDRESS ("bngrw.dll", "BngRwReqAiccAuth"));

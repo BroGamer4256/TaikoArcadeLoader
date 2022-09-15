@@ -14,6 +14,13 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
+typedef void event ();
+
+#ifdef DEFINE_GUID
+#undef DEFINE_GUID
+#endif
+
+#define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) const GUID name = { l, w1, w2, { b1, b2, b3, b4, b5, b6, b7, b8 } }
 
 #ifdef BASE_ADDRESS
 #define ASLR(address, handle) ((u64)handle + (u64)address - (u64)BASE_ADDRESS)
