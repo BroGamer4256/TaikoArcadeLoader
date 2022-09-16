@@ -90,16 +90,16 @@ class CAuth : public IUnknown {
 	}
 	virtual i32
 	Unk10 (char *a1) {
-		memset (a1, 0, 0xA8);
+		memset (a1, 0, 0xB0);
 		strncpy_s (a1, 0x10, "STANDALONE", 0xF);
-		strncpy_s (a1 + 0x10, 0x10, "ABLN1080001", 0xF);
-		strncpy_s (a1 + 0x20, 0x10, "284111080001", 0xF);
+		strncpy_s (a1 + 0x10, 0x10, "TAL0000001", 0xF);   // PCB ID
+		strncpy_s (a1 + 0x20, 0x10, "000000-00000", 0xF); // ignored by game
 		strncpy_s (a1 + 0x30, 0x10, server_ip, 0xF);
 		strncpy_s (a1 + 0x40, 0x10, server_ip, 0xF);
 		strncpy_s (a1 + 0x50, 0x10, server_ip, 0xF);
-		strncpy_s (a1 + 0x60, 0x10, "255.255.255.0", 0xF);
-		strncpy_s (a1 + 0x70, 0x10, "192.168.0.1", 0xF);
-		strncpy_s (a1 + 0x80, 0x8, "8.8.8.8", 0x7);
+		strncpy_s (a1 + 0x60, 0x10, "***.***.***.***", 0xF); // Subnet mask
+		strncpy_s (a1 + 0x70, 0x10, "***.***.***.***", 0xF); // GATEWAY
+		strncpy_s (a1 + 0x80, 0x10, "***.***.***.***", 0xF); // PRIMARY DNS
 		return 0;
 	}
 	virtual i32
@@ -109,8 +109,8 @@ class CAuth : public IUnknown {
 		strncpy_s (a1 + 4, 0x10, "ALLNET", 0xF);
 		strncpy_s (a1 + 20, 8, "SWBY", 7);
 		strncpy_s (a1 + 28, 8, "12.00", 7);
-		strncpy_s (a1 + 36, 8, "S121", 7);
-		strncpy_s (a1 + 44, 8, "08.18", 7);
+		strncpy_s (a1 + 36, 8, "TAL0", 7);  // ignored by game
+		strncpy_s (a1 + 44, 8, "08.18", 7); // GAME VERSION
 		strncpy_s (a1 + 52, 4, "0", 3);
 		strncpy_s (a1 + 56, 4, "PCB", 3);
 		char *mucha_url = (char *)malloc (0x100);
@@ -133,10 +133,10 @@ class CAuth : public IUnknown {
 		memset (a1, 0, 0x8A2);
 		strncpy_s (a1, 0x101, server_hostname, 0x100);
 		strncpy_s (a1 + 0x101, 0x101, server_hostname, 0x100);
-		strncpy_s (a1 + 0x202, 0x100, "NAMCO", 0xFF);
-		strncpy_s (a1 + 0x302, 0x100, "NAMCO", 0xFF);
+		strncpy_s (a1 + 0x202, 0x100, "TAIKO ARCADE LOADER", 0xFF); // ALL.Net SHOP NAME
+		strncpy_s (a1 + 0x302, 0x100, "TAIKO ARCADE LOADER", 0xFF);
 		strncpy_s (a1 + 0x402, 0x10, "1", 0xF);
-		strncpy_s (a1 + 0x412, 0x100, "NAMCO", 0xFF);
+		strncpy_s (a1 + 0x412, 0x100, "TAIKO ARCADE LOADER", 0xFF);
 		strncpy_s (a1 + 0x512, 0x100, "X", 0xFF);
 		strncpy_s (a1 + 0x612, 0x100, "Y", 0xFF);
 		strncpy_s (a1 + 0x712, 0x100, "Z", 0xFF);
@@ -270,10 +270,11 @@ extern "C" {
 void
 Init () {
 	CoInitializeEx (0, 0);
-	CoRegisterClassObject (IID_CAuthFactory, (IUnknown *)new CAuthFactory (), 4, 1, &reg);
+	CoRegisterClassObject (IID_CAuthFactory, (IUnknown *)new CAuthFactory (), CLSCTX_LOCAL_SERVER, 1, &reg);
 	toml_table_t *config = openConfig (configPath ((char *)"config.toml"));
 	if (config) {
-		server_hostname      = readConfigString (config, (char *)"server", server_hostname);
+		server_hostname = readConfigString (config, (char *)"server", server_hostname);
+		// Get ipv4 address of server
 		struct addrinfo *res = 0;
 		getaddrinfo (server_hostname, "", 0, &res);
 		for (struct addrinfo *i = res; i != 0; i = i->ai_next) {
@@ -298,7 +299,7 @@ Test () {
 	CAuth *auth;
 	res = CoCreateInstance (IID_CAuthFactory, 0, 4, IID_CAuth, (void **)&auth);
 	if (res != S_OK) {
-		printf ("AMAuthd not running %llx\n", res);
+		printf ("AMAuthd not running %x\n", res);
 		CoUninitialize ();
 		return;
 	}
@@ -346,7 +347,7 @@ Test () {
 	printf ("%s\n", unk11 + 60);
 	free (unk11);
 
-	char *unk10 = (char *)malloc (0xA8);
+	char *unk10 = (char *)malloc (0xB0);
 	res         = auth->Unk10 (unk10);
 	printf ("unk10: %d\n", res);
 	FILE *unk10fp = fopen ("unk10.bin", "w");
