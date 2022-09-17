@@ -11,16 +11,18 @@ char accessCode1[21] = "00000000000000000001";
 char accessCode2[21] = "00000000000000000002";
 char chipId1[33]     = "00000000000000000000000000000001";
 char chipId2[33]     = "00000000000000000000000000000002";
-
-char *server = "https://divamodarchive.com";
+char *server         = "https://divamodarchive.com";
 
 typedef i32 (*callbackAttach) (i32, i32, i32 *);
 typedef void (*callbackTouch) (i32, i32, u8[168], u64);
+typedef void event ();
+typedef void waitTouchEvent (callbackTouch, u64);
 bool waitingForTouch = false;
 callbackTouch touchCallback;
 u64 touchData;
 callbackAttach attachCallback;
 i32 *attachData;
+HMODULE plugins[255] = { 0 };
 
 #define ON_HIT(bind) IsButtonTapped (bind) ? drumMax == drumMin ? drumMax : (u16)(rand () % drumMax + drumMin) : 0
 
@@ -136,61 +138,17 @@ u32 __stdcall bnusio_GetSwIn () {
 }
 
 i64 __stdcall bnusio_Close () {
-	wchar_t path[MAX_PATH];
-	GetModuleFileNameW (NULL, path, MAX_PATH);
-	*wcsrchr (path, '\\') = '\0';
-	SetCurrentDirectoryW (path);
-
-	WIN32_FIND_DATAW fd;
-	HANDLE hFind = FindFirstFileW (L"plugins/*.dll", &fd);
-	if (hFind != INVALID_HANDLE_VALUE) {
-		do {
-			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
-			wchar_t filePath[MAX_PATH];
-			wcscpy (filePath, path);
-			wcscat (filePath, L"/plugins/");
-			wcscat (filePath, fd.cFileName);
-			HMODULE hModule = LoadLibraryW (filePath);
-			if (!hModule) {
-				wchar_t buf[128];
-				swprintf (buf, 128, L"Failed to load plugin %d", GetLastError ());
-				MessageBoxW (NULL, buf, fd.cFileName, MB_ICONERROR);
-			} else {
-				FARPROC exitEvent = GetProcAddress (hModule, "Exit");
-				if (exitEvent) ((event *)exitEvent) ();
-			}
-		} while (FindNextFileW (hFind, &fd));
-		FindClose (hFind);
+	for (int i = 0; plugins[i] != 0; i++) {
+		FARPROC exitEvent = GetProcAddress (plugins[i], "Exit");
+		if (exitEvent) ((event *)exitEvent) ();
 	}
 	return 0;
 }
 
 HOOK_DYNAMIC (u64, __stdcall, bngrw_Init) {
-	wchar_t path[MAX_PATH];
-	GetModuleFileNameW (NULL, path, MAX_PATH);
-	*wcsrchr (path, '\\') = '\0';
-	SetCurrentDirectoryW (path);
-
-	WIN32_FIND_DATAW fd;
-	HANDLE hFind = FindFirstFileW (L"plugins/*.dll", &fd);
-	if (hFind != INVALID_HANDLE_VALUE) {
-		do {
-			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
-			wchar_t filePath[MAX_PATH];
-			wcscpy (filePath, path);
-			wcscat (filePath, L"/plugins/");
-			wcscat (filePath, fd.cFileName);
-			HMODULE hModule = LoadLibraryW (filePath);
-			if (!hModule) {
-				wchar_t buf[128];
-				swprintf (buf, 128, L"Failed to load plugin %d", GetLastError ());
-				MessageBoxW (NULL, buf, fd.cFileName, MB_ICONERROR);
-			} else {
-				FARPROC initEvent = GetProcAddress (hModule, "Init");
-				if (initEvent) ((event *)initEvent) ();
-			}
-		} while (FindNextFileW (hFind, &fd));
-		FindClose (hFind);
+	for (int i = 0; plugins[i] != 0; i++) {
+		FARPROC initEvent = GetProcAddress (plugins[i], "Init");
+		if (initEvent) ((event *)initEvent) ();
 	}
 	return 0;
 }
@@ -206,6 +164,10 @@ HOOK_DYNAMIC (i32, __stdcall, bngrw_reqWaitTouch, u32 a1, i32 a2, u32 a3, callba
 	waitingForTouch = true;
 	touchCallback   = callback;
 	touchData       = a5;
+	for (int i = 0; plugins[i] != 0; i++) {
+		FARPROC touchEvent = GetProcAddress (plugins[i], "WaitTouch");
+		if (touchEvent) ((waitTouchEvent *)touchEvent) (callback, a5);
+	}
 	return 1;
 }
 
@@ -237,6 +199,7 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	SetCurrentDirectoryW (path);
 
 	WIN32_FIND_DATAW fd;
+	int i        = 0;
 	HANDLE hFind = FindFirstFileW (L"plugins/*.dll", &fd);
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
@@ -251,6 +214,8 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 				swprintf (buf, 128, L"Failed to load plugin %d", GetLastError ());
 				MessageBoxW (NULL, buf, fd.cFileName, MB_ICONERROR);
 			} else {
+				plugins[i] = hModule;
+				i++;
 				FARPROC preInitEvent = GetProcAddress (hModule, "PreInit");
 				if (preInitEvent) ((event *)preInitEvent) ();
 			}
