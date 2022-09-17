@@ -266,7 +266,7 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 		toml_free (config);
 	}
 
-	FILE *cards = fopen (configPath ("cards.bin"), "r");
+	FILE *cards = fopen (configPath ("cards.dat"), "r");
 	if (cards) {
 		fread (accessCode1, 1, 20, cards);
 		fread (chipId1, 1, 20, cards);
@@ -274,7 +274,7 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 		fread (chipId2, 1, 32, cards);
 		fclose (cards);
 	} else {
-		FILE *cards_new = fopen (configPath ("cards.bin"), "w");
+		FILE *cards_new = fopen (configPath ("cards.dat"), "w");
 		if (cards_new) {
 			srand (time (0));
 			sprintf (accessCode1, "%020d", generate_rand ());
