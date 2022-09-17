@@ -123,6 +123,10 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 			touchCallback (0, 0, cardData, touchData);
 		}
 	}
+	for (int i = 0; plugins[i] != 0; i++) {
+		FARPROC updateEvent = GetProcAddress (plugins[i], "Update");
+		if (updateEvent) ((event *)updateEvent) ();
+	}
 	if (attachCallback) attachCallback (0, 0, attachData);
 	return coin_count;
 }
