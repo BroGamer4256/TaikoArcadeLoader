@@ -16,7 +16,24 @@ PreInit () {
 	WRITE_MEMORY (ASLR (0x1400239C0, handle), u8, 0xC3);                                                          // Stop error
 	if (readConfigBool (config, "unlock_songs", true)) WRITE_MEMORY (ASLR (0x140314E8D, handle), u8, 0xB0, 0x01); // Unlock songs
 	if (readConfigBool (config, "shared_audio", true)) WRITE_MEMORY (ASLR (0x140692E17, handle), u8, 0xEB);       // Shared audio
-	WRITE_MEMORY (ASLR (0x140313726, handle), u8, 0x00, 0x7F);                                                    // Remove song limit
+	// Remove song limit
+	WRITE_MEMORY (ASLR (0x140313726, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x1402F39E6, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x1402F3AB0, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x1402F3BE4, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x14030643B, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x140306507, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x1403065D3, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x1403066FB, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x1403067C7, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x140306893, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x14030698B, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x140313666, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x140313B04, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x140313C24, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x140313CF4, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x1403140C4, handle), u8, 0x28, 0x23);
+	WRITE_MEMORY (ASLR (0x1403147AA, handle), u8, 0x28, 0x23);
 	if (!readConfigBool (config, "vsync", false)) WRITE_MEMORY (ASLR (0x140517339, handle), u8, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x90); // Disable VSync
 	// Save settings cross session without F:/ and G:/ drive
 	WRITE_MEMORY (ASLR (0x140B5C528, handle), u8, "./Setting1.bin");
