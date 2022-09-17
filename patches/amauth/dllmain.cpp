@@ -1,10 +1,8 @@
 // Here be lions
-#include <chrono>
-#include <combaseapi.h>
-#include <thread>
+// The following code is shit
+// It attempts to recreate the functionality of AMAuthd
+// However some of this functionality is needless
 #include <unknwn.h>
-#include <winerror.h>
-#include <wininet.h>
 #include <ws2tcpip.h>
 // Needs to be after for DEFINE_GUID
 #include "helpers.h"
@@ -37,7 +35,7 @@ class CAuth : public IUnknown {
 	STDMETHODIMP_ (ULONG) Release () {
 		this->refCount--;
 		if (this->refCount <= 0) {
-			delete this;
+			// delete this;
 			return 0;
 		}
 		return this->refCount;
@@ -69,7 +67,7 @@ class CAuth : public IUnknown {
 	}
 	virtual i32
 	Unk9 (i32 *a1) {
-		memset (a1, 0, sizeof (i32) * 0x30);
+		memset (a1, 0, sizeof (i32) * 0x31);
 		a1[0]  = 15;
 		a1[2]  = 2;
 		a1[3]  = 1;
@@ -113,11 +111,6 @@ class CAuth : public IUnknown {
 		strncpy_s (a1 + 44, 8, "08.18", 7); // GAME VERSION
 		strncpy_s (a1 + 52, 4, "0", 3);
 		strncpy_s (a1 + 56, 4, "PCB", 3);
-		char *mucha_url = (char *)malloc (0x100);
-		strcat (mucha_url, server_hostname);
-		strcat (mucha_url, ":10122/mucha_front/");
-		strncpy_s (a1 + 60, 0x100, mucha_url, 0xFF);
-		free (mucha_url);
 		return 0;
 	}
 	virtual i32
@@ -141,7 +134,6 @@ class CAuth : public IUnknown {
 		strncpy_s (a1 + 0x612, 0x100, "Y", 0xFF);
 		strncpy_s (a1 + 0x712, 0x100, "Z", 0xFF);
 		strncpy_s (a1 + 0x812, 0x10, "JPN0123", 0xF);
-		strncpy_s (a1 + 0x822, 0x10, "", 0xF);
 		strncpy_s (a1 + 0x832, 0x10, "JPN", 0xF);
 		strncpy_s (a1 + 0x842, 0x10, "002,00", 0xF);
 		strncpy_s (a1 + 0x842, 0x10, "PowerOnResponseVer2", 0xF);
@@ -242,7 +234,6 @@ class CAuthFactory : public IClassFactory {
 
 		if (riid == IID_IUnknown || riid == IID_IClassFactory || riid == IID_CAuthFactory) {
 			*ppvObj = this;
-			this->AddRef ();
 			return 0;
 		} else {
 			*ppvObj = 0;
