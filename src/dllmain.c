@@ -1,12 +1,12 @@
 #include "boilerplate.h"
 #include "helpers.h"
 #include "poll.h"
+#include <stdio.h>
 #include <time.h>
 
-bool testEnabled = false;
-u16 drumMax      = 0xFFFF;
-u16 drumMin      = 0xFFFF;
-
+bool testEnabled     = false;
+u16 drumMax          = 0xFFFF;
+u16 drumMin          = 0xFFFF;
 char accessCode1[21] = "00000000000000000001";
 char accessCode2[21] = "00000000000000000002";
 char chipId1[33]     = "00000000000000000000000000000001";
@@ -213,6 +213,8 @@ HOOK_DYNAMIC (i32, __stdcall, ws2_getaddrinfo, char *node, char *service, void *
 	return originalws2_getaddrinfo (server, service, hints, out);
 }
 
+u32 inline generate_rand () { return rand () + rand () * rand () + rand (); }
+
 i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause == DLL_PROCESS_DETACH) DisposePoll ();
 	if (cause != DLL_PROCESS_ATTACH) return true;
@@ -258,18 +260,33 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 
 	toml_table_t *config = openConfig (configPath ("config.toml"));
 	if (config) {
-		drumMax            = readConfigInt (config, "drumMax", drumMax);
-		drumMin            = readConfigInt (config, "drumMin", drumMin);
-		server             = readConfigString (config, "server", server);
-		i64 accessCode1Int = readConfigInt (config, "accessCode1", 1);
-		i64 accessCode2Int = readConfigInt (config, "accessCode2", 2);
-		i64 chipId1Int     = readConfigInt (config, "chipId1", 1);
-		i64 chipId2Int     = readConfigInt (config, "chipId2", 2);
-		sprintf (accessCode1, "%020lld", accessCode1Int);
-		sprintf (accessCode2, "%020lld", accessCode2Int);
-		sprintf (chipId1, "%032llX", chipId1Int);
-		sprintf (chipId2, "%032llX", chipId2Int);
+		drumMax = readConfigInt (config, "drumMax", drumMax);
+		drumMin = readConfigInt (config, "drumMin", drumMin);
+		server  = readConfigString (config, "server", server);
 		toml_free (config);
+	}
+
+	FILE *cards = fopen (configPath ("cards.bin"), "r");
+	if (cards) {
+		fread (accessCode1, 1, 20, cards);
+		fread (chipId1, 1, 20, cards);
+		fread (accessCode2, 1, 32, cards);
+		fread (chipId2, 1, 32, cards);
+		fclose (cards);
+	} else {
+		FILE *cards_new = fopen (configPath ("cards.bin"), "w");
+		if (cards_new) {
+			srand (time (0));
+			sprintf (accessCode1, "%020d", generate_rand ());
+			fwrite (accessCode1, 1, 20, cards_new);
+			sprintf (accessCode2, "%020d", generate_rand ());
+			fwrite (accessCode2, 1, 20, cards_new);
+			sprintf (chipId1, "%032X", generate_rand ());
+			fwrite (chipId1, 1, 32, cards_new);
+			sprintf (chipId2, "%032X", generate_rand ());
+			fwrite (chipId2, 1, 32, cards_new);
+			fclose (cards_new);
+		}
 	}
 
 	return true;
