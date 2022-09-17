@@ -269,8 +269,8 @@ i32 __stdcall DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	FILE *cards = fopen (configPath ("cards.dat"), "r");
 	if (cards) {
 		fread (accessCode1, 1, 20, cards);
-		fread (chipId1, 1, 20, cards);
-		fread (accessCode2, 1, 32, cards);
+		fread (accessCode2, 1, 20, cards);
+		fread (chipId1, 1, 32, cards);
 		fread (chipId2, 1, 32, cards);
 		fclose (cards);
 	} else {
