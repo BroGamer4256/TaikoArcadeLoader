@@ -15,6 +15,10 @@ void Exit()
 ```
 Runs on bnusio_Close, dispose of any data here.
 ```
+void Update()
+```
+Runs once per frame.
+```
 void WaitTouch(i32 (*callback) (i32, i32, u8[168], u64), u64 data)
 ```
 Runs on bngrw_reqWaitTouch. Call the callback like so when you wish to have a card scanned.
