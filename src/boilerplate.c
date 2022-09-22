@@ -79,6 +79,8 @@ HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendUrl) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqSetLedPower) { return 0; }
 HOOK_DYNAMIC (i32, __stdcall, bngrw_reqCancel) { return 1; }
 
+HOOK_DYNAMIC (i32, __stdcall, ssleay_Shutdown) { return 1; }
+
 void
 init_boilerplate () {
 	INSTALL_HOOK_DYNAMIC (ShowMouse, PROC_ADDRESS ("user32.dll", "ShowCursor"));
@@ -110,4 +112,6 @@ init_boilerplate () {
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqSendUrl, PROC_ADDRESS ("bngrw.dll", "BngRwReqSendUrlTo"));
 	INSTALL_HOOK_DYNAMIC (bngrw_ReqSetLedPower, PROC_ADDRESS ("bngrw.dll", "BngRwReqSetLedPower"));
 	INSTALL_HOOK_DYNAMIC (bngrw_reqCancel, PROC_ADDRESS ("bngrw.dll", "BngRwReqCancel"));
+
+	INSTALL_HOOK_DYNAMIC (ssleay_Shutdown, PROC_ADDRESS ("ssleay32.dll", "SSL_shutdown"));
 }

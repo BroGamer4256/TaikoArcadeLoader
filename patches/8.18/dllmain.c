@@ -18,6 +18,7 @@ PreInit () {
 	if (readConfigBool (config, "shared_audio", true)) WRITE_MEMORY (ASLR (0x140692E17, handle), u8, 0xEB);       // Shared audio
 	// Remove song limit
 	WRITE_MEMORY (ASLR (0x140313726, handle), u8, 0x28, 0x23);
+	/* Unfinished network stuff
 	WRITE_MEMORY (ASLR (0x1402F39E6, handle), u8, 0x28, 0x23);
 	WRITE_MEMORY (ASLR (0x1402F3AB0, handle), u8, 0x28, 0x23);
 	WRITE_MEMORY (ASLR (0x1402F3BE4, handle), u8, 0x28, 0x23);
@@ -34,6 +35,7 @@ PreInit () {
 	WRITE_MEMORY (ASLR (0x140313CF4, handle), u8, 0x28, 0x23);
 	WRITE_MEMORY (ASLR (0x1403140C4, handle), u8, 0x28, 0x23);
 	WRITE_MEMORY (ASLR (0x1403147AA, handle), u8, 0x28, 0x23);
+	*/
 	if (!readConfigBool (config, "vsync", false)) WRITE_MEMORY (ASLR (0x140517339, handle), u8, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x90); // Disable VSync
 	// Save settings cross session without F:/ and G:/ drive
 	WRITE_MEMORY (ASLR (0x140B5C528, handle), u8, "./Setting1.bin");
@@ -41,6 +43,8 @@ PreInit () {
 	// Move F:/ files to current directory
 	WRITE_MEMORY (ASLR (0x140B1B4B0, handle), u8, "./");
 	WRITE_MEMORY (ASLR (0x14001C941, handle), u8, 0x02);
+	// Patch TLS v1.0 to v1.2
+	WRITE_MEMORY (ASLR (0x14044b1a9, handle), u8, 0x10);
 
 	// Move various files to current directory
 	void *amHandle = GetModuleHandle ("AMFrameWork.dll");
