@@ -79,7 +79,7 @@ HOOK_DYNAMIC (i32, __stdcall, bngrw_ReqSendUrl) { return 1; }
 HOOK_DYNAMIC (u64, __stdcall, bngrw_ReqSetLedPower) { return 0; }
 HOOK_DYNAMIC (i32, __stdcall, bngrw_reqCancel) { return 1; }
 
-HOOK_DYNAMIC (i32, __stdcall, ssleay_Shutdown) { return 1; }
+HOOK_DYNAMIC (i32, __fastcall, ssleay_Shutdown, void *ssl) { originalssleay_Shutdown(ssl); return 1; }
 
 void
 init_boilerplate () {

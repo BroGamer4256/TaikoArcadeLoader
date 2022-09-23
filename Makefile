@@ -8,6 +8,7 @@ CFLAGS = -std=c99 -Iminhook/include -ISDL/${SDL_TARGET}/include -ISDL/include -I
 LDFLAGS := -shared -static -static-libgcc -s
 LIBS := SDL/${SDL_TARGET}/build/.libs/libSDL2.a SDL/${SDL_TARGET}/build/.libs/libSDL2main.a -lmingw32 -luuid -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lsetupapi -lversion -pthread
 DEPS = SDL
+VERSION=$(shell git describe --tags)
 
 all: options ${OUT}
 
@@ -64,5 +65,5 @@ dist-no-7z: options ${OUT} patches
 
 .PHONY: dist
 dist: dist-no-7z
-	cd out && 7z a -t7z ../${OUT}.7z .
+	cd out && 7z a -t7z ../${OUT}-${VERSION}.7z .
 	rm -rf out
