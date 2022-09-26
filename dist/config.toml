@@ -2,4 +2,4 @@
 drumMax = 20000
 drumMin = 10000
 
-server = "https://divamodarchive.com"
+server = "127.0.0.1"
