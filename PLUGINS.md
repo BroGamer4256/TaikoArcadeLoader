@@ -32,8 +32,8 @@ callback(0, 0, cardData, data);
 ```
 void Card1Insert()
 ```
-Runs when user presses CARD_INSERT_1
+Runs when user presses CARD_INSERT_1, causes TAL to not insert a card if any plugins have this present
 ```
 void Card2Insert()
 ```
-Runs when user presses CARD_INSERT_2
+Runs when user presses CARD_INSERT_2, causes TAL to not insert a card if any plugins have this present
