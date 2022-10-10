@@ -28,3 +28,12 @@ memcpy (cardData + 0x2C, chipId, 33);
 memcpy (cardData + 0x50, accessCode, 21);
 callback(0, 0, cardData, data);
 ```
+
+```
+void Card1Insert()
+```
+Runs when user presses CARD_INSERT_1
+```
+void Card2Insert()
+```
+Runs when user presses CARD_INSERT_2

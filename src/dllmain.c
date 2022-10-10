@@ -113,14 +113,31 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 			    0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4E, 0x42, 0x47, 0x49, 0x43, 0x36,
 			    0x00, 0x00, 0xFA, 0xE9, 0x69, 0x00, 0xF6, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		bool hasInserted = false;
 		if (IsButtonTapped (CARD_INSERT_1)) {
-			memcpy (cardData + 0x2C, chipId1, 33);
-			memcpy (cardData + 0x50, accessCode1, 21);
-			touchCallback (0, 0, cardData, touchData);
+			for (int i = 0; plugins[i] != 0; i++) {
+				FARPROC insertEvent = GetProcAddress (plugins[i], "Card1Insert");
+				if (insertEvent) {
+					((event *)insertEvent) ();
+					hasInserted = true;
+				}
+			}
+			if (!hasInserted) {
+				memcpy (cardData + 0x2C, chipId1, 33);
+				memcpy (cardData + 0x50, accessCode1, 21);
+				touchCallback (0, 0, cardData, touchData);
+			}
 		} else if (IsButtonTapped (CARD_INSERT_2)) {
-			memcpy (cardData + 0x2C, chipId2, 33);
-			memcpy (cardData + 0x50, accessCode2, 21);
-			touchCallback (0, 0, cardData, touchData);
+			for (int i = 0; plugins[i] != 0; i++) {
+				FARPROC insertEvent = GetProcAddress (plugins[i], "Card2Insert");
+				if (insertEvent) ((event *)insertEvent) ();
+				hasInserted = true;
+			}
+			if (!hasInserted) {
+				memcpy (cardData + 0x2C, chipId2, 33);
+				memcpy (cardData + 0x50, accessCode2, 21);
+				touchCallback (0, 0, cardData, touchData);
+			}
 		}
 	}
 	for (int i = 0; plugins[i] != 0; i++) {
