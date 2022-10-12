@@ -60,7 +60,7 @@ dist-no-7z: options ${OUT} plugins
 	mkdir -p out/plugins
 	cp ${TARGET}/${OUT}.dll out/
 	mv out/${OUT}.dll out/bnusio.dll
-	cp ${TARGET}/plugins.*.dll out/plugins
+	cp ${TARGET}/patches.*.dll out/plugins
 	cp ${TARGET}/amauth.dll out/plugins
 	cp ${TARGET}/song_limit_8_18.dll out/plugins
 	cp -r dist/* out/
