@@ -7,7 +7,7 @@ EXTERN_SRC = src/helpers.c tomlc99/toml.c minhook/src/buffer.c minhook/src/hook.
 EXTERN_OBJ = ${addprefix ../../${TARGET}/,${EXTERN_SRC:.c=.o}}
 CXXFLAGS = -std=c++11 -I../../src -I../../minhook/include -I../../tomlc99 -Wall -Ofast -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=_WIN32_WINNT_WIN7
 LDFLAGS := -shared -static -static-libgcc -s
-LIBS := -lmingw32 -luuid -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lsetupapi -lversion -lws2_32 -pthread
+LIBS := -lmingw32 -luuid -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lsetupapi -lversion -lws2_32
 
 all: options ${OUT}
 
