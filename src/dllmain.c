@@ -127,6 +127,10 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 				memcpy (cardData + 0x50, accessCode1, 21);
 				touchCallback (0, 0, cardData, touchData);
 			}
+			for (int i = 0; plugins[i] != 0; i++) {
+				FARPROC insertEvent = GetProcAddress (plugins[i], "AfterCard1Insert");
+				if (insertEvent) ((event *)insertEvent) ();
+			}
 		} else if (IsButtonTapped (CARD_INSERT_2)) {
 			for (int i = 0; plugins[i] != 0; i++) {
 				FARPROC insertEvent = GetProcAddress (plugins[i], "Card2Insert");
@@ -137,6 +141,10 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 				memcpy (cardData + 0x2C, chipId2, 33);
 				memcpy (cardData + 0x50, accessCode2, 21);
 				touchCallback (0, 0, cardData, touchData);
+			}
+			for (int i = 0; plugins[i] != 0; i++) {
+				FARPROC insertEvent = GetProcAddress (plugins[i], "AfterCard2Insert");
+				if (insertEvent) ((event *)insertEvent) ();
 			}
 		}
 	}

@@ -41,25 +41,28 @@ ${OUT}: dirs ${DEPS} ${OBJ}
 .PHONY: fmt
 fmt:
 	@cd src && clang-format -i *.h *.c -style=file
-	@cd patches/8.18 && clang-format -i *.c -style=file
-	@cd patches/amauth && clang-format -i *.c -style=file
+	@cd plugins/8.18 && clang-format -i *.c -style=file
+	@cd plugins/amauth && clang-format -i *.c -style=file
 
 .PHONY: clean
 clean:
 	rm -rf ${TARGET}
 
-.PHONY: patches
-patches:
-	make -C patches/8.18
-	make -C patches/amauth
+.PHONY: plugins
+plugins:
+	make -C plugins/8.18
+	make -C plugins/amauth
+	cd plugins/8.18-song-limit && cargo build --release --target x86_64-pc-windows-gnu -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort
+	cp plugins/8.18-song-limit/target/x86_64-pc-windows-gnu/release/song_limit_8_18.dll ${TARGET}
 
 .PHONY: dist-no-7z
-dist-no-7z: options ${OUT} patches
+dist-no-7z: options ${OUT} plugins
 	mkdir -p out/plugins
 	cp ${TARGET}/${OUT}.dll out/
 	mv out/${OUT}.dll out/bnusio.dll
-	cp ${TARGET}/patches.*.dll out/plugins
+	cp ${TARGET}/plugins.*.dll out/plugins
 	cp ${TARGET}/amauth.dll out/plugins
+	cp ${TARGET}/song_limit_8_18.dll out/plugins
 	cp -r dist/* out/
 
 .PHONY: dist

@@ -37,3 +37,11 @@ Runs when user presses CARD_INSERT_1, causes TAL to not insert a card if any plu
 void Card2Insert()
 ```
 Runs when user presses CARD_INSERT_2, causes TAL to not insert a card if any plugins have this present
+```
+void AfterCard1Insert()
+```
+Runs after CARD_INSERT_1 is handled
+```
+void AfterCard2Insert()
+```
+Runs after CARD_INSERT_2 is handled
