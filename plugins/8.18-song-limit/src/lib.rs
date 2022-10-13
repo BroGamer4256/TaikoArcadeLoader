@@ -43,9 +43,11 @@ macro_rules! set_crown_data {
 			"jge 1f",
 			concat!("mov dword ptr [rdx + rcx * 8 + 0x300], ", $value),
 			"1:",
-			"jmp r9",
 			in("rdx") SONG_DATA.unwrap(),
-			in("r9") HANDLE.unwrap() + $offset,
+		);
+		asm!(
+			"jmp rcx",
+			in("rcx") HANDLE.unwrap() + $offset,
 		)
 	};
 }
@@ -74,9 +76,11 @@ macro_rules! set_score_rank {
 			"jge 1f",
 			concat!("mov dword ptr [rdx + rax * 8], ", $value),
 			"1:",
-			"jmp r9",
 			in("rdx") SONG_DATA.unwrap(),
-			in("r9") HANDLE.unwrap() + $offset,
+		);
+		asm!(
+			"jmp rcx",
+			in("rcx") HANDLE.unwrap() + $offset,
 		);
 	};
 }
@@ -127,10 +131,10 @@ pub unsafe fn set_unknown_data_2() {
 		"lea rcx, [rdi + rdi * 4]",
 		"add rcx, rbx",
 		"lea rax, [rcx + rcx * 8]",
-		"jmp r8",
+		"jmp rsi",
 		in("rdx") SONG_DATA.unwrap(),
-		in("r8") HANDLE.unwrap() + 0x313A20,
-	);
+		in("rsi") HANDLE.unwrap() + 0x313A20,
+	)
 }
 
 pub unsafe fn set_unknown_data_3() {
@@ -176,7 +180,6 @@ pub unsafe fn set_crown_data_other() {
 		"lea rdx, [rdi + rdi * 4]",
 		"add rdx, rbx",
 		"lea rax, [rdx + rdx * 8]",
-		"mov byte ptr [r8 + rax * 8 + 0x31C], 1",
 		"jmp rcx",
 		in("r8") SONG_DATA.unwrap(),
 		in("rcx") HANDLE.unwrap() + 0x3140EC,
@@ -212,37 +215,37 @@ pub unsafe extern "C" fn Init() {
 	write_bytes(primitive_ptr!(handle + 0x2F3BFC), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_1) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3065EA), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3065EC), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_2) as usize);
-	write_bytes(primitive_ptr!(handle + 0x30651E), bytes);
+	write_bytes(primitive_ptr!(handle + 0x306520), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_3) as usize);
-	write_bytes(primitive_ptr!(handle + 0x306452), bytes);
+	write_bytes(primitive_ptr!(handle + 0x306454), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_4) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3068AA), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3068AC), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_5) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3067DE), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3067E0), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_6) as usize);
-	write_bytes(primitive_ptr!(handle + 0x306712), bytes);
+	write_bytes(primitive_ptr!(handle + 0x306714), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_7) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3069A2), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3069A4), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_1) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313755), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313757), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_2) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313A0B), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313A0D), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_3) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313B4C), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313B4E), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_4) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313C42), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313C44), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_other) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313D38), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313D3A), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_crown_data_other) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3140D7), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3140D9), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_song_data) as usize);
-	write_bytes(primitive_ptr!(handle + 0x31367B), bytes);
+	write_bytes(primitive_ptr!(handle + 0x31367D), bytes);
 }
 
 #[no_mangle]
