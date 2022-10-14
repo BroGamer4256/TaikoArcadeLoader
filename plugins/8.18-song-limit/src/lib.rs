@@ -37,16 +37,16 @@ macro_rules! set_crown_data {
 		asm!(
 			"add rsp, 0x28",
 			"mov rax, qword ptr [rsp + 0x40]",
+			"push rcx",
 			"add rax, r14",
 			"lea rcx, [rax + rax * 8]",
 			concat!("cmp dword ptr [rdx + rcx * 8 + 0x300], ", $value),
 			"jge 1f",
 			concat!("mov dword ptr [rdx + rcx * 8 + 0x300], ", $value),
 			"1:",
-			in("rdx") SONG_DATA.unwrap(),
-		);
-		asm!(
+			"pop rcx",
 			"jmp rcx",
+			in("rdx") SONG_DATA.unwrap(),
 			in("rcx") HANDLE.unwrap() + $offset,
 		)
 	};
@@ -68,6 +68,7 @@ macro_rules! set_score_rank {
 	($offset:literal, $value:literal) => {
 		asm!(
 			"add rsp, 0x28",
+			"push rcx",
 			"lea rcx, [0xB + RBX * 4]",
 			"add rcx, rsi",
 			"add rcx, rbx",
@@ -76,11 +77,10 @@ macro_rules! set_score_rank {
 			"jge 1f",
 			concat!("mov dword ptr [rdx + rax * 8], ", $value),
 			"1:",
-			in("rdx") SONG_DATA.unwrap(),
-		);
-		asm!(
+			"pop rcx",
 			"jmp rcx",
 			in("rcx") HANDLE.unwrap() + $offset,
+			in("rdx") SONG_DATA.unwrap(),
 		);
 	};
 }
