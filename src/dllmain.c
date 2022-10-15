@@ -138,8 +138,10 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 			}
 			for (int i = 0; plugins[i] != 0; i++) {
 				FARPROC insertEvent = GetProcAddress (plugins[i], "Card2Insert");
-				if (insertEvent) ((event *)insertEvent) ();
-				hasInserted = true;
+				if (insertEvent) {
+					((event *)insertEvent) ();
+					hasInserted = true;
+				}
 			}
 			if (!hasInserted) {
 				memcpy (cardData + 0x2C, chipId2, 33);
