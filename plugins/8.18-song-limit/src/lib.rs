@@ -191,7 +191,7 @@ pub unsafe fn set_song_data() {
 		"add rsp, 0x28",
 		"movsxd rax, edi",
 		"lea rdx, [rax + rax * 4]",
-		"movsxd rdx, ebx",
+		"movsxd rax, ebx",
 		"add rdx, rax",
 		"lea rax, [rdx + rdx * 8]",
 		"lea rbx, [r8 + rax * 8]",
@@ -205,7 +205,8 @@ pub unsafe fn set_song_data() {
 pub unsafe extern "C" fn Init() {
 	let handle = GetModuleHandleA(0 as *const i8) as usize;
 	HANDLE = Some(handle);
-	SONG_DATA = Some(calloc(1, SONG_DATA_SIZE));
+	SONG_DATA = Some(malloc(SONG_DATA_SIZE));
+	memset(SONG_DATA.unwrap(), 0, SONG_DATA_SIZE);
 
 	let bytes = gen_jmp(primitive_ptr!(set_crown_data_1) as usize);
 	write_bytes(primitive_ptr!(handle + 0x2F3AC8), bytes);
@@ -215,46 +216,46 @@ pub unsafe extern "C" fn Init() {
 	write_bytes(primitive_ptr!(handle + 0x2F3BFC), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_1) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3065EC), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3065EA), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_2) as usize);
-	write_bytes(primitive_ptr!(handle + 0x306520), bytes);
+	write_bytes(primitive_ptr!(handle + 0x30651E), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_3) as usize);
-	write_bytes(primitive_ptr!(handle + 0x306454), bytes);
+	write_bytes(primitive_ptr!(handle + 0x306452), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_4) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3068AC), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3068AA), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_5) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3067E0), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3067DE), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_6) as usize);
-	write_bytes(primitive_ptr!(handle + 0x306714), bytes);
+	write_bytes(primitive_ptr!(handle + 0x306712), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_score_rank_7) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3069A4), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3069A2), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_1) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313757), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313755), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_2) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313A0D), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313A0B), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_3) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313B4E), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313B4C), bytes);
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_4) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313C44), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313C42), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_unknown_data_other) as usize);
-	write_bytes(primitive_ptr!(handle + 0x313D3A), bytes);
+	write_bytes(primitive_ptr!(handle + 0x313D38), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_crown_data_other) as usize);
-	write_bytes(primitive_ptr!(handle + 0x3140D9), bytes);
+	write_bytes(primitive_ptr!(handle + 0x3140D7), bytes);
 
 	let bytes = gen_jmp(primitive_ptr!(set_song_data) as usize);
-	write_bytes(primitive_ptr!(handle + 0x31367D), bytes);
+	write_bytes(primitive_ptr!(handle + 0x31367B), bytes);
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AfterCard1Insert() {
+pub unsafe extern "C" fn BeforeCard1Insert() {
 	memset(SONG_DATA.unwrap(), 0, SONG_DATA_SIZE);
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AfterCard2Insert() {
+pub unsafe extern "C" fn BeforeCard2Insert() {
 	memset(SONG_DATA.unwrap(), 0, SONG_DATA_SIZE);
 }
 
