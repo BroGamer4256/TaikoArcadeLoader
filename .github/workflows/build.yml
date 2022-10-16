@@ -14,7 +14,7 @@ jobs:
       - name: Setup rust
         run: rustup target add x86_64-pc-windows-gnu
       - name: Make
-        run: make dist-no-7z
+        run: make dist-no-7z -j
       - uses: actions/upload-artifact@v2
         with:
           name: dist

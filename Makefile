@@ -30,8 +30,8 @@ ${TARGET}/%.o: %.c
 .PHONY: SDL
 SDL:
 	@mkdir -p SDL/${SDL_TARGET}
-	@cd SDL/${SDL_TARGET} && ../configure --build=x86_64-linux-gnu --host=${SDL_TARGET} --disable-sdl2-config --disable-shared --enable-assertions=release --enable-directx --enable-haptic 
-	@make -s -C SDL/${SDL_TARGET}
+	@cd SDL/${SDL_TARGET} && ../configure -C --build=x86_64-linux-gnu --host=${SDL_TARGET} --disable-sdl2-config --disable-shared --enable-assertions=release --enable-directx --enable-haptic 
+	@make -s -C SDL/${SDL_TARGET} -j
 
 .PHONY: ${OUT}
 ${OUT}: dirs ${DEPS} ${OBJ}
@@ -50,8 +50,8 @@ clean:
 
 .PHONY: plugins
 plugins:
-	make -C plugins/8.18
-	make -C plugins/amauth
+	make -C plugins/8.18 -j
+	make -C plugins/amauth -j
 	cd plugins/8.18-song-limit && cargo build --release --target x86_64-pc-windows-gnu
 	cp plugins/8.18-song-limit/target/x86_64-pc-windows-gnu/release/song_limit_8_18.dll ${TARGET}
 	strip ${TARGET}/*.dll
