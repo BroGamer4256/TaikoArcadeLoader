@@ -66,6 +66,19 @@ PreInit () {
 	// Patch TLS v1.0 to v1.2
 	WRITE_MEMORY (ASLR (0x14044b1a9, handle), u8, 0x10);
 
+	toml_table_t *windowResSection = openConfigSection (config, "windowRes");
+	if (windowResSection) {
+		i32 windowResX = readConfigInt (windowResSection, "x", 0);
+		i32 windowResY = readConfigInt (windowResSection, "y", 0);
+		if (windowResX > 0 && windowResY > 0) {
+			WRITE_MEMORY (ASLR (0x14035FC5B, handle), u32, windowResX);
+			WRITE_MEMORY (ASLR (0x14035FC62, handle), u32, windowResY);
+		}
+		toml_free (windowResSection);
+	}
+
+	toml_free (config);
+
 	// Move various files to current directory
 	void *amHandle = GetModuleHandle ("AMFrameWork.dll");
 	WRITE_MEMORY (amHandle + 0x33EF7, u8, 0xEB);
@@ -79,14 +92,4 @@ PreInit () {
 
 	INSTALL_HOOK_DYNAMIC (qrVtable1, amHandle + 0x1BA00);
 	INSTALL_HOOK_DYNAMIC (qrReadFromCOM1, amHandle + 0x1BC20);
-
-	toml_table_t *windowResSection = openConfigSection (config, "windowRes");
-	if (windowResSection) {
-		i32 windowResX = readConfigInt (windowResSection, "x", 0);
-		i32 windowResY = readConfigInt (windowResSection, "y", 0);
-		if (windowResX > 0 && windowResY > 0) {
-			WRITE_MEMORY (ASLR (0x14035FC5B, handle), u32, windowResX);
-			WRITE_MEMORY (ASLR (0x14035FC62, handle), u32, windowResY);
-		}
-	}
 }
