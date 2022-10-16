@@ -475,8 +475,7 @@ ControllerAxisIsDown (enum SDLAxis axis) {
 	case SDL_AXIS_RIGHT_DOWN: return currentControllerAxisState.RightDown;
 	case SDL_AXIS_LTRIGGER_DOWN: return currentControllerAxisState.LTriggerDown;
 	case SDL_AXIS_RTRIGGER_DOWN: return currentControllerAxisState.RTriggerDown;
-	case SDL_AXIS_NULL:
-	case SDL_AXIS_MAX: return false;
+	default: return false;
 	}
 }
 
@@ -498,8 +497,7 @@ ControllerAxisWasDown (enum SDLAxis axis) {
 	case SDL_AXIS_RIGHT_DOWN: return lastControllerAxisState.RightDown;
 	case SDL_AXIS_LTRIGGER_DOWN: return lastControllerAxisState.LTriggerDown;
 	case SDL_AXIS_RTRIGGER_DOWN: return lastControllerAxisState.RTriggerDown;
-	case SDL_AXIS_NULL:
-	case SDL_AXIS_MAX: return false;
+	default: return false;
 	}
 }
 
