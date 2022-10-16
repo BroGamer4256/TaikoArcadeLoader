@@ -1,3 +1,4 @@
 unlock_songs = true
 shared_audio = true
 vsync = false
+windowRes = { x = 1920, y = 1080 }
