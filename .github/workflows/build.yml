@@ -11,15 +11,10 @@ jobs:
           submodules: recursive
       - name: Install depends
         run: sudo apt-get install -y mingw-w64 clang
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          target: x86_64-pc-windows-gnu
-          override: true
-          components: rust-src
+      - name: Setup rust
+        run: rustup target add x86_64-pc-windows-gnu
       - name: Make
-        run: |
-          make dist-no-7z
+        run: make dist-no-7z
       - uses: actions/upload-artifact@v2
         with:
           name: dist
