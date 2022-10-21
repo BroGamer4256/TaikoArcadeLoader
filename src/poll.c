@@ -160,6 +160,7 @@ InitializePoll (void *DivaWindowHandle) {
 	if (SDL_GameControllerAddMappingsFromFile (configPath ("gamecontrollerdb.txt")) == -1)
 		printError ("%s (): Cannot read gamecontrollerdb.txt\n", __func__);
 	SDL_GameControllerEventState (SDL_ENABLE);
+	SDL_JoystickEventState (SDL_ENABLE);
 
 	for (int i = 0; i < SDL_NumJoysticks (); i++) {
 		if (!SDL_IsGameController (i)) continue;
@@ -172,7 +173,6 @@ InitializePoll (void *DivaWindowHandle) {
 		}
 
 		controllers[i] = controller;
-		break;
 	}
 
 	window = SDL_CreateWindowFrom (DivaWindowHandle);

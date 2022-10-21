@@ -13,9 +13,10 @@ PreInit () {
 	toml_table_t *config = openConfig (configPath ("plugins/patches.toml"));
 	if (!config) return;
 	void *handle = GetModuleHandle (0);
-	WRITE_MEMORY (ASLR (0x1400239C0, handle), u8, 0xC3);                                                          // Stop error
-	if (readConfigBool (config, "unlock_songs", true)) WRITE_MEMORY (ASLR (0x140314E8D, handle), u8, 0xB0, 0x01); // Unlock songs
-	if (readConfigBool (config, "shared_audio", true)) WRITE_MEMORY (ASLR (0x140692E17, handle), u8, 0xEB);       // Shared audio
+	WRITE_MEMORY (ASLR (0x1400239C0, handle), u8, 0xC3);                                                                             // Stop error
+	if (readConfigBool (config, "unlock_songs", true)) WRITE_MEMORY (ASLR (0x140314E8D, handle), u8, 0xB0, 0x01);                    // Unlock songs
+	if (readConfigBool (config, "shared_audio", true)) WRITE_MEMORY (ASLR (0x140692E17, handle), u8, 0xEB);                          // Shared audio
+	if (!readConfigBool (config, "vsync", false)) WRITE_MEMORY (ASLR (0x140517339, handle), u8, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x90); // Disable VSync
 	// Remove song limit
 	WRITE_MEMORY (ASLR (0x140313726, handle), i32, 9000);
 	// Remove for with server
@@ -30,7 +31,6 @@ PreInit () {
 	WRITE_MEMORY (ASLR (0x140306893, handle), i32, 9000);
 	WRITE_MEMORY (ASLR (0x14030698B, handle), i32, 9000);
 	WRITE_MEMORY (ASLR (0x140313666, handle), i32, 9000);
-	WRITE_MEMORY (ASLR (0x140313726, handle), i32, 9000);
 	WRITE_MEMORY (ASLR (0x1403139F4, handle), i32, 9000);
 	WRITE_MEMORY (ASLR (0x140313B04, handle), i32, 9000);
 	WRITE_MEMORY (ASLR (0x140313C24, handle), i32, 9000);
@@ -56,12 +56,11 @@ PreInit () {
 	WRITE_MEMORY (ASLR (0x140314F46, handle), i32, 9000);
 	WRITE_MEMORY (ASLR (0x140314F97, handle), i32, 9000);
 
-	if (!readConfigBool (config, "vsync", false)) WRITE_MEMORY (ASLR (0x140517339, handle), u8, 0xBA, 0x00, 0x00, 0x00, 0x00, 0x90); // Disable VSync
 	// Save settings cross session without F:/ and G:/ drive
-	WRITE_MEMORY (ASLR (0x140B5C528, handle), u8, "./Setting1.bin");
-	WRITE_MEMORY (ASLR (0x140B5C538, handle), u8, "./Setting2.bin");
+	WRITE_MEMORY (ASLR (0x140B5C528, handle), char, "./Setting1.bin");
+	WRITE_MEMORY (ASLR (0x140B5C538, handle), char, "./Setting2.bin");
 	// Move F:/ files to current directory
-	WRITE_MEMORY (ASLR (0x140B1B4B0, handle), u8, "./");
+	WRITE_MEMORY (ASLR (0x140B1B4B0, handle), char, "./");
 	WRITE_MEMORY (ASLR (0x14001C941, handle), u8, 0x02);
 	// Patch TLS v1.0 to v1.2
 	WRITE_MEMORY (ASLR (0x14044b1a9, handle), u8, 0x10);
@@ -71,10 +70,9 @@ PreInit () {
 		i32 windowResX = readConfigInt (windowResSection, "x", 0);
 		i32 windowResY = readConfigInt (windowResSection, "y", 0);
 		if (windowResX > 0 && windowResY > 0) {
-			WRITE_MEMORY (ASLR (0x14035FC5B, handle), u32, windowResX);
-			WRITE_MEMORY (ASLR (0x14035FC62, handle), u32, windowResY);
+			WRITE_MEMORY (ASLR (0x14035FC5B, handle), i32, windowResX);
+			WRITE_MEMORY (ASLR (0x14035FC62, handle), i32, windowResY);
 		}
-		toml_free (windowResSection);
 	}
 
 	toml_free (config);

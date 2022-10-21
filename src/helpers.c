@@ -73,10 +73,8 @@ printColour (int colour, const char *format, ...) {
 
 	if (consoleHandle == 0) consoleHandle = GetStdHandle (STD_OUTPUT_HANDLE);
 
-	char buffer[255];
-	vsprintf (buffer, format, args);
 	SetConsoleTextAttribute (consoleHandle, colour);
-	printf ("%s", buffer);
+	vprintf (format, args);
 	SetConsoleTextAttribute (consoleHandle, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 
 	va_end (args);
