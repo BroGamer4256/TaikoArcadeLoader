@@ -63,7 +63,7 @@ PreInit () {
 	WRITE_MEMORY (ASLR (0x140B1B4B0, handle), char, "./");
 	WRITE_MEMORY (ASLR (0x14001C941, handle), u8, 0x02);
 	// Patch TLS v1.0 to v1.2
-	WRITE_MEMORY (ASLR (0x14044b1a9, handle), u8, 0x10);
+	WRITE_MEMORY (ASLR (0x14044B1A9, handle), u8, 0x10);
 
 	toml_table_t *windowResSection = openConfigSection (config, "windowRes");
 	if (windowResSection) {
