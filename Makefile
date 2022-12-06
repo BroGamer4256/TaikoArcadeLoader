@@ -52,8 +52,6 @@ clean:
 plugins:
 	make -C plugins/8.18
 	make -C plugins/amauth
-	cd plugins/8.18-song-limit && cargo build --release --target x86_64-pc-windows-gnu
-	cp plugins/8.18-song-limit/target/x86_64-pc-windows-gnu/release/song_limit_8_18.dll ${TARGET}
 	strip ${TARGET}/*.dll
 
 .PHONY: dist-no-7z
@@ -63,7 +61,6 @@ dist-no-7z: options ${OUT} plugins
 	mv out/${OUT}.dll out/bnusio.dll
 	cp ${TARGET}/patches.*.dll out/plugins
 	cp ${TARGET}/amauth.dll out/plugins
-	cp ${TARGET}/song_limit_8_18.dll out/plugins
 	cp -r dist/* out/
 
 .PHONY: dist

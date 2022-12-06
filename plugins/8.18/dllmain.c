@@ -1,6 +1,24 @@
 #define BASE_ADDRESS 0x140000000
 #include "helpers.h"
 
+const u64 song_data_size = 1024 * 1024 * 64;
+void *song_data;
+
+extern void set_song_data_rdx ();
+extern void set_song_data_r8 ();
+
+#define GENERATE_CALL(to)                                                                                                                            \
+	0x48, 0xB8, (u8)(u64)(to), (u8)((u64)(to) >> 8), (u8)((u64)(to) >> 16), (u8)((u64)(to) >> 24), (u8)((u64)(to) >> 32), (u8)((u64)(to) >> 40),     \
+	    (u8)((u64)(to) >> 48), (u8)((u64)(to) >> 56), 0xFF, 0xD0
+
+#define NOPS_NEEDED(start, return_location) WRITE_NOP ((u64)(start) + 12, (u64)(return_location)-1 - (u64)(start)-11)
+
+#define HOOK_SONG_DATA(function, start_loc, ret_loc, handle)                                                                                         \
+	{                                                                                                                                                \
+		WRITE_MEMORY (ASLR (start_loc, handle), u8, GENERATE_CALL (function));                                                                       \
+		NOPS_NEEDED (ASLR (start_loc, handle), ASLR (ret_loc, handle));                                                                              \
+	}
+
 HOOK_DYNAMIC (u8, __fastcall, qrVtable1, u64 a1) { return 1; }
 HOOK_DYNAMIC (u8, __fastcall, qrReadFromCOM1, u64 a1) {
 	*(u32 *)(a1 + 40) = 1;
@@ -55,6 +73,31 @@ PreInit () {
 	WRITE_MEMORY (ASLR (0x140306A2E, handle), i32, 9000);
 	WRITE_MEMORY (ASLR (0x140314F46, handle), i32, 9000);
 	WRITE_MEMORY (ASLR (0x140314F97, handle), i32, 9000);
+
+	song_data = malloc (song_data_size);
+	memset (song_data, 0, song_data_size);
+
+	// Song data
+	HOOK_SONG_DATA (set_song_data_r8, 0x140313678, 0x140313685, handle);
+	// Crown data
+	HOOK_SONG_DATA (set_song_data_rdx, 0x1402F3AC2, 0x1402F3AD0, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x1402F39F8, 0x1402F3A06, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x1402F3BF6, 0x1402F3C04, handle);
+	HOOK_SONG_DATA (set_song_data_r8, 0x1403140D4, 0x1403140E1, handle)
+	// Score ranks
+	HOOK_SONG_DATA (set_song_data_rdx, 0x1403065E6, 0x1403065F4, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x14030651A, 0x140306528, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x14030644E, 0x14030645C, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x1403068A6, 0x1403068B4, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x1403067DA, 0x1403067E8, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x14030670E, 0x14030671C, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x14030699E, 0x1403069B1, handle);
+	// Unknown
+	HOOK_SONG_DATA (set_song_data_rdx, 0x140313752, 0x14031375F, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x140313A08, 0x140313A15, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x140313B49, 0x140313B56, handle);
+	HOOK_SONG_DATA (set_song_data_rdx, 0x140313D35, 0x140313D42, handle);
+	HOOK_SONG_DATA (set_song_data_r8, 0x140313C3F, 0x140313C4C, handle);
 
 	// Save settings cross session without F:/ and G:/ drive
 	WRITE_MEMORY (ASLR (0x140B5C528, handle), char, "./Setting1.bin");
