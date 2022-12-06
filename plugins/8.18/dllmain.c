@@ -134,3 +134,13 @@ PreInit () {
 	INSTALL_HOOK_DYNAMIC (qrVtable1, amHandle + 0x1BA00);
 	INSTALL_HOOK_DYNAMIC (qrReadFromCOM1, amHandle + 0x1BC20);
 }
+
+void
+BeforeCard1Insert () {
+	memset (song_data, 0, song_data_size);
+}
+
+void
+BeforeCard2Insert () {
+	memset (song_data, 0, song_data_size);
+}
