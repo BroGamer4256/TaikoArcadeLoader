@@ -24,7 +24,7 @@ options:
 
 ../../${TARGET}/plugins/8.18/%.o: %.c
 	@echo BUILD $@
-	@bear -- ${CC} -c ${CFLAGS} $< -o $@
+	@${CC} -c ${CFLAGS} $< -o $@
 
 ../../${TARGET}/plugins/8.18/%.o: %.s
 	@echo BUILD $@
