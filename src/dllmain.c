@@ -11,7 +11,7 @@ char accessCode1[21] = "00000000000000000001";
 char accessCode2[21] = "00000000000000000002";
 char chipId1[33]     = "00000000000000000000000000000001";
 char chipId2[33]     = "00000000000000000000000000000002";
-char *server         = "https://divamodarchive.com";
+char *server         = "127.0.0.1";
 
 typedef i32 (*callbackAttach) (i32, i32, i32 *);
 typedef void (*callbackTouch) (i32, i32, u8[168], u64);
