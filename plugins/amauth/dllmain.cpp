@@ -10,6 +10,7 @@
 DWORD reg = 0;
 char server_ip[0x10];
 char *server_hostname = (char *)"127.0.0.1";
+char *pcb_id          = (char *)"TAL0000001";
 
 DEFINE_GUID (IID_CAuthFactory, 0x4603BB03, 0x058D, 0x43D9, 0xB9, 0x6F, 0x63, 0x9B, 0xE9, 0x08, 0xC1, 0xED);
 DEFINE_GUID (IID_CAuth, 0x045A5150, 0xD2B3, 0x4590, 0xA3, 0x8B, 0xC1, 0x15, 0x86, 0x78, 0xE1, 0xAC);
@@ -90,7 +91,7 @@ class CAuth : public IUnknown {
 	Unk10 (char *a1) {
 		memset (a1, 0, 0xB0);
 		strncpy_s (a1, 0x10, "STANDALONE", 0xF);
-		strncpy_s (a1 + 0x10, 0x10, "TAL0000001", 0xF);   // PCB ID
+		strncpy_s (a1 + 0x10, 0x10, pcb_id, 0xF);         // PCB ID
 		strncpy_s (a1 + 0x20, 0x10, "000000-00000", 0xF); // ignored by game
 		strncpy_s (a1 + 0x30, 0x10, server_ip, 0xF);
 		strncpy_s (a1 + 0x40, 0x10, server_ip, 0xF);
@@ -105,7 +106,7 @@ class CAuth : public IUnknown {
 		memset (a1, 0, 0x13C);
 		strncpy_s (a1, 4, "1", 3);
 		strncpy_s (a1 + 4, 0x10, "ALLNET", 0xF);
-		strncpy_s (a1 + 20, 8, "SWBY", 7);
+		strncpy_s (a1 + 20, 8, "SBWY", 7);
 		strncpy_s (a1 + 28, 8, "12.00", 7);
 		strncpy_s (a1 + 36, 8, "TAL0", 7);  // ignored by game
 		strncpy_s (a1 + 44, 8, "08.18", 7); // GAME VERSION
@@ -265,6 +266,7 @@ Init () {
 	toml_table_t *config = openConfig (configPath ((char *)"config.toml"));
 	if (config) {
 		server_hostname = readConfigString (config, (char *)"server", server_hostname);
+		pcb_id          = readConfigString (config, (char *)"pcb_id", pcb_id);
 		// Get ipv4 address of server
 		struct addrinfo *res = 0;
 		getaddrinfo (server_hostname, "", 0, &res);
