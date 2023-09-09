@@ -1,4 +1,6 @@
 #include "poll.h"
+#include "SDL3/SDL_gamepad.h"
+#include "SDL3/SDL_joystick.h"
 #include "helpers.h"
 #include <windows.h>
 
@@ -20,29 +22,29 @@ struct {
 
 struct {
 	const char *string;
-	SDL_GameControllerButton button;
+	SDL_GamepadButton button;
 } ConfigControllerButtons[] = {
-	{ "SDL_A", SDL_CONTROLLER_BUTTON_A },
-	{ "SDL_B", SDL_CONTROLLER_BUTTON_B },
-	{ "SDL_X", SDL_CONTROLLER_BUTTON_X },
-	{ "SDL_Y", SDL_CONTROLLER_BUTTON_Y },
-	{ "SDL_BACK", SDL_CONTROLLER_BUTTON_BACK },
-	{ "SDL_GUIDE", SDL_CONTROLLER_BUTTON_GUIDE },
-	{ "SDL_START", SDL_CONTROLLER_BUTTON_START },
-	{ "SDL_LSTICK_PRESS", SDL_CONTROLLER_BUTTON_LEFTSTICK },
-	{ "SDL_RSTICK_PRESS", SDL_CONTROLLER_BUTTON_RIGHTSTICK },
-	{ "SDL_LSHOULDER", SDL_CONTROLLER_BUTTON_LEFTSHOULDER },
-	{ "SDL_RSHOULDER", SDL_CONTROLLER_BUTTON_RIGHTSHOULDER },
-	{ "SDL_DPAD_UP", SDL_CONTROLLER_BUTTON_DPAD_UP },
-	{ "SDL_DPAD_DOWN", SDL_CONTROLLER_BUTTON_DPAD_DOWN },
-	{ "SDL_DPAD_LEFT", SDL_CONTROLLER_BUTTON_DPAD_LEFT },
-	{ "SDL_DPAD_RIGHT", SDL_CONTROLLER_BUTTON_DPAD_RIGHT },
-	{ "SDL_MISC", SDL_CONTROLLER_BUTTON_MISC1 },
-	{ "SDL_PADDLE1", SDL_CONTROLLER_BUTTON_PADDLE1 },
-	{ "SDL_PADDLE2", SDL_CONTROLLER_BUTTON_PADDLE2 },
-	{ "SDL_PADDLE3", SDL_CONTROLLER_BUTTON_PADDLE3 },
-	{ "SDL_PADDLE4", SDL_CONTROLLER_BUTTON_PADDLE4 },
-	{ "SDL_TOUCHPAD", SDL_CONTROLLER_BUTTON_TOUCHPAD },
+	{ "SDL_A", SDL_GAMEPAD_BUTTON_A },
+	{ "SDL_B", SDL_GAMEPAD_BUTTON_B },
+	{ "SDL_X", SDL_GAMEPAD_BUTTON_X },
+	{ "SDL_Y", SDL_GAMEPAD_BUTTON_Y },
+	{ "SDL_BACK", SDL_GAMEPAD_BUTTON_BACK },
+	{ "SDL_GUIDE", SDL_GAMEPAD_BUTTON_GUIDE },
+	{ "SDL_START", SDL_GAMEPAD_BUTTON_START },
+	{ "SDL_LSTICK_PRESS", SDL_GAMEPAD_BUTTON_LEFT_STICK },
+	{ "SDL_RSTICK_PRESS", SDL_GAMEPAD_BUTTON_RIGHT_STICK },
+	{ "SDL_LSHOULDER", SDL_GAMEPAD_BUTTON_LEFT_SHOULDER },
+	{ "SDL_RSHOULDER", SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER },
+	{ "SDL_DPAD_UP", SDL_GAMEPAD_BUTTON_DPAD_UP },
+	{ "SDL_DPAD_DOWN", SDL_GAMEPAD_BUTTON_DPAD_DOWN },
+	{ "SDL_DPAD_LEFT", SDL_GAMEPAD_BUTTON_DPAD_LEFT },
+	{ "SDL_DPAD_RIGHT", SDL_GAMEPAD_BUTTON_DPAD_RIGHT },
+	{ "SDL_MISC", SDL_GAMEPAD_BUTTON_MISC1 },
+	{ "SDL_PADDLE1", SDL_GAMEPAD_BUTTON_PADDLE1 },
+	{ "SDL_PADDLE2", SDL_GAMEPAD_BUTTON_PADDLE2 },
+	{ "SDL_PADDLE3", SDL_GAMEPAD_BUTTON_PADDLE3 },
+	{ "SDL_PADDLE4", SDL_GAMEPAD_BUTTON_PADDLE4 },
+	{ "SDL_TOUCHPAD", SDL_GAMEPAD_BUTTON_TOUCHPAD },
 };
 
 struct {
@@ -73,13 +75,13 @@ struct MouseState {
 bool currentKeyboardState[0xFF];
 bool lastKeyboardState[0xFF];
 
-bool currentControllerButtonsState[SDL_CONTROLLER_BUTTON_MAX];
-bool lastControllerButtonsState[SDL_CONTROLLER_BUTTON_MAX];
+bool currentControllerButtonsState[SDL_GAMEPAD_BUTTON_MAX];
+bool lastControllerButtonsState[SDL_GAMEPAD_BUTTON_MAX];
 struct SDLAxisState currentControllerAxisState;
 struct SDLAxisState lastControllerAxisState;
 
 SDL_Window *window;
-SDL_GameController *controllers[255];
+SDL_Gamepad *controllers[255];
 
 void
 SetConfigValue (toml_table_t *table, char *key, struct Keybindings *keybind) {
@@ -91,7 +93,7 @@ SetConfigValue (toml_table_t *table, char *key, struct Keybindings *keybind) {
 
 	memset (keybind, 0, sizeof (*keybind));
 	for (int i = 0; i < COUNTOFARR (keybind->buttons); i++)
-		keybind->buttons[i] = SDL_CONTROLLER_BUTTON_INVALID;
+		keybind->buttons[i] = SDL_GAMEPAD_BUTTON_INVALID;
 
 	for (int i = 0;; i++) {
 		toml_datum_t bind = toml_string_at (array, i);
@@ -110,7 +112,7 @@ SetConfigValue (toml_table_t *table, char *key, struct Keybindings *keybind) {
 			break;
 		case button:
 			for (int i = 0; i < COUNTOFARR (keybind->buttons); i++) {
-				if (keybind->buttons[i] == SDL_CONTROLLER_BUTTON_INVALID) {
+				if (keybind->buttons[i] == SDL_GAMEPAD_BUTTON_INVALID) {
 					keybind->buttons[i] = value.button;
 					break;
 				}
@@ -137,7 +139,7 @@ SetConfigValue (toml_table_t *table, char *key, struct Keybindings *keybind) {
 }
 
 bool
-InitializePoll (void *DivaWindowHandle) {
+InitializePoll (void *windowHandle) {
 	bool hasRumble = true;
 	SDL_SetMainReady ();
 
@@ -146,8 +148,8 @@ InitializePoll (void *DivaWindowHandle) {
 	SDL_SetHint (SDL_HINT_JOYSTICK_HIDAPI_PS5, "1");
 	SDL_SetHint (SDL_HINT_JOYSTICK_HIDAPI_PS5_RUMBLE, "1");
 
-	if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO) != 0) {
-		if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO) == 0) {
+	if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS | SDL_INIT_VIDEO) != 0) {
+		if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS | SDL_INIT_VIDEO) == 0) {
 			hasRumble = false;
 		} else {
 			printError ("SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO): "
@@ -157,27 +159,26 @@ InitializePoll (void *DivaWindowHandle) {
 		}
 	}
 
-	if (SDL_GameControllerAddMappingsFromFile (configPath ("gamecontrollerdb.txt")) == -1)
+	if (SDL_AddGamepadMappingsFromFile (configPath ("gamecontrollerdb.txt")) == -1)
 		printError ("%s (): Cannot read gamecontrollerdb.txt\n", __func__);
-	SDL_GameControllerEventState (SDL_ENABLE);
-	SDL_JoystickEventState (SDL_ENABLE);
 
-	for (int i = 0; i < SDL_NumJoysticks (); i++) {
-		if (!SDL_IsGameController (i)) continue;
+	int count                 = 0;
+	SDL_JoystickID *joysticks = SDL_GetJoysticks (&count);
+	if (joysticks == 0) { return hasRumble; }
+	for (int i = 0; i < count; i++) {
+		if (!SDL_IsGamepad (joysticks[i])) continue;
 
-		SDL_GameController *controller = SDL_GameControllerOpen (i);
+		SDL_Gamepad *controller = SDL_OpenGamepad (joysticks[i]);
 
-		if (!controller) {
-			printWarning ("Could not open gamecontroller %s: %s\n", SDL_GameControllerNameForIndex (i), SDL_GetError ());
-			continue;
-		}
+		if (!controller) { continue; }
 
+		printInfo ("%s: %s\n", SDL_GetGamepadName (controller), SDL_GetGamepadMapping (controller));
 		controllers[i] = controller;
 	}
 
-	window = SDL_CreateWindowFrom (DivaWindowHandle);
+	window = SDL_CreateWindowFrom (windowHandle);
 	if (window != NULL) SDL_SetWindowResizable (window, true);
-	else printError ("SDL_CreateWindowFrom (DivaWindowHandle): %s\n", SDL_GetError ());
+	else printError ("SDL_CreateWindowFrom (windowHandle): %s\n", SDL_GetError ());
 
 	return hasRumble;
 }
@@ -200,67 +201,67 @@ UpdatePoll (void *DivaWindowHandle) {
 	SDL_Event event;
 	while (SDL_PollEvent (&event) != 0) {
 		switch (event.type) {
-		case SDL_CONTROLLERDEVICEADDED:
-			if (!SDL_IsGameController (event.cdevice.which)) break;
+		case SDL_GAMEPADADDED:
+			if (!SDL_IsGamepad (event.cdevice.which)) break;
 
-			SDL_GameController *controller = SDL_GameControllerOpen (event.cdevice.which);
+			SDL_Gamepad *controller = SDL_OpenGamepad (event.cdevice.which);
 
-			if (!controller) {
-				printError ("%s (): Could not open gamecontroller %s: %s\n", __func__, SDL_GameControllerNameForIndex (event.cdevice.which),
-				            SDL_GetError ());
-				continue;
-			}
-
+			if (!controller) { continue; }
+			printInfo ("%s: %s\n", SDL_GetGamepadName (controller), SDL_GetGamepadMapping (controller));
 			controllers[event.cdevice.which] = controller;
 			break;
-		case SDL_CONTROLLERDEVICEREMOVED:
-			if (!SDL_IsGameController (event.cdevice.which)) break;
-			SDL_GameControllerClose (controllers[event.cdevice.which]);
+		case SDL_GAMEPADREMOVED:
+			printInfo ("%s: %s\n", SDL_GetGamepadName (controllers[event.cdevice.which]), SDL_GetGamepadMapping (controllers[event.cdevice.which]));
+			if (!SDL_IsGamepad (event.cdevice.which)) break;
+			SDL_CloseGamepad (controllers[event.cdevice.which]);
 
 			break;
 		case SDL_MOUSEWHEEL:
 			if (event.wheel.y > 0) currentMouseState.ScrolledUp = true;
 			else if (event.wheel.y < 0) currentMouseState.ScrolledDown = true;
 			break;
-		case SDL_CONTROLLERBUTTONUP:
-		case SDL_CONTROLLERBUTTONDOWN: currentControllerButtonsState[event.cbutton.button] = event.cbutton.state; break;
-		case SDL_CONTROLLERAXISMOTION:
+		case SDL_GAMEPADBUTTONUP:
+		case SDL_GAMEPADBUTTONDOWN:
+			currentControllerButtonsState[event.cbutton.button] = event.cbutton.state;
+			printInfo ("%s\n", SDL_GetGamepadStringForButton (event.cbutton.button));
+			break;
+		case SDL_GAMEPADAXISMOTION:
 			if (event.caxis.value > 8000) {
 				switch (event.caxis.axis) {
-				case SDL_CONTROLLER_AXIS_LEFTX: currentControllerAxisState.LeftRight = 1; break;
-				case SDL_CONTROLLER_AXIS_LEFTY: currentControllerAxisState.LeftDown = 1; break;
-				case SDL_CONTROLLER_AXIS_RIGHTX: currentControllerAxisState.RightRight = 1; break;
-				case SDL_CONTROLLER_AXIS_RIGHTY: currentControllerAxisState.RightDown = 1; break;
-				case SDL_CONTROLLER_AXIS_TRIGGERLEFT: currentControllerAxisState.LTriggerDown = 1; break;
-				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: currentControllerAxisState.RTriggerDown = 1; break;
+				case SDL_GAMEPAD_AXIS_LEFTX: currentControllerAxisState.LeftRight = 1; break;
+				case SDL_GAMEPAD_AXIS_LEFTY: currentControllerAxisState.LeftDown = 1; break;
+				case SDL_GAMEPAD_AXIS_RIGHTX: currentControllerAxisState.RightRight = 1; break;
+				case SDL_GAMEPAD_AXIS_RIGHTY: currentControllerAxisState.RightDown = 1; break;
+				case SDL_GAMEPAD_AXIS_LEFT_TRIGGER: currentControllerAxisState.LTriggerDown = 1; break;
+				case SDL_GAMEPAD_AXIS_RIGHT_TRIGGER: currentControllerAxisState.RTriggerDown = 1; break;
 				}
 			} else if (event.caxis.value < -8000) {
 				switch (event.caxis.axis) {
-				case SDL_CONTROLLER_AXIS_LEFTX: currentControllerAxisState.LeftLeft = 1; break;
-				case SDL_CONTROLLER_AXIS_LEFTY: currentControllerAxisState.LeftUp = 1; break;
-				case SDL_CONTROLLER_AXIS_RIGHTX: currentControllerAxisState.RightLeft = 1; break;
-				case SDL_CONTROLLER_AXIS_RIGHTY: currentControllerAxisState.RightUp = 1; break;
+				case SDL_GAMEPAD_AXIS_LEFTX: currentControllerAxisState.LeftLeft = 1; break;
+				case SDL_GAMEPAD_AXIS_LEFTY: currentControllerAxisState.LeftUp = 1; break;
+				case SDL_GAMEPAD_AXIS_RIGHTX: currentControllerAxisState.RightLeft = 1; break;
+				case SDL_GAMEPAD_AXIS_RIGHTY: currentControllerAxisState.RightUp = 1; break;
 				}
 			} else {
 				switch (event.caxis.axis) {
-				case SDL_CONTROLLER_AXIS_LEFTX:
+				case SDL_GAMEPAD_AXIS_LEFTX:
 					currentControllerAxisState.LeftRight = 0;
 					currentControllerAxisState.LeftLeft  = 0;
 					break;
-				case SDL_CONTROLLER_AXIS_LEFTY:
+				case SDL_GAMEPAD_AXIS_LEFTY:
 					currentControllerAxisState.LeftDown = 0;
 					currentControllerAxisState.LeftUp   = 0;
 					break;
-				case SDL_CONTROLLER_AXIS_RIGHTX:
+				case SDL_GAMEPAD_AXIS_RIGHTX:
 					currentControllerAxisState.RightRight = 0;
 					currentControllerAxisState.RightLeft  = 0;
 					break;
-				case SDL_CONTROLLER_AXIS_RIGHTY:
+				case SDL_GAMEPAD_AXIS_RIGHTY:
 					currentControllerAxisState.RightDown = 0;
 					currentControllerAxisState.RightUp   = 0;
 					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERLEFT: currentControllerAxisState.LTriggerDown = 0; break;
-				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: currentControllerAxisState.RTriggerDown = 0; break;
+				case SDL_GAMEPAD_AXIS_LEFT_TRIGGER: currentControllerAxisState.LTriggerDown = 0; break;
+				case SDL_GAMEPAD_AXIS_RIGHT_TRIGGER: currentControllerAxisState.RTriggerDown = 0; break;
 				}
 			}
 			break;
@@ -317,7 +318,7 @@ GetInternalButtonState (struct Keybindings bindings) {
 		if (KeyboardIsTapped (bindings.keycodes[i])) buttons.Tapped = 1;
 	}
 	for (int i = 0; i < COUNTOFARR (ConfigControllerButtons); i++) {
-		if (bindings.buttons[i] == SDL_CONTROLLER_BUTTON_INVALID) continue;
+		if (bindings.buttons[i] == SDL_GAMEPAD_BUTTON_INVALID) continue;
 		if (ControllerButtonIsReleased (bindings.buttons[i])) buttons.Released = 1;
 		if (ControllerButtonIsDown (bindings.buttons[i])) buttons.Down = 1;
 		if (ControllerButtonIsTapped (bindings.buttons[i])) buttons.Tapped = 1;
@@ -341,9 +342,9 @@ GetInternalButtonState (struct Keybindings bindings) {
 void
 SetRumble (int left, int right) {
 	for (int i = 0; i < COUNTOFARR (controllers); i++) {
-		if (!controllers[i] || !SDL_GameControllerHasRumble (controllers[i])) continue;
+		if (!controllers[i] || !SDL_GamepadHasRumble (controllers[i])) continue;
 
-		SDL_GameControllerRumble (controllers[i], left, right, 1000);
+		SDL_RumbleGamepad (controllers[i], left, right, 1000);
 	}
 }
 
@@ -433,32 +434,32 @@ GetMouseScrollIsTapped (enum Scroll scroll) {
 }
 
 bool
-ControllerButtonIsDown (SDL_GameControllerButton button) {
+ControllerButtonIsDown (SDL_GamepadButton button) {
 	return currentControllerButtonsState[button];
 }
 
 bool
-ControllerButtonIsUp (SDL_GameControllerButton button) {
+ControllerButtonIsUp (SDL_GamepadButton button) {
 	return !ControllerButtonIsDown (button);
 }
 
 bool
-ControllerButtonWasDown (SDL_GameControllerButton button) {
+ControllerButtonWasDown (SDL_GamepadButton button) {
 	return lastControllerButtonsState[button];
 }
 
 bool
-ControllerButtonWasUp (SDL_GameControllerButton button) {
+ControllerButtonWasUp (SDL_GamepadButton button) {
 	return !ControllerButtonWasDown (button);
 }
 
 bool
-ControllerButtonIsTapped (SDL_GameControllerButton button) {
+ControllerButtonIsTapped (SDL_GamepadButton button) {
 	return ControllerButtonIsDown (button) && ControllerButtonWasUp (button);
 }
 
 bool
-ControllerButtonIsReleased (SDL_GameControllerButton button) {
+ControllerButtonIsReleased (SDL_GamepadButton button) {
 	return ControllerButtonIsUp (button) && ControllerButtonWasDown (button);
 }
 

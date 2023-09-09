@@ -1,5 +1,5 @@
 #pragma once
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <toml.h>
@@ -37,7 +37,7 @@ enum Scroll { MOUSE_SCROLL_INVALID, MOUSE_SCROLL_UP, MOUSE_SCROLL_DOWN };
 
 struct Keybindings {
 	uint8_t keycodes[255];
-	SDL_GameControllerButton buttons[255];
+	SDL_GamepadButton buttons[255];
 	enum SDLAxis axis[255];
 	enum Scroll scroll[2];
 };
@@ -50,7 +50,7 @@ struct ConfigValue {
 	enum EnumType type;
 	union {
 		uint8_t keycode;
-		SDL_GameControllerButton button;
+		SDL_GamepadButton button;
 		enum SDLAxis axis;
 		enum Scroll scroll;
 	};
@@ -89,12 +89,12 @@ bool GetWasMouseScrollDown ();
 bool GetMouseScrollIsReleased (enum Scroll scroll);
 bool GetMouseScrollIsDown (enum Scroll scroll);
 bool GetMouseScrollIsTapped (enum Scroll scroll);
-bool ControllerButtonIsDown (SDL_GameControllerButton button);
-bool ControllerButtonIsUp (SDL_GameControllerButton button);
-bool ControllerButtonWasDown (SDL_GameControllerButton button);
-bool ControllerButtonWasUp (SDL_GameControllerButton button);
-bool ControllerButtonIsTapped (SDL_GameControllerButton button);
-bool ControllerButtonIsReleased (SDL_GameControllerButton button);
+bool ControllerButtonIsDown (SDL_GamepadButton button);
+bool ControllerButtonIsUp (SDL_GamepadButton button);
+bool ControllerButtonWasDown (SDL_GamepadButton button);
+bool ControllerButtonWasUp (SDL_GamepadButton button);
+bool ControllerButtonIsTapped (SDL_GamepadButton button);
+bool ControllerButtonIsReleased (SDL_GamepadButton button);
 bool ControllerAxisIsDown (enum SDLAxis axis);
 bool ControllerAxisIsUp (enum SDLAxis axis);
 bool ControllerAxisWasDown (enum SDLAxis axis);
