@@ -3,10 +3,6 @@
 Plugins are just libraries with certain exported functions that go in the plugins folder.
 
 ```
-void PreInit()
-```
-Runs in dllmain, may run into loader locks. You can also just use your own dllmain for this but that involves writing out all the arguments.
-```
 void Init()
 ```
 Runs on bngrw_Init, may be a bit late for some things but should generally allow functions which would cause loader locks to run fine if a bit late.
@@ -30,18 +26,7 @@ callback(0, 0, cardData, data);
 ```
 
 ```
-void Card1Insert()
+void CardInsert()
 ```
-Runs when user presses CARD_INSERT_1, causes TAL to not insert a card if any plugins have this present
-```
-void Card2Insert()
-```
-Runs when user presses CARD_INSERT_2, causes TAL to not insert a card if any plugins have this present
-```
-void BeforeCard1Insert()
-```
-Runs before CARD_INSERT_1 is handled
-```
-void BeforeCard2Insert()
-```
-Runs before CARD_INSERT_2 is handled
+Runs when user presses CARD_INSERT, causes TAL to not insert a card if any plugins have this present
+void BeforeCardInsert()

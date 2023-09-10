@@ -1,6 +1,9 @@
-x86_64-pc-windows
-*.o
-*.dll
-*.7z
-.cache
+build/
 compile_commands.json
+.cache
+subprojects/minhook
+subprojects/packagecache
+subprojects/tomlc99
+subprojects/SDL2-2.26.5
+subprojects/xxHash-0.8.2
+dist.7z

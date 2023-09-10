@@ -1,9 +1,0 @@
-[submodule "minhook"]
-	path = minhook
-	url = https://github.com/TsudaKageyu/minhook
-[submodule "SDL"]
-	path = SDL
-	url = https://github.com/libsdl-org/SDL
-[submodule "tomlc99"]
-	path = tomlc99
-	url = https://github.com/cktan/tomlc99

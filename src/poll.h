@@ -1,5 +1,5 @@
 #pragma once
-#include <SDL3/SDL.h>
+#include <SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <toml.h>
@@ -21,55 +21,52 @@ enum SDLAxis {
 };
 
 struct SDLAxisState {
-	unsigned int LeftLeft : 1;
-	unsigned int LeftRight : 1;
-	unsigned int LeftUp : 1;
-	unsigned int LeftDown : 1;
-	unsigned int RightLeft : 1;
-	unsigned int RightRight : 1;
-	unsigned int RightUp : 1;
-	unsigned int RightDown : 1;
-	unsigned int LTriggerDown : 1;
-	unsigned int RTriggerDown : 1;
+	float LeftLeft;
+	float LeftRight;
+	float LeftUp;
+	float LeftDown;
+	float RightLeft;
+	float RightRight;
+	float RightUp;
+	float RightDown;
+	float LTriggerDown;
+	float RTriggerDown;
 };
 
 enum Scroll { MOUSE_SCROLL_INVALID, MOUSE_SCROLL_UP, MOUSE_SCROLL_DOWN };
 
 struct Keybindings {
 	uint8_t keycodes[255];
-	SDL_GamepadButton buttons[255];
-	enum SDLAxis axis[255];
-	enum Scroll scroll[2];
+	SDL_GameControllerButton buttons[255];
+	SDLAxis axis[255];
+	Scroll scroll[2];
 };
-
-typedef struct Keybindings Keybindings;
 
 enum EnumType { none, keycode, button, axis, scroll };
 
 struct ConfigValue {
-	enum EnumType type;
+	EnumType type;
 	union {
 		uint8_t keycode;
-		SDL_GamepadButton button;
-		enum SDLAxis axis;
-		enum Scroll scroll;
+		SDL_GameControllerButton button;
+		SDLAxis axis;
+		Scroll scroll;
 	};
 };
 
 struct InternalButtonState {
-	unsigned int Released : 1;
-	unsigned int Down : 1;
-	unsigned int Tapped : 1;
+	float Down;
+	bool Released;
+	bool Tapped;
 };
 
-bool InitializePoll (void *DivaWindowHandle);
-void UpdatePoll (void *DivaWindowHandle);
+bool InitializePoll (HWND windowHandle);
+void UpdatePoll (HWND windowHandle);
 void DisposePoll ();
-
-struct ConfigValue StringToConfigEnum (char *value);
-void SetConfigValue (toml_table_t *table, char *key, struct Keybindings *keybind);
-struct InternalButtonState GetInternalButtonState (struct Keybindings bindings);
-void SetRumble (int left, int right);
+ConfigValue StringToConfigEnum (const char *value);
+void SetConfigValue (toml_table_t *table, const char *key, Keybindings *keybind);
+InternalButtonState GetInternalButtonState (Keybindings bindings);
+void SetRumble (int left, int right, int length);
 
 bool KeyboardIsDown (uint8_t keycode);
 bool KeyboardIsUp (uint8_t keycode);
@@ -86,21 +83,21 @@ bool GetMouseScrollUp ();
 bool GetMouseScrollDown ();
 bool GetWasMouseScrollUp ();
 bool GetWasMouseScrollDown ();
-bool GetMouseScrollIsReleased (enum Scroll scroll);
-bool GetMouseScrollIsDown (enum Scroll scroll);
-bool GetMouseScrollIsTapped (enum Scroll scroll);
-bool ControllerButtonIsDown (SDL_GamepadButton button);
-bool ControllerButtonIsUp (SDL_GamepadButton button);
-bool ControllerButtonWasDown (SDL_GamepadButton button);
-bool ControllerButtonWasUp (SDL_GamepadButton button);
-bool ControllerButtonIsTapped (SDL_GamepadButton button);
-bool ControllerButtonIsReleased (SDL_GamepadButton button);
-bool ControllerAxisIsDown (enum SDLAxis axis);
-bool ControllerAxisIsUp (enum SDLAxis axis);
-bool ControllerAxisWasDown (enum SDLAxis axis);
-bool ControllerAxisWasUp (enum SDLAxis axis);
-bool ControllerAxisIsTapped (enum SDLAxis axis);
-bool ControllerAxisIsReleased (enum SDLAxis axis);
-bool IsButtonTapped (struct Keybindings bindings);
-bool IsButtonReleased (struct Keybindings bindings);
-bool IsButtonDown (struct Keybindings bindings);
+bool GetMouseScrollIsReleased (Scroll scroll);
+bool GetMouseScrollIsDown (Scroll scroll);
+bool GetMouseScrollIsTapped (Scroll scroll);
+bool ControllerButtonIsDown (SDL_GameControllerButton button);
+bool ControllerButtonIsUp (SDL_GameControllerButton button);
+bool ControllerButtonWasDown (SDL_GameControllerButton button);
+bool ControllerButtonWasUp (SDL_GameControllerButton button);
+bool ControllerButtonIsTapped (SDL_GameControllerButton button);
+bool ControllerButtonIsReleased (SDL_GameControllerButton button);
+float ControllerAxisIsDown (SDLAxis axis);
+bool ControllerAxisIsUp (SDLAxis axis);
+float ControllerAxisWasDown (SDLAxis axis);
+bool ControllerAxisWasUp (SDLAxis axis);
+bool ControllerAxisIsTapped (SDLAxis axis);
+bool ControllerAxisIsReleased (SDLAxis axis);
+bool IsButtonTapped (Keybindings bindings);
+bool IsButtonReleased (Keybindings bindings);
+float IsButtonDown (Keybindings bindings);
