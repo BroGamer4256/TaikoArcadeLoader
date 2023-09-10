@@ -50,6 +50,7 @@ RETURN_FALSE (i64, bnusio_SramRead, i32 a1, u8 a2, i32 a3, u16 a4);
 RETURN_FALSE (i64, bnusio_SramWrite, i32 a1, u8 a2, i32 a3, u16 a4);
 RETURN_FALSE (i64, bnusio_ResetCoin);
 RETURN_FALSE (i64, bnusio_DecCoin, i32 a1, u16 a2);
+RETURN_FALSE (i64, bnusio_Close);
 size_t
 bnusio_GetFirmwareVersion () {
 	return 126;
@@ -72,26 +73,20 @@ Keybindings P2_LEFT_RED   = {};
 Keybindings P2_RIGHT_RED  = {};
 Keybindings P2_RIGHT_BLUE = {};
 
-struct AnalogGameButton {
-	Keybindings *bindings;
-	i32 offset;
-};
-
-u16 drumMin                      = 10000;
-u16 drumMax                      = 20000;
-AnalogGameButton analogButtons[] = {{&P1_LEFT_BLUE}, {&P1_LEFT_RED}, {&P1_RIGHT_RED}, {&P1_RIGHT_BLUE}, {&P2_LEFT_BLUE}, {&P2_LEFT_RED}, {&P2_RIGHT_RED}, {&P2_RIGHT_BLUE}};
+u16 drumMin                  = 10000;
+u16 drumMax                  = 20000;
+u16 lastHitValue             = drumMin;
+Keybindings *analogButtons[] = {&P1_LEFT_BLUE, &P1_LEFT_RED, &P1_RIGHT_RED, &P1_RIGHT_BLUE, &P2_LEFT_BLUE, &P2_LEFT_RED, &P2_RIGHT_RED, &P2_RIGHT_BLUE};
 
 u16
 bnusio_GetAnalogIn (u8 which) {
-	auto button = &analogButtons[which];
-	if (!IsButtonDown (*button->bindings)) {
-		button->offset = drumMin;
-		return 0;
-	} else if (button->offset == drumMax) {
-		return drumMax;
+	auto button = analogButtons[which];
+	if (IsButtonTapped (*button)) {
+		lastHitValue++;
+		if (lastHitValue >= drumMax) lastHitValue = drumMin;
+		return lastHitValue;
 	} else {
-		button->offset += 1;
-		return button->offset;
+		return 0;
 	}
 }
 
