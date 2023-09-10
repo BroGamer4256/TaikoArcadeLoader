@@ -78,10 +78,48 @@ u16 drumMax                  = 20000;
 u16 lastHitValue             = drumMin;
 Keybindings *analogButtons[] = {&P1_LEFT_BLUE, &P1_LEFT_RED, &P1_RIGHT_RED, &P1_RIGHT_BLUE, &P2_LEFT_BLUE, &P2_LEFT_RED, &P2_RIGHT_RED, &P2_RIGHT_BLUE};
 
+u16 buttonWaitPeriodP1 = 0;
+u16 buttonWaitPeriodP2 = 0;
+std::queue<u8> buttonQueueP1;
+std::queue<u8> buttonQueueP2;
+
 u16
 bnusio_GetAnalogIn (u8 which) {
 	auto button = analogButtons[which];
-	if (IsButtonTapped (*button)) {
+	if (which == 0) {
+		if (buttonWaitPeriodP1 > 0) buttonWaitPeriodP1--;
+		if (buttonWaitPeriodP2 > 0) buttonWaitPeriodP2--;
+	}
+	bool isP1 = which / 4 == 0;
+	if ((isP1 && !buttonQueueP1.empty ()) || (!isP1 && !buttonQueueP2.empty ())) {
+		if ((isP1 && buttonQueueP1.front () == which && buttonWaitPeriodP1 == 0) || (!isP1 && buttonQueueP2.front () == which && buttonWaitPeriodP2 == 0)) {
+			if (isP1) {
+				buttonQueueP1.pop ();
+				buttonWaitPeriodP1 = 4;
+			} else {
+				buttonQueueP2.pop ();
+				buttonWaitPeriodP2 = 4;
+			}
+
+			lastHitValue++;
+			if (lastHitValue >= drumMax) lastHitValue = drumMin;
+			return lastHitValue;
+		}
+		if (IsButtonTapped (*button)) {
+			if (isP1) buttonQueueP1.push (which);
+			else buttonQueueP2.push (which);
+		}
+		return 0;
+	} else if (IsButtonTapped (*button)) {
+		if (isP1 && buttonWaitPeriodP1 > 0) {
+			buttonQueueP1.push (which);
+			return 0;
+		} else if (!isP1 && buttonWaitPeriodP2 > 0) {
+			buttonQueueP2.push (which);
+			return 0;
+		}
+		if (isP1) buttonWaitPeriodP1 = 4;
+		else buttonWaitPeriodP2 = 4;
 		lastHitValue++;
 		if (lastHitValue >= drumMax) lastHitValue = drumMin;
 		return lastHitValue;
