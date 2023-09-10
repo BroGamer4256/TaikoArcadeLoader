@@ -76,5 +76,8 @@ Init () {
 
 	// Use TLS v1.2
 	WRITE_MEMORY (ASLR (0x140369662), u8, 0x10);
+
+	// Disable SSLVerify
+	WRITE_MEMORY (ASLR (0x14034C181), u8, 0x00);
 }
 } // namespace patches::CN_JUN_2023

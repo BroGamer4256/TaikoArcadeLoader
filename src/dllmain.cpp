@@ -66,7 +66,6 @@ GetGameVersion () {
 	stream.close ();
 	free (buf);
 
-	printf ("%llx\n", (u64)version);
 	switch (version) {
 	case GameVersion::JP_NOV_2020:
 	case GameVersion::CN_JUN_2023: break;
