@@ -54,6 +54,7 @@ library(
 		'src/bnusio.cpp',
 		'src/patches/jp_nov_2020.cpp',
 		'src/patches/cn_jun_2023.cpp',
+		'src/patches/amauth.cpp',
 	],
 	name_prefix: ''
 )

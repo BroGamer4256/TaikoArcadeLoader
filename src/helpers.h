@@ -31,10 +31,10 @@ const HMODULE MODULE_HANDLE = GetModuleHandle (nullptr);
 #define ASLR(address) ((u64)MODULE_HANDLE + (u64)address - (u64)BASE_ADDRESS)
 #endif
 
-#define HOOK(returnType, functionName, location, ...)       \
-	typedef returnType (*functionName) (__VA_ARGS__);       \
-	functionName original##functionName = NULL;             \
-	void *where##functionName           = (void *)location; \
+#define HOOK(returnType, functionName, location, ...)         \
+	typedef returnType (*functionName) (__VA_ARGS__);         \
+	functionName original##functionName = NULL;               \
+	void *where##functionName           = (void *)(location); \
 	returnType implOf##functionName (__VA_ARGS__)
 
 #define VTABLE_HOOK(returnType, className, functionName, ...)                      \

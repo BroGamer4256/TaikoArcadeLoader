@@ -73,8 +73,10 @@ Keybindings P2_LEFT_RED   = {};
 Keybindings P2_RIGHT_RED  = {};
 Keybindings P2_RIGHT_BLUE = {};
 
-u16 drumMin                  = 10000;
-u16 drumMax                  = 20000;
+u16 drumMin        = 10000;
+u16 drumMax        = 20000;
+u16 drumWaitPeriod = 4;
+
 u16 lastHitValue             = drumMin;
 Keybindings *analogButtons[] = {&P1_LEFT_BLUE, &P1_LEFT_RED, &P1_RIGHT_RED, &P1_RIGHT_BLUE, &P2_LEFT_BLUE, &P2_LEFT_RED, &P2_RIGHT_RED, &P2_RIGHT_BLUE};
 
@@ -95,10 +97,10 @@ bnusio_GetAnalogIn (u8 which) {
 		if ((isP1 && buttonQueueP1.front () == which && buttonWaitPeriodP1 == 0) || (!isP1 && buttonQueueP2.front () == which && buttonWaitPeriodP2 == 0)) {
 			if (isP1) {
 				buttonQueueP1.pop ();
-				buttonWaitPeriodP1 = 4;
+				buttonWaitPeriodP1 = drumWaitPeriod;
 			} else {
 				buttonQueueP2.pop ();
-				buttonWaitPeriodP2 = 4;
+				buttonWaitPeriodP2 = drumWaitPeriod;
 			}
 
 			lastHitValue++;
@@ -118,8 +120,8 @@ bnusio_GetAnalogIn (u8 which) {
 			buttonQueueP2.push (which);
 			return 0;
 		}
-		if (isP1) buttonWaitPeriodP1 = 4;
-		else buttonWaitPeriodP2 = 4;
+		if (isP1) buttonWaitPeriodP1 = drumWaitPeriod;
+		else buttonWaitPeriodP2 = drumWaitPeriod;
 		lastHitValue++;
 		if (lastHitValue >= drumMax) lastHitValue = drumMin;
 		return lastHitValue;

@@ -1,12 +1,6 @@
 #include "helpers.h"
 namespace patches::CN_JUN_2023 {
 
-i32 xRes         = 1360;
-i32 yRes         = 768;
-bool unlockSongs = true;
-bool sharedAudio = true;
-bool vsync       = false;
-
 u8 *haspBuffer;
 HOOK (i32, HaspDecrypt, PROC_ADDRESS ("hasp_windows_x64.dll", "hasp_decrypt")) { return 0; }
 HOOK (i32, HaspEncrypt, PROC_ADDRESS ("hasp_windows_x64.dll", "hasp_encrypt")) { return 0; }
@@ -27,6 +21,12 @@ HOOK (i32, HaspRead, PROC_ADDRESS ("hasp_windows_x64.dll", "hasp_read"), i32, i3
 
 void
 Init () {
+	i32 xRes         = 1360;
+	i32 yRes         = 768;
+	bool unlockSongs = true;
+	bool sharedAudio = true;
+	bool vsync       = false;
+
 	haspBuffer = (u8 *)malloc (0xD40);
 	memset (haspBuffer, 0, 0xD40);
 	strcpy ((char *)(haspBuffer + 0xD00), "284111080001");
