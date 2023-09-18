@@ -1,4 +1,5 @@
 #include "helpers.h"
+#include "patches.h"
 namespace patches::CN_JUN_2023 {
 
 u8 *haspBuffer;
@@ -79,5 +80,7 @@ Init () {
 
 	// Disable SSLVerify
 	WRITE_MEMORY (ASLR (0x14034C182), u8, 0x00);
+
+	patches::Qr::Init ();
 }
 } // namespace patches::CN_JUN_2023

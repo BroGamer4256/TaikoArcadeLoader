@@ -8,4 +8,8 @@ void Init ();
 namespace AmAuth {
 void Init ();
 } // namespace AmAuth
+namespace Qr {
+void Init ();
+void Update ();
+} // namespace Qr
 } // namespace patches

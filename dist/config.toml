@@ -1,5 +1,7 @@
 server = "127.0.0.1"
-res = { x = 1360, y = 768 }
+res = { x = 1920, y = 1080 }
 unlock_songs = true
 shared_audio = true
 vsync = false
+qr_card_string = ""
+qr_data_string = ""
