@@ -117,14 +117,14 @@ Init () {
 
 	// Move various files to current directory
 	auto amHandle = GetModuleHandle ("AMFrameWork.dll");
-	WRITE_MEMORY (amHandle + 0x33EF7, u8, 0xEB);
-	WRITE_MEMORY (amHandle + 0x3404A, u8, 0xEB);
-	WRITE_MEMORY (amHandle + 0x34429, u8, 0xEB);
-	WRITE_MEMORY (amHandle + 0x3457C, u8, 0xEB);
-	WRITE_MEMORY (amHandle + 0x3497A, u8, 0xEB);
-	WRITE_MEMORY (amHandle + 0x34ACD, u8, 0xEB);
-	WRITE_MEMORY (amHandle + 0x148AF, u8, 0xEB);
-	WRITE_MEMORY (amHandle + 0x14A1A, u8, 0xEB);
+	WRITE_MEMORY ((u64)amHandle + 0x33EF7, u8, 0xEB);
+	WRITE_MEMORY ((u64)amHandle + 0x3404A, u8, 0xEB);
+	WRITE_MEMORY ((u64)amHandle + 0x34429, u8, 0xEB);
+	WRITE_MEMORY ((u64)amHandle + 0x3457C, u8, 0xEB);
+	WRITE_MEMORY ((u64)amHandle + 0x3497A, u8, 0xEB);
+	WRITE_MEMORY ((u64)amHandle + 0x34ACD, u8, 0xEB);
+	WRITE_MEMORY ((u64)amHandle + 0x148AF, u8, 0xEB);
+	WRITE_MEMORY ((u64)amHandle + 0x14A1A, u8, 0xEB);
 
 	patches::AmAuth::Init ();
 }

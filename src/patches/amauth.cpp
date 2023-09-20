@@ -13,7 +13,7 @@ DWORD reg = 0;
 #undef DEFINE_GUID
 #endif
 
-#define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) const GUID name = {l, w1, w2, {b1, b2, b3, b4, b5, b6, b7, b8}}
+#define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) const GUID name = { l, w1, w2, { b1, b2, b3, b4, b5, b6, b7, b8 } }
 DEFINE_GUID (IID_CAuthFactory, 0x4603BB03, 0x058D, 0x43D9, 0xB9, 0x6F, 0x63, 0x9B, 0xE9, 0x08, 0xC1, 0xED);
 DEFINE_GUID (IID_CAuth, 0x045A5150, 0xD2B3, 0x4590, 0xA3, 0x8B, 0xC1, 0x15, 0x86, 0x78, 0xE1, 0xAC);
 
@@ -145,8 +145,9 @@ private:
 	i32 refCount = 0;
 };
 
-class CAuthFactory : public IClassFactory {
+class CAuthFactory final : public IClassFactory {
 public:
+	virtual ~CAuthFactory () = default;
 	STDMETHODIMP
 	QueryInterface (REFIID riid, LPVOID *ppvObj) {
 		wchar_t *iid_str;
@@ -173,18 +174,23 @@ public:
 	virtual HRESULT LockServer (i32 lock) { return 0; }
 };
 
+HRESULT (STDAPICALLTYPE *gOriCoCreateInstance) (const IID *const rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, const IID *const riid, LPVOID *ppv);
+
+HRESULT STDAPICALLTYPE
+CoCreateInstanceHook (const IID *const rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, const IID *const riid, LPVOID *ppv) {
+	if (IsEqualGUID (*rclsid, IID_CAuthFactory)) {
+		if (IsEqualGUID (*riid, IID_CAuth)) {
+			auto cauth = new CAuth ();
+			return cauth->QueryInterface (*riid, ppv);
+		}
+	}
+	return gOriCoCreateInstance (rclsid, pUnkOuter, dwClsContext, riid, ppv);
+}
+
 void
 Init () {
-	CoInitializeEx (0, 0);
-	CoRegisterClassObject (IID_CAuthFactory, (IUnknown *)new CAuthFactory (), CLSCTX_LOCAL_SERVER, 1, &reg);
-
-	struct addrinfo *res = 0;
-	getaddrinfo (server, "", 0, &res);
-	for (struct addrinfo *i = res; i != 0; i = i->ai_next) {
-		if (res->ai_addr->sa_family != AF_INET) continue;
-		struct sockaddr_in *p = (struct sockaddr_in *)res->ai_addr;
-		inet_ntop (AF_INET, &p->sin_addr, server_ip, 0x10);
-		break;
-	}
+	MH_Initialize ();
+	MH_CreateHookApi (L"ole32.dll", "CoCreateInstance", reinterpret_cast<LPVOID> (CoCreateInstanceHook), reinterpret_cast<void **> (&gOriCoCreateInstance)); // NOLINT(clang-diagnostic-microsoft-cast)
+	MH_EnableHook (nullptr);
 }
 } // namespace patches::AmAuth
