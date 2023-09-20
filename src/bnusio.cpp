@@ -1,14 +1,25 @@
 #include "helpers.h"
 #include "poll.h"
 #include "patches/patches.h"
-#include <xxhash.h>
 #include "keyconfig.h"
 #include "constants.h"
 
 extern std::vector<HMODULE> plugins;
-extern char accessCode[21];
-extern char chipId[33];
+extern char accessCode1[21];
+extern char chipId1[33];
+extern char accessCode2[21];
+extern char chipId2[33];
 extern GameVersion version;
+
+typedef i32 (*callbackAttach) (i32, i32, i32 *);
+typedef void (*callbackTouch) (i32, i32, u8[168], u64);
+typedef void event ();
+typedef void waitTouchEvent (callbackTouch, u64);
+bool waitingForTouch = false;
+callbackTouch touchCallback;
+u64 touchData;
+callbackAttach attachCallback;
+i32 *attachData;
 
 namespace bnusio {
 #define RETURN_FALSE(returnType, functionName, ...) \
@@ -55,7 +66,6 @@ RETURN_FALSE (i64, bnusio_SramRead, i32 a1, u8 a2, i32 a3, u16 a4);
 RETURN_FALSE (i64, bnusio_SramWrite, i32 a1, u8 a2, i32 a3, u16 a4);
 RETURN_FALSE (i64, bnusio_ResetCoin);
 RETURN_FALSE (i64, bnusio_DecCoin, i32 a1, u16 a2);
-RETURN_FALSE (i64, bnusio_Close);
 size_t
 bnusio_GetFirmwareVersion () {
 	return 126;
@@ -68,6 +78,8 @@ extern Keybindings DEBUG_UP;
 extern Keybindings DEBUG_DOWN;
 extern Keybindings DEBUG_ENTER;
 extern Keybindings COIN_ADD;
+extern Keybindings CARD_INSERT_1;
+extern Keybindings CARD_INSERT_2;
 extern Keybindings P1_LEFT_BLUE;
 extern Keybindings P1_LEFT_RED;
 extern Keybindings P1_RIGHT_RED;
@@ -158,6 +170,53 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 	if (IsButtonTapped (COIN_ADD) && !testEnabled) coin_count++;
 	if (IsButtonTapped (TEST)) testEnabled = !testEnabled;
 	if (IsButtonTapped (EXIT)) ExitProcess (0);
+	if (waitingForTouch) {
+		static u8 cardData[168]
+		    = { 0x01, 0x01, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x92, 0x2E, 0x58, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00,
+			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7F, 0x5C, 0x97, 0x44, 0xF0, 0x88, 0x04, 0x00, 0x43, 0x26, 0x2C, 0x33, 0x00, 0x04,
+			    0x06, 0x10, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30,
+			    0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x30, 0x30, 0x30, 0x30,
+			    0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00,
+			    0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4E, 0x42, 0x47, 0x49, 0x43, 0x36,
+			    0x00, 0x00, 0xFA, 0xE9, 0x69, 0x00, 0xF6, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		bool hasInserted = false;
+		if (IsButtonTapped (CARD_INSERT_1)) {
+			for (auto plugin : plugins) {
+				FARPROC insertEvent = GetProcAddress (plugin, "BeforeCard1Insert");
+				if (insertEvent) ((event *)insertEvent) ();
+			}
+			for (auto plugin : plugins) {
+				FARPROC insertEvent = GetProcAddress (plugin, "Card1Insert");
+				if (insertEvent) {
+					((event *)insertEvent) ();
+					hasInserted = true;
+				}
+			}
+			if (!hasInserted) {
+				memcpy (cardData + 0x2C, chipId1, 33);
+				memcpy (cardData + 0x50, accessCode1, 21);
+				touchCallback (0, 0, cardData, touchData);
+			}
+		} else if (IsButtonTapped (CARD_INSERT_2)) {
+			for (auto plugin : plugins) {
+				FARPROC insertEvent = GetProcAddress (plugin, "BeforeCard2Insert");
+				if (insertEvent) ((event *)insertEvent) ();
+			}
+			for (auto plugin : plugins) {
+				FARPROC insertEvent = GetProcAddress (plugin, "Card2Insert");
+				if (insertEvent) {
+					((event *)insertEvent) ();
+					hasInserted = true;
+				}
+			}
+			if (!hasInserted) {
+				memcpy (cardData + 0x2C, chipId2, 33);
+				memcpy (cardData + 0x50, accessCode2, 21);
+				touchCallback (0, 0, cardData, touchData);
+			}
+		}
+	}
 
 	for (auto plugin : plugins) {
 		auto updateEvent = GetProcAddress (plugin, "Update");
@@ -178,6 +237,15 @@ bnusio_GetSwIn () {
 	sw |= (u32)IsButtonDown (DEBUG_UP) << 13;
 	sw |= (u32)IsButtonDown (SERVICE) << 14;
 	return sw;
+}
+
+i64
+bnusio_Close () {
+	for (auto plugin : plugins) {
+		FARPROC exitEvent = GetProcAddress (plugin, "Exit");
+		if (exitEvent) ((event *)exitEvent) ();
+	}
+	return 0;
 }
 }
 
@@ -200,8 +268,22 @@ HOOK (i32, bngrw_ReqSendUrl, PROC_ADDRESS ("bngrw.dll", "BngRwReqSendUrlTo")) { 
 HOOK (u64, bngrw_ReqSetLedPower, PROC_ADDRESS ("bngrw.dll", "BngRwReqSetLedPower")) { return 0; }
 HOOK (i32, bngrw_reqCancel, PROC_ADDRESS ("bngrw.dll", "BngRwReqCancel")) { return 1; }
 HOOK (u64, bngrw_Init, PROC_ADDRESS ("bngrw.dll", "BngRwInit")) { return 0; }
-HOOK (u64, bngrw_attach, PROC_ADDRESS ("bngrw.dll", "BngRwAttach"), i32 a1, char *a2, i32 a3, i32 a4, i32 (*callback) (i32, i32, i32 *), i32 *a6) { return 1; }
-HOOK (u64, bngrw_reqWaitTouch, PROC_ADDRESS ("bngrw.dll", "BngRwReqWaitTouch"), u32 a1, i32 a2, u32 a3, void (*callback) (i32, i32, u8[168], u64), u64 a5) { return 1; }
+HOOK (u64, bngrw_attach, PROC_ADDRESS ("bngrw.dll", "BngRwAttach"), i32 a1, char *a2, i32 a3, i32 a4, i32 (*callback) (i32, i32, i32 *), i32 *a6) {
+	// This is way too fucking jank
+	attachCallback = callback;
+	attachData     = a6;
+	return 1;
+}
+HOOK (u64, bngrw_reqWaitTouch, PROC_ADDRESS ("bngrw.dll", "BngRwReqWaitTouch"), u32 a1, i32 a2, u32 a3, void (*callback) (i32, i32, u8[168], u64), u64 a5) {
+	waitingForTouch = true;
+	touchCallback   = callback;
+	touchData       = a5;
+	for (auto plugin : plugins) {
+		FARPROC touchEvent = GetProcAddress (plugin, "WaitTouch");
+		if (touchEvent) ((waitTouchEvent *)touchEvent) (callback, a5);
+	}
+	return 1;
+}
 
 void
 Init () {
@@ -224,6 +306,8 @@ Init () {
 	INSTALL_HOOK (bngrw_ReqSetLedPower);
 	INSTALL_HOOK (bngrw_reqCancel);
 	INSTALL_HOOK (bngrw_Init)
+	INSTALL_HOOK (bngrw_attach);
+	INSTALL_HOOK (bngrw_reqWaitTouch);
 
 	KeyConfig::Init();
 }

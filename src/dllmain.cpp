@@ -8,8 +8,10 @@ GameVersion version = GameVersion::UNKNOWN;
 std::vector<HMODULE> plugins;
 
 const char *server  = "127.0.0.1";
-char accessCode[21] = "00000000000000000000";
-char chipId[33]     = "00000000000000000000000000000000";
+char accessCode1[21] = "00000000000000000001";
+char accessCode2[21] = "00000000000000000002";
+char chipId1[33]     = "00000000000000000000000000000001";
+char chipId2[33]     = "00000000000000000000000000000002";
 
 HOOK (i32, ShowMouse, PROC_ADDRESS ("user32.dll", "ShowCursor"), bool) { return originalShowMouse (true); }
 HOOK (i32, ExitWindows, PROC_ADDRESS ("user32.dll", "ExitWindowsEx")) {
@@ -75,9 +77,13 @@ createCard () {
 	srand (time (0));
 
 	std::generate (buf, buf + 20, [&] () { return hexCharacterTable[rand () % 10]; });
-	WritePrivateProfileStringA ("card", "accessCode", buf, ".\\card.ini");
+	WritePrivateProfileStringA ("card", "accessCode1", buf, ".\\card.ini");
 	std::generate (buf, buf + 32, [&] () { return hexCharacterTable[rand () % 16]; });
-	WritePrivateProfileStringA ("card", "chipId", buf, ".\\card.ini");
+	WritePrivateProfileStringA ("card", "chipId1", buf, ".\\card.ini");
+	std::generate (buf, buf + 20, [&] () { return hexCharacterTable[rand () % 10]; });
+	WritePrivateProfileStringA ("card", "accessCode2", buf, ".\\card.ini");
+	std::generate (buf, buf + 32, [&] () { return hexCharacterTable[rand () % 16]; });
+	WritePrivateProfileStringA ("card", "chipId2", buf, ".\\card.ini");
 }
 
 BOOL
@@ -113,8 +119,10 @@ DllMain (HMODULE module, DWORD reason, LPVOID reserved) {
 		}
 
 		if (!std::filesystem::exists (".\\card.ini")) createCard ();
-		GetPrivateProfileStringA ("card", "accessCode", accessCode, accessCode, 21, ".\\card.ini");
-		GetPrivateProfileStringA ("card", "chipId", chipId, chipId, 33, ".\\card.ini");
+		GetPrivateProfileStringA ("card", "accessCode1", accessCode1, accessCode1, 21, ".\\card.ini");
+		GetPrivateProfileStringA ("card", "chipId1", chipId1, chipId1, 33, ".\\card.ini");
+		GetPrivateProfileStringA ("card", "accessCode2", accessCode2, accessCode2, 21, ".\\card.ini");
+		GetPrivateProfileStringA ("card", "chipId2", chipId2, chipId2, 33, ".\\card.ini");
 
 		INSTALL_HOOK (ShowMouse);
 		INSTALL_HOOK (ExitWindows);

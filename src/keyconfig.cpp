@@ -9,8 +9,10 @@ Keybindings DEBUG_UP      = {.keycodes = {VK_UP}};
 Keybindings DEBUG_DOWN    = {.keycodes = {VK_DOWN}};
 Keybindings DEBUG_ENTER   = {.keycodes = {VK_RETURN}};
 Keybindings COIN_ADD      = {.keycodes = {VK_RETURN}, .buttons = {SDL_CONTROLLER_BUTTON_START}};
-Keybindings QR_CARD_READ   = {.keycodes = {'P'}};
-Keybindings QR_DATA_READ   = {.keycodes = {'Q'}};
+Keybindings CARD_INSERT_1 = {.keycodes = {'P'}};
+Keybindings CARD_INSERT_2 = {};
+Keybindings QR_CARD_READ  = {.keycodes = {'O'}};
+Keybindings QR_DATA_READ  = {.keycodes = {'Q'}};
 Keybindings P1_LEFT_BLUE  = {.keycodes = {'D'}, .axis = {SDL_AXIS_LTRIGGER_DOWN}};
 Keybindings P1_LEFT_RED   = {.keycodes = {'F'}, .buttons = {SDL_CONTROLLER_BUTTON_LEFTSTICK}};
 Keybindings P1_RIGHT_RED  = {.keycodes = {'J'}, .buttons = {SDL_CONTROLLER_BUTTON_RIGHTSTICK}};
@@ -36,6 +38,8 @@ Init() {
 		SetConfigValue (config, "DEBUG_ENTER", &DEBUG_ENTER);
 
 		SetConfigValue (config, "COIN_ADD", &COIN_ADD);
+		SetConfigValue (config, "CARD_INSERT_1", &CARD_INSERT_1);
+		SetConfigValue (config, "CARD_INSERT_2", &CARD_INSERT_2);
 		SetConfigValue (config, "QR_CARD_READ", &QR_CARD_READ);
 		SetConfigValue (config, "QR_DATA_READ", &QR_DATA_READ);
 
