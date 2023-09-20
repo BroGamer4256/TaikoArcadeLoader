@@ -126,6 +126,8 @@ Init () {
 	WRITE_MEMORY ((u64)amHandle + 0x148AF, u8, 0xEB);
 	WRITE_MEMORY ((u64)amHandle + 0x14A1A, u8, 0xEB);
 
+	patches::Qr::Init ();
+
 	patches::AmAuth::Init ();
 }
 } // namespace patches::JP_NOV_2020

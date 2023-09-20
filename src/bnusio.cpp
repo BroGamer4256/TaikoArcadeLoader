@@ -223,7 +223,7 @@ u16 __fastcall bnusio_GetCoin (i32 a1) {
 		if (updateEvent) updateEvent ();
 	}
 
-	if (version == GameVersion::CN_JUN_2023) patches::Qr::Update();
+	patches::Qr::Update();
 
 	return coin_count;
 }
