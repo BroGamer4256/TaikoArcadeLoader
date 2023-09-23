@@ -48,14 +48,17 @@ Init () {
 	auto configPath      = std::filesystem::current_path () / "config.toml";
 	toml_table_t *config = openConfig (configPath);
 	if (config) {
-		auto res = openConfigSection (config, "res");
-		if (res) {
-			xRes = readConfigInt (res, "x", xRes);
-			yRes = readConfigInt (res, "y", yRes);
+		auto patches = openConfigSection(config, "patches");
+		if (patches) {
+			auto res = openConfigSection (patches, "res");
+			if (res) {
+				xRes = readConfigInt (res, "x", xRes);
+				yRes = readConfigInt (res, "y", yRes);
+			}
+			unlockSongs = readConfigBool (patches, "unlock_songs", unlockSongs);
+			sharedAudio = readConfigBool (patches, "shared_audio", sharedAudio);
+			vsync       = readConfigBool (patches, "vsync", vsync);
 		}
-		unlockSongs = readConfigBool (config, "unlock_songs", unlockSongs);
-		sharedAudio = readConfigBool (config, "shared_audio", sharedAudio);
-		vsync       = readConfigBool (config, "vsync", vsync);
 		toml_free (config);
 	}
 

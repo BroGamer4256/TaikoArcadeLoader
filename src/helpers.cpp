@@ -71,6 +71,21 @@ readConfigString (toml_table_t *table, const char *key, const char *notFoundValu
 	return data.u.s;
 }
 
+std::vector<int64_t>
+readConfigIntArray (toml_table_t *table, const char *key, std::vector<int64_t> notFoundValue) {
+	toml_array_t *array = toml_array_in (table, key);
+	if (!array) return notFoundValue;
+
+	std::vector<int64_t> datas;
+	for (int i = 0; ; i++) {
+        toml_datum_t data = toml_int_at (array, i);
+        if (!data.ok) break;
+		datas.push_back (data.u.i);
+    }
+
+	return datas;
+}
+
 void
 printColour (int colour, const char *format, ...) {
 	va_list args;

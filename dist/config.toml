@@ -1,7 +1,12 @@
+[amauth]
 server = "127.0.0.1"
+
+[patches]
 res = { x = 1920, y = 1080 }
 unlock_songs = true
 shared_audio = true
 vsync = false
-qr_card_string = ""
-qr_data_string = ""
+
+[qr]
+card = ""
+data = { serial = "", type = 0, song_no = [] }

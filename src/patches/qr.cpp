@@ -65,30 +65,63 @@ HOOK_DYNAMIC (bool, __fastcall, Send4, int64_t a1) {
 HOOK_DYNAMIC (int64_t, __fastcall, copy_data, int64_t this_, void *dest, int length) {
 	if (gState == State::CopyWait) {
 		std::cout << "Copy data, length: " << length << std::endl;
+
 		auto configPath      = std::filesystem::current_path () / "config.toml";
 		toml_table_t *config = openConfig (configPath);
-		std::string data     = "";
-
+		
 		if (gMode == Mode::Card) {
+			std::string card = "";
 			if (config) {
-				data = readConfigString (config, "qr_card_string", "");
-				toml_free (config);
+				auto qr = openConfigSection(config, "qr");
+				if (qr) {
+					card = readConfigString(qr, "card", "");
+				}
+				toml_free(config);
 			}
 
-			memcpy (dest, data.c_str (), data.size () + 1);
+			memcpy (dest, card.c_str (), card.size () + 1);
 			gState = State::AfterCopy1;
-			return data.size () + 1;
-		} else if (gMode == Mode::Data) {
+			return card.size () + 1;
+		} else {
+			std::string serial = "";
+			u16 type = 0;
+			std::vector<i64> songNoes;
+
 			if (config) {
-				data = readConfigString (config, "qr_data_string", "");
-				toml_free (config);
+				auto qr = openConfigSection (config, "qr");
+				if (qr) {
+					auto data = openConfigSection (qr, "data");
+					if (data) {
+						serial = readConfigString (data, "serial", "");
+						type = readConfigInt (data, "type", 0);
+						songNoes = readConfigIntArray (data, "song_no", songNoes);
+					}
+				}
 			}
 
-			BYTE data_length             = static_cast<BYTE> (data.size ());
-			std::vector<BYTE> byteBuffer = {0x53, 0x31, 0x32, 0x00, 0x00, 0xFF, 0xFF, data_length, 0x01, 0x00};
+			BYTE serial_length           = static_cast<BYTE> (serial.size ());
+			std::vector<BYTE> byteBuffer = {0x53, 0x31, 0x32, 0x00, 0x00, 0xFF, 0xFF, serial_length, 0x01, 0x00};
 
-			for (char c : data)
+			for (char c : serial)
 				byteBuffer.push_back (static_cast<BYTE> (c));
+
+			if (type == 5) {
+				std::vector<BYTE> folderData = {0xFF, 0xFF};
+
+				folderData.push_back (songNoes.size() * 2);
+
+				folderData.push_back (static_cast<u8> (type & 0xFF));
+				folderData.push_back (static_cast<u8> ((type >> 8) & 0xFF));
+
+				for (u16 songNo:songNoes) {
+					folderData.push_back (static_cast<u8> (songNo & 0xFF));
+					folderData.push_back (static_cast<u8> ((songNo >> 8) & 0xFF));
+				}
+				
+				for (auto c:folderData) {
+					byteBuffer.push_back (c);
+				}
+			}
 
 			byteBuffer.push_back (0xEE);
 			byteBuffer.push_back (0xFF);

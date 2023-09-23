@@ -114,7 +114,10 @@ DllMain (HMODULE module, DWORD reason, LPVOID reserved) {
 		auto configPath      = std::filesystem::current_path () / "config.toml";
 		toml_table_t *config = openConfig (configPath);
 		if (config) {
-			server = readConfigString (config, "server", server);
+			auto amauth = openConfigSection(config, "amauth");
+			if (amauth) {
+				server = readConfigString(amauth, "server", server);
+			}
 			toml_free (config);
 		}
 
