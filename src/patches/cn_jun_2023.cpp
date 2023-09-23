@@ -22,8 +22,8 @@ HOOK (i32, HaspRead, PROC_ADDRESS ("hasp_windows_x64.dll", "hasp_read"), i32, i3
 
 void
 Init () {
-	i32 xRes         = 1360;
-	i32 yRes         = 768;
+	i32 xRes         = 1920;
+	i32 yRes         = 1080;
 	bool unlockSongs = true;
 	bool sharedAudio = true;
 	bool vsync       = false;
@@ -48,7 +48,7 @@ Init () {
 	auto configPath      = std::filesystem::current_path () / "config.toml";
 	toml_table_t *config = openConfig (configPath);
 	if (config) {
-		auto patches = openConfigSection(config, "patches");
+		auto patches = openConfigSection (config, "patches");
 		if (patches) {
 			auto res = openConfigSection (patches, "res");
 			if (res) {

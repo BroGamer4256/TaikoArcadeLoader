@@ -17,10 +17,13 @@ enum class State {
 	Ready,
 	CopyWait,
 	AfterCopy1,
-	AfterCopy2,
+	AfterCopy2
 };
 
-enum class Mode { Card, Data };
+enum class Mode {
+	Card,
+	Data
+};
 
 State gState = State::Ready;
 Mode gMode   = Mode::Card;
@@ -72,11 +75,11 @@ HOOK_DYNAMIC (int64_t, __fastcall, copy_data, int64_t this_, void *dest, int len
 		if (gMode == Mode::Card) {
 			std::string card = "";
 			if (config) {
-				auto qr = openConfigSection(config, "qr");
+				auto qr = openConfigSection (config, "qr");
 				if (qr) {
-					card = readConfigString(qr, "card", "");
+					card = readConfigString (qr, "card", "");
 				}
-				toml_free(config);
+				toml_free (config);
 			}
 
 			memcpy (dest, card.c_str (), card.size () + 1);
@@ -97,6 +100,7 @@ HOOK_DYNAMIC (int64_t, __fastcall, copy_data, int64_t this_, void *dest, int len
 						songNoes = readConfigIntArray (data, "song_no", songNoes);
 					}
 				}
+				toml_free (config);
 			}
 
 			BYTE serial_length           = static_cast<BYTE> (serial.size ());

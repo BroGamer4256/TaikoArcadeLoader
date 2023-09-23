@@ -13,8 +13,8 @@ void *song_data;
 namespace patches::JP_NOV_2020 {
 void
 Init () {
-	i32 xRes         = 1360;
-	i32 yRes         = 768;
+	i32 xRes         = 1920;
+	i32 yRes         = 1080;
 	bool unlockSongs = true;
 	bool sharedAudio = true;
 	bool vsync       = false;
@@ -22,7 +22,7 @@ Init () {
 	auto configPath      = std::filesystem::current_path () / "config.toml";
 	toml_table_t *config = openConfig (configPath);
 	if (config) {
-		auto patches = openConfigSection(config, "patches");
+		auto patches = openConfigSection (config, "patches");
 		if (patches) {
 			auto res = openConfigSection (patches, "res");
 			if (res) {
@@ -119,18 +119,17 @@ Init () {
 	}
 
 	// Move various files to current directory
-	auto amHandle = GetModuleHandle ("AMFrameWork.dll");
-	WRITE_MEMORY ((u64)amHandle + 0x33EF7, u8, 0xEB);
-	WRITE_MEMORY ((u64)amHandle + 0x3404A, u8, 0xEB);
-	WRITE_MEMORY ((u64)amHandle + 0x34429, u8, 0xEB);
-	WRITE_MEMORY ((u64)amHandle + 0x3457C, u8, 0xEB);
-	WRITE_MEMORY ((u64)amHandle + 0x3497A, u8, 0xEB);
-	WRITE_MEMORY ((u64)amHandle + 0x34ACD, u8, 0xEB);
-	WRITE_MEMORY ((u64)amHandle + 0x148AF, u8, 0xEB);
-	WRITE_MEMORY ((u64)amHandle + 0x14A1A, u8, 0xEB);
+	auto amHandle = reinterpret_cast<uintptr_t> (GetModuleHandle ("AMFrameWork.dll"));
+	WRITE_MEMORY (amHandle + 0x33EF7, u8, 0xEB);
+	WRITE_MEMORY (amHandle + 0x3404A, u8, 0xEB);
+	WRITE_MEMORY (amHandle + 0x34429, u8, 0xEB);
+	WRITE_MEMORY (amHandle + 0x3457C, u8, 0xEB);
+	WRITE_MEMORY (amHandle + 0x3497A, u8, 0xEB);
+	WRITE_MEMORY (amHandle + 0x34ACD, u8, 0xEB);
+	WRITE_MEMORY (amHandle + 0x148AF, u8, 0xEB);
+	WRITE_MEMORY (amHandle + 0x14A1A, u8, 0xEB);
 
 	patches::Qr::Init ();
-
 	patches::AmAuth::Init ();
 }
 } // namespace patches::JP_NOV_2020
