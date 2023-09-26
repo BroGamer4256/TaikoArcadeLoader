@@ -20,6 +20,17 @@ HOOK (i32, HaspRead, PROC_ADDRESS ("hasp_windows_x64.dll", "hasp_read"), i32, i3
 	return 0;
 }
 
+void (__fastcall* lua_touserdata) (i64 L, i64 index);
+void (__fastcall* lua_settop) (i64 L, i64 index);
+void (__fastcall* lua_pushboolean) (i64 L, i64 b);
+
+HOOK (i64, sub_1401AC550, ASLR (0x1401AC550), i64 a1) {
+	lua_touserdata (a1, 4294957292);
+	lua_settop (a1, 0);
+	lua_pushboolean (a1, 1);
+	return 1;
+}
+
 void
 Init () {
 	i32 xRes         = 1920;
@@ -83,6 +94,12 @@ Init () {
 
 	// Disable SSLVerify
 	WRITE_MEMORY (ASLR (0x14034C182), u8, 0x00);
+
+	lua_touserdata = reinterpret_cast<void ((__fastcall*)(i64, i64))> (PROC_ADDRESS ("lua51.dll", "lua_touserdata"));
+	lua_settop = reinterpret_cast<void ((__fastcall*)(i64, i64))> (PROC_ADDRESS ("lua51.dll", "lua_settop"));
+	lua_pushboolean = reinterpret_cast<void ((__fastcall*)(i64, i64))> (PROC_ADDRESS ("lua51.dll", "lua_pushboolean"));
+
+	INSTALL_HOOK (sub_1401AC550);
 
 	patches::Qr::Init ();
 }
