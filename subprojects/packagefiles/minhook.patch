@@ -1,3 +1,4 @@
+--- minhook/meson.build
 +++ minhook/meson.build
 @@ -0,0 +1,18 @@
 +project('minhook', 'c', version: '1.0.0')
