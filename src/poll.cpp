@@ -178,8 +178,7 @@ SetConfigValue (toml_table_t *table, const char *key, Keybindings *keybind) {
 				}
 			}
 			break;
-		default:
-			break;
+		default: break;
 		}
 	}
 }
@@ -271,45 +270,23 @@ UpdatePoll (HWND windowHandle) {
 			else if (event.wheel.y < 0) currentMouseState.ScrolledDown = true;
 			break;
 		case SDL_CONTROLLERBUTTONUP:
-		case SDL_CONTROLLERBUTTONDOWN:
-			currentControllerButtonsState[event.cbutton.button] = event.cbutton.state;
-			break;
+		case SDL_CONTROLLERBUTTONDOWN: currentControllerButtonsState[event.cbutton.button] = event.cbutton.state; break;
 		case SDL_CONTROLLERAXISMOTION:
 			if (event.caxis.value > 1) {
 				switch (event.caxis.axis) {
-				case SDL_CONTROLLER_AXIS_LEFTX:
-					currentControllerAxisState.LeftRight = (float)event.caxis.value / 32767;
-					break;
-				case SDL_CONTROLLER_AXIS_LEFTY:
-					currentControllerAxisState.LeftDown = (float)event.caxis.value / 32767;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTX:
-					currentControllerAxisState.RightRight = (float)event.caxis.value / 32767;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTY:
-					currentControllerAxisState.RightDown = (float)event.caxis.value / 32767;
-					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-					currentControllerAxisState.LTriggerDown = (float)event.caxis.value / 32767;
-					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-					currentControllerAxisState.RTriggerDown = (float)event.caxis.value / 32767;
-					break;
+				case SDL_CONTROLLER_AXIS_LEFTX: currentControllerAxisState.LeftRight = (float)event.caxis.value / 32767; break;
+				case SDL_CONTROLLER_AXIS_LEFTY: currentControllerAxisState.LeftDown = (float)event.caxis.value / 32767; break;
+				case SDL_CONTROLLER_AXIS_RIGHTX: currentControllerAxisState.RightRight = (float)event.caxis.value / 32767; break;
+				case SDL_CONTROLLER_AXIS_RIGHTY: currentControllerAxisState.RightDown = (float)event.caxis.value / 32767; break;
+				case SDL_CONTROLLER_AXIS_TRIGGERLEFT: currentControllerAxisState.LTriggerDown = (float)event.caxis.value / 32767; break;
+				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: currentControllerAxisState.RTriggerDown = (float)event.caxis.value / 32767; break;
 				}
 			} else if (event.caxis.value < -1) {
 				switch (event.caxis.axis) {
-				case SDL_CONTROLLER_AXIS_LEFTX:
-					currentControllerAxisState.LeftLeft = (float)event.caxis.value / -32768;
-					break;
-				case SDL_CONTROLLER_AXIS_LEFTY:
-					currentControllerAxisState.LeftUp = (float)event.caxis.value / -32768;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTX:
-					currentControllerAxisState.RightLeft = (float)event.caxis.value / -32768;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTY:
-					currentControllerAxisState.RightUp = (float)event.caxis.value / -32768;
-					break;
+				case SDL_CONTROLLER_AXIS_LEFTX: currentControllerAxisState.LeftLeft = (float)event.caxis.value / -32768; break;
+				case SDL_CONTROLLER_AXIS_LEFTY: currentControllerAxisState.LeftUp = (float)event.caxis.value / -32768; break;
+				case SDL_CONTROLLER_AXIS_RIGHTX: currentControllerAxisState.RightLeft = (float)event.caxis.value / -32768; break;
+				case SDL_CONTROLLER_AXIS_RIGHTY: currentControllerAxisState.RightUp = (float)event.caxis.value / -32768; break;
 				}
 			} else {
 				switch (event.caxis.axis) {
@@ -329,12 +306,8 @@ UpdatePoll (HWND windowHandle) {
 					currentControllerAxisState.RightDown = 0;
 					currentControllerAxisState.RightUp   = 0;
 					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-					currentControllerAxisState.LTriggerDown = 0;
-					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-					currentControllerAxisState.RTriggerDown = 0;
-					break;
+				case SDL_CONTROLLER_AXIS_TRIGGERLEFT: currentControllerAxisState.LTriggerDown = 0; break;
+				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: currentControllerAxisState.RTriggerDown = 0; break;
 				}
 			}
 			break;
@@ -539,28 +512,17 @@ ControllerButtonIsReleased (SDL_GameControllerButton button) {
 float
 ControllerAxisIsDown (SDLAxis axis) {
 	switch (axis) {
-	case SDL_AXIS_LEFT_LEFT:
-		return currentControllerAxisState.LeftLeft;
-	case SDL_AXIS_LEFT_RIGHT:
-		return currentControllerAxisState.LeftRight;
-	case SDL_AXIS_LEFT_UP:
-		return currentControllerAxisState.LeftUp;
-	case SDL_AXIS_LEFT_DOWN:
-		return currentControllerAxisState.LeftDown;
-	case SDL_AXIS_RIGHT_LEFT:
-		return currentControllerAxisState.RightLeft;
-	case SDL_AXIS_RIGHT_RIGHT:
-		return currentControllerAxisState.RightRight;
-	case SDL_AXIS_RIGHT_UP:
-		return currentControllerAxisState.RightUp;
-	case SDL_AXIS_RIGHT_DOWN:
-		return currentControllerAxisState.RightDown;
-	case SDL_AXIS_LTRIGGER_DOWN:
-		return currentControllerAxisState.LTriggerDown;
-	case SDL_AXIS_RTRIGGER_DOWN:
-		return currentControllerAxisState.RTriggerDown;
-	default:
-		return false;
+	case SDL_AXIS_LEFT_LEFT: return currentControllerAxisState.LeftLeft;
+	case SDL_AXIS_LEFT_RIGHT: return currentControllerAxisState.LeftRight;
+	case SDL_AXIS_LEFT_UP: return currentControllerAxisState.LeftUp;
+	case SDL_AXIS_LEFT_DOWN: return currentControllerAxisState.LeftDown;
+	case SDL_AXIS_RIGHT_LEFT: return currentControllerAxisState.RightLeft;
+	case SDL_AXIS_RIGHT_RIGHT: return currentControllerAxisState.RightRight;
+	case SDL_AXIS_RIGHT_UP: return currentControllerAxisState.RightUp;
+	case SDL_AXIS_RIGHT_DOWN: return currentControllerAxisState.RightDown;
+	case SDL_AXIS_LTRIGGER_DOWN: return currentControllerAxisState.LTriggerDown;
+	case SDL_AXIS_RTRIGGER_DOWN: return currentControllerAxisState.RTriggerDown;
+	default: return false;
 	}
 }
 
@@ -572,28 +534,17 @@ ControllerAxisIsUp (SDLAxis axis) {
 float
 ControllerAxisWasDown (SDLAxis axis) {
 	switch (axis) {
-	case SDL_AXIS_LEFT_LEFT:
-		return lastControllerAxisState.LeftLeft;
-	case SDL_AXIS_LEFT_RIGHT:
-		return lastControllerAxisState.LeftRight;
-	case SDL_AXIS_LEFT_UP:
-		return lastControllerAxisState.LeftUp;
-	case SDL_AXIS_LEFT_DOWN:
-		return lastControllerAxisState.LeftDown;
-	case SDL_AXIS_RIGHT_LEFT:
-		return lastControllerAxisState.RightLeft;
-	case SDL_AXIS_RIGHT_RIGHT:
-		return lastControllerAxisState.RightRight;
-	case SDL_AXIS_RIGHT_UP:
-		return lastControllerAxisState.RightUp;
-	case SDL_AXIS_RIGHT_DOWN:
-		return lastControllerAxisState.RightDown;
-	case SDL_AXIS_LTRIGGER_DOWN:
-		return lastControllerAxisState.LTriggerDown;
-	case SDL_AXIS_RTRIGGER_DOWN:
-		return lastControllerAxisState.RTriggerDown;
-	default:
-		return false;
+	case SDL_AXIS_LEFT_LEFT: return lastControllerAxisState.LeftLeft;
+	case SDL_AXIS_LEFT_RIGHT: return lastControllerAxisState.LeftRight;
+	case SDL_AXIS_LEFT_UP: return lastControllerAxisState.LeftUp;
+	case SDL_AXIS_LEFT_DOWN: return lastControllerAxisState.LeftDown;
+	case SDL_AXIS_RIGHT_LEFT: return lastControllerAxisState.RightLeft;
+	case SDL_AXIS_RIGHT_RIGHT: return lastControllerAxisState.RightRight;
+	case SDL_AXIS_RIGHT_UP: return lastControllerAxisState.RightUp;
+	case SDL_AXIS_RIGHT_DOWN: return lastControllerAxisState.RightDown;
+	case SDL_AXIS_LTRIGGER_DOWN: return lastControllerAxisState.LTriggerDown;
+	case SDL_AXIS_RTRIGGER_DOWN: return lastControllerAxisState.RTriggerDown;
+	default: return false;
 	}
 }
 

@@ -1,17 +1,17 @@
-project('TaikoArcadeLoader', 'c', 'cpp', 'nasm', version: '1.0.0')
+project('TaikoArcadeLoader', 'c', 'cpp', version: '1.0.0')
 warning_level = 3
 debug = true
 optimization = 3
 b_lto = true
 b_pgo = 'use'
-cpp_std = 'c++20'
+cpp_std = 'c++23'
 
 cpp = meson.get_compiler('cpp')
 
 add_project_arguments(
 	cpp.get_supported_arguments(
 		'-D_WIN32_WINNT=_WIN32_WINNT_WIN10',
-		'-std=c++20',
+		'-std=c++23',
 		'-Werror',
 	),
 	language: 'cpp',
